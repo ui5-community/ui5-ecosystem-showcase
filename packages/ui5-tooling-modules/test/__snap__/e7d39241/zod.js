@@ -1,7 +1,8 @@
 sap.ui.define((function () { 'use strict';
 
+    var _a$1;
     /** A special constant with type `never` */
-    const NEVER = Object.freeze({
+    const NEVER = /*@__PURE__*/ Object.freeze({
         status: "aborted",
     });
     function $constructor(name, initializer, params) {
@@ -70,7 +71,8 @@ sap.ui.define((function () { 'use strict';
             this.name = "ZodEncodeError";
         }
     }
-    const globalConfig = {};
+    (_a$1 = globalThis).__zod_globalConfig ?? (_a$1.__zod_globalConfig = {});
+    const globalConfig = globalThis.__zod_globalConfig;
     function config(newConfig) {
         if (newConfig)
             Object.assign(globalConfig, newConfig);
@@ -124,21 +126,15 @@ sap.ui.define((function () { 'use strict';
         return source.slice(start, end);
     }
     function floatSafeRemainder(val, step) {
-        const valDecCount = (val.toString().split(".")[1] || "").length;
-        const stepString = step.toString();
-        let stepDecCount = (stepString.split(".")[1] || "").length;
-        if (stepDecCount === 0 && /\d?e-\d?/.test(stepString)) {
-            const match = stepString.match(/\d?e-(\d?)/);
-            if (match?.[1]) {
-                stepDecCount = Number.parseInt(match[1]);
-            }
-        }
-        const decCount = valDecCount > stepDecCount ? valDecCount : stepDecCount;
-        const valInt = Number.parseInt(val.toFixed(decCount).replace(".", ""));
-        const stepInt = Number.parseInt(step.toFixed(decCount).replace(".", ""));
-        return (valInt % stepInt) / 10 ** decCount;
+        const ratio = val / step;
+        const roundedRatio = Math.round(ratio);
+        // Use a relative epsilon scaled to the magnitude of the result
+        const tolerance = Number.EPSILON * Math.max(Math.abs(ratio), 1);
+        if (Math.abs(ratio - roundedRatio) < tolerance)
+            return 0;
+        return ratio - roundedRatio;
     }
-    const EVALUATING = Symbol("evaluating");
+    const EVALUATING = /* @__PURE__*/ Symbol("evaluating");
     function defineLazy(object, key, getter) {
         let value = undefined;
         Object.defineProperty(object, key, {
@@ -224,7 +220,12 @@ sap.ui.define((function () { 'use strict';
     function isObject(data) {
         return typeof data === "object" && data !== null && !Array.isArray(data);
     }
-    const allowsEval = cached(() => {
+    const allowsEval = /* @__PURE__*/ cached(() => {
+        // Skip the probe under `jitless`: strict CSPs report the caught `new Function`
+        // as a `securitypolicyviolation` even though the throw is swallowed.
+        if (globalConfig.jitless) {
+            return false;
+        }
         // @ts-ignore
         if (typeof navigator !== "undefined" && navigator?.userAgent?.includes("Cloudflare")) {
             return false;
@@ -262,6 +263,10 @@ sap.ui.define((function () { 'use strict';
             return { ...o };
         if (Array.isArray(o))
             return [...o];
+        if (o instanceof Map)
+            return new Map(o);
+        if (o instanceof Set)
+            return new Set(o);
         return o;
     }
     function numKeys(data) {
@@ -318,8 +323,15 @@ sap.ui.define((function () { 'use strict';
                 throw new Error(`Unknown data type: ${t}`);
         }
     };
-    const propertyKeyTypes = new Set(["string", "number", "symbol"]);
-    const primitiveTypes = new Set(["string", "number", "bigint", "boolean", "symbol", "undefined"]);
+    const propertyKeyTypes = /* @__PURE__*/ new Set(["string", "number", "symbol"]);
+    const primitiveTypes = /* @__PURE__*/ new Set([
+        "string",
+        "number",
+        "bigint",
+        "boolean",
+        "symbol",
+        "undefined",
+    ]);
     function escapeRegex(str) {
         return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
@@ -491,6 +503,9 @@ sap.ui.define((function () { 'use strict';
         return clone(schema, def);
     }
     function merge(a, b) {
+        if (a._zod.def.checks?.length) {
+            throw new Error(".merge() cannot be used on object schemas containing refinements. Use .safeExtend() instead.");
+        }
         const def = mergeDefs(a._zod.def, {
             get shape() {
                 const _shape = { ...a._zod.def.shape, ...b._zod.def.shape };
@@ -500,7 +515,7 @@ sap.ui.define((function () { 'use strict';
             get catchall() {
                 return b._zod.def.catchall;
             },
-            checks: [], // delete existing checks
+            checks: b._zod.def.checks ?? [],
         });
         return clone(a, def);
     }
@@ -594,6 +609,18 @@ sap.ui.define((function () { 'use strict';
         }
         return false;
     }
+    // Checks for explicit abort (continue === false), as opposed to implicit abort (continue === undefined).
+    // Used to respect `abort: true` in .refine() even for checks that have a `when` function.
+    function explicitlyAborted(x, startIndex = 0) {
+        if (x.aborted === true)
+            return true;
+        for (let i = startIndex; i < x.issues.length; i++) {
+            if (x.issues[i]?.continue === false) {
+                return true;
+            }
+        }
+        return false;
+    }
     function prefixIssues(path, issues) {
         return issues.map((iss) => {
             var _a;
@@ -606,23 +633,20 @@ sap.ui.define((function () { 'use strict';
         return typeof message === "string" ? message : message?.message;
     }
     function finalizeIssue(iss, ctx, config) {
-        const full = { ...iss, path: iss.path ?? [] };
-        // for backwards compatibility
-        if (!iss.message) {
-            const message = unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ??
+        const message = iss.message
+            ? iss.message
+            : (unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ??
                 unwrapMessage(ctx?.error?.(iss)) ??
                 unwrapMessage(config.customError?.(iss)) ??
                 unwrapMessage(config.localeError?.(iss)) ??
-                "Invalid input";
-            full.message = message;
+                "Invalid input");
+        const { inst: _inst, continue: _continue, input: _input, ...rest } = iss;
+        rest.path ?? (rest.path = []);
+        rest.message = message;
+        if (ctx?.reportInput) {
+            rest.input = _input;
         }
-        // delete (full as any).def;
-        delete full.inst;
-        delete full.continue;
-        if (!ctx?.reportInput) {
-            delete full.input;
-        }
-        return full;
+        return rest;
     }
     function getSizableOrigin(input) {
         if (input instanceof Set)
@@ -752,6 +776,7 @@ sap.ui.define((function () { 'use strict';
         defineLazy: defineLazy,
         esc: esc,
         escapeRegex: escapeRegex,
+        explicitlyAborted: explicitlyAborted,
         extend: extend,
         finalizeIssue: finalizeIssue,
         floatSafeRemainder: floatSafeRemainder,
@@ -827,35 +852,38 @@ sap.ui.define((function () { 'use strict';
     }
     function formatError(error, mapper = (issue) => issue.message) {
         const fieldErrors = { _errors: [] };
-        const processError = (error) => {
+        const processError = (error, path = []) => {
             for (const issue of error.issues) {
                 if (issue.code === "invalid_union" && issue.errors.length) {
-                    issue.errors.map((issues) => processError({ issues }));
+                    issue.errors.map((issues) => processError({ issues }, [...path, ...issue.path]));
                 }
                 else if (issue.code === "invalid_key") {
-                    processError({ issues: issue.issues });
+                    processError({ issues: issue.issues }, [...path, ...issue.path]);
                 }
                 else if (issue.code === "invalid_element") {
-                    processError({ issues: issue.issues });
-                }
-                else if (issue.path.length === 0) {
-                    fieldErrors._errors.push(mapper(issue));
+                    processError({ issues: issue.issues }, [...path, ...issue.path]);
                 }
                 else {
-                    let curr = fieldErrors;
-                    let i = 0;
-                    while (i < issue.path.length) {
-                        const el = issue.path[i];
-                        const terminal = i === issue.path.length - 1;
-                        if (!terminal) {
-                            curr[el] = curr[el] || { _errors: [] };
+                    const fullpath = [...path, ...issue.path];
+                    if (fullpath.length === 0) {
+                        fieldErrors._errors.push(mapper(issue));
+                    }
+                    else {
+                        let curr = fieldErrors;
+                        let i = 0;
+                        while (i < fullpath.length) {
+                            const el = fullpath[i];
+                            const terminal = i === fullpath.length - 1;
+                            if (!terminal) {
+                                curr[el] = curr[el] || { _errors: [] };
+                            }
+                            else {
+                                curr[el] = curr[el] || { _errors: [] };
+                                curr[el]._errors.push(mapper(issue));
+                            }
+                            curr = curr[el];
+                            i++;
                         }
-                        else {
-                            curr[el] = curr[el] || { _errors: [] };
-                            curr[el]._errors.push(mapper(issue));
-                        }
-                        curr = curr[el];
-                        i++;
                     }
                 }
             }
@@ -870,13 +898,13 @@ sap.ui.define((function () { 'use strict';
             for (const issue of error.issues) {
                 if (issue.code === "invalid_union" && issue.errors.length) {
                     // regular union error
-                    issue.errors.map((issues) => processError({ issues }, issue.path));
+                    issue.errors.map((issues) => processError({ issues }, [...path, ...issue.path]));
                 }
                 else if (issue.code === "invalid_key") {
-                    processError({ issues: issue.issues }, issue.path);
+                    processError({ issues: issue.issues }, [...path, ...issue.path]);
                 }
                 else if (issue.code === "invalid_element") {
-                    processError({ issues: issue.issues }, issue.path);
+                    processError({ issues: issue.issues }, [...path, ...issue.path]);
                 }
                 else {
                     const fullpath = [...path, ...issue.path];
@@ -975,7 +1003,7 @@ sap.ui.define((function () { 'use strict';
     }
 
     const _parse = (_Err) => (schema, value, _ctx, _params) => {
-        const ctx = _ctx ? Object.assign(_ctx, { async: false }) : { async: false };
+        const ctx = _ctx ? { ..._ctx, async: false } : { async: false };
         const result = schema._zod.run({ value, issues: [] }, ctx);
         if (result instanceof Promise) {
             throw new $ZodAsyncError();
@@ -989,7 +1017,7 @@ sap.ui.define((function () { 'use strict';
     };
     const parse$1 = /* @__PURE__*/ _parse($ZodRealError);
     const _parseAsync = (_Err) => async (schema, value, _ctx, params) => {
-        const ctx = _ctx ? Object.assign(_ctx, { async: true }) : { async: true };
+        const ctx = _ctx ? { ..._ctx, async: true } : { async: true };
         let result = schema._zod.run({ value, issues: [] }, ctx);
         if (result instanceof Promise)
             result = await result;
@@ -1016,7 +1044,7 @@ sap.ui.define((function () { 'use strict';
     };
     const safeParse$1 = /* @__PURE__*/ _safeParse($ZodRealError);
     const _safeParseAsync = (_Err) => async (schema, value, _ctx) => {
-        const ctx = _ctx ? Object.assign(_ctx, { async: true }) : { async: true };
+        const ctx = _ctx ? { ..._ctx, async: true } : { async: true };
         let result = schema._zod.run({ value, issues: [] }, ctx);
         if (result instanceof Promise)
             result = await result;
@@ -1029,7 +1057,7 @@ sap.ui.define((function () { 'use strict';
     };
     const safeParseAsync$1 = /* @__PURE__*/ _safeParseAsync($ZodRealError);
     const _encode = (_Err) => (schema, value, _ctx) => {
-        const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
+        const ctx = _ctx ? { ..._ctx, direction: "backward" } : { direction: "backward" };
         return _parse(_Err)(schema, value, ctx);
     };
     const encode$1 = /* @__PURE__*/ _encode($ZodRealError);
@@ -1038,7 +1066,7 @@ sap.ui.define((function () { 'use strict';
     };
     const decode$1 = /* @__PURE__*/ _decode($ZodRealError);
     const _encodeAsync = (_Err) => async (schema, value, _ctx) => {
-        const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
+        const ctx = _ctx ? { ..._ctx, direction: "backward" } : { direction: "backward" };
         return _parseAsync(_Err)(schema, value, ctx);
     };
     const encodeAsync$1 = /* @__PURE__*/ _encodeAsync($ZodRealError);
@@ -1047,7 +1075,7 @@ sap.ui.define((function () { 'use strict';
     };
     const decodeAsync$1 = /* @__PURE__*/ _decodeAsync($ZodRealError);
     const _safeEncode = (_Err) => (schema, value, _ctx) => {
-        const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
+        const ctx = _ctx ? { ..._ctx, direction: "backward" } : { direction: "backward" };
         return _safeParse(_Err)(schema, value, ctx);
     };
     const safeEncode$1 = /* @__PURE__*/ _safeEncode($ZodRealError);
@@ -1056,7 +1084,7 @@ sap.ui.define((function () { 'use strict';
     };
     const safeDecode$1 = /* @__PURE__*/ _safeDecode($ZodRealError);
     const _safeEncodeAsync = (_Err) => async (schema, value, _ctx) => {
-        const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
+        const ctx = _ctx ? { ..._ctx, direction: "backward" } : { direction: "backward" };
         return _safeParseAsync(_Err)(schema, value, ctx);
     };
     const safeEncodeAsync$1 = /* @__PURE__*/ _safeEncodeAsync($ZodRealError);
@@ -1065,7 +1093,12 @@ sap.ui.define((function () { 'use strict';
     };
     const safeDecodeAsync$1 = /* @__PURE__*/ _safeDecodeAsync($ZodRealError);
 
-    const cuid$1 = /^[cC][^\s-]{8,}$/;
+    /**
+     * @deprecated CUID v1 is deprecated by its authors due to information leakage
+     * (timestamps embedded in the id). Use {@link cuid2} instead.
+     * See https://github.com/paralleldrive/cuid.
+     */
+    const cuid$1 = /^[cC][0-9a-z]{6,}$/;
     const cuid2$1 = /^[0-9a-z]+$/;
     const ulid$1 = /^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$/;
     const xid$1 = /^[0-9a-vA-V]{20}$/;
@@ -1118,6 +1151,7 @@ sap.ui.define((function () { 'use strict';
     // export const hostname: RegExp = /^([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+$/;
     const hostname$1 = /^(?=.{1,253}\.?$)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?)*\.?$/;
     const domain = /^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+    const httpProtocol = /^https?$/;
     // https://blog.stevenlevithan.com/archives/validate-phone-number#r4-3 (regex sans spaces)
     // E.164: leading digit must be 1-9; total digits (excluding '+') between 7-15
     const e164$1 = /^\+[1-9]\d{6,14}$/;
@@ -1219,6 +1253,7 @@ sap.ui.define((function () { 'use strict';
         hex: hex$1,
         hostname: hostname$1,
         html5Email: html5Email,
+        httpProtocol: httpProtocol,
         idnEmail: idnEmail,
         integer: integer,
         ipv4: ipv4$1,
@@ -1869,8 +1904,8 @@ sap.ui.define((function () { 'use strict';
 
     const version = {
         major: 4,
-        minor: 3,
-        patch: 6,
+        minor: 4,
+        patch: 3,
     };
 
     const $ZodType = /*@__PURE__*/ $constructor("$ZodType", (inst, def) => {
@@ -1903,6 +1938,8 @@ sap.ui.define((function () { 'use strict';
                 let asyncResult;
                 for (const ch of checks) {
                     if (ch._zod.def.when) {
+                        if (explicitlyAborted(payload))
+                            continue;
                         const shouldRun = ch._zod.def.when(payload);
                         if (!shouldRun)
                             continue;
@@ -2055,6 +2092,21 @@ sap.ui.define((function () { 'use strict';
             try {
                 // Trim whitespace from input
                 const trimmed = payload.value.trim();
+                // When normalize is off, require :// for http/https URLs
+                // This prevents strings like "http:example.com" or "https:/path" from being silently accepted
+                if (!def.normalize && def.protocol?.source === httpProtocol.source) {
+                    if (!/^https?:\/\//i.test(trimmed)) {
+                        payload.issues.push({
+                            code: "invalid_format",
+                            format: "url",
+                            note: "Invalid URL format",
+                            input: payload.value,
+                            inst,
+                            continue: !def.abort,
+                        });
+                        return;
+                    }
+                }
                 // @ts-ignore
                 const url = new URL(trimmed);
                 if (def.hostname) {
@@ -2115,6 +2167,11 @@ sap.ui.define((function () { 'use strict';
         def.pattern ?? (def.pattern = nanoid$1);
         $ZodStringFormat.init(inst, def);
     });
+    /**
+     * @deprecated CUID v1 is deprecated by its authors due to information leakage
+     * (timestamps embedded in the id). Use {@link $ZodCUID2} instead.
+     * See https://github.com/paralleldrive/cuid.
+     */
     const $ZodCUID = /*@__PURE__*/ $constructor("$ZodCUID", (inst, def) => {
         def.pattern ?? (def.pattern = cuid$1);
         $ZodStringFormat.init(inst, def);
@@ -2220,6 +2277,9 @@ sap.ui.define((function () { 'use strict';
     function isValidBase64(data) {
         if (data === "")
             return true;
+        // atob ignores whitespace, so reject it up front.
+        if (/\s/.test(data))
+            return false;
         if (data.length % 4 !== 0)
             return false;
         try {
@@ -2424,8 +2484,6 @@ sap.ui.define((function () { 'use strict';
         $ZodType.init(inst, def);
         inst._zod.pattern = _undefined$2;
         inst._zod.values = new Set([undefined]);
-        inst._zod.optin = "optional";
-        inst._zod.optout = "optional";
         inst._zod.parse = (payload, _ctx) => {
             const input = payload.value;
             if (typeof input === "undefined")
@@ -2555,16 +2613,28 @@ sap.ui.define((function () { 'use strict';
             return payload; //handleArrayResultsAsync(parseResults, final);
         };
     });
-    function handlePropertyResult(result, final, key, input, isOptionalOut) {
+    function handlePropertyResult(result, final, key, input, isOptionalIn, isOptionalOut) {
+        const isPresent = key in input;
         if (result.issues.length) {
-            // For optional-out schemas, ignore errors on absent keys
-            if (isOptionalOut && !(key in input)) {
+            // For optional-in/out schemas, ignore errors on absent keys.
+            if (isOptionalIn && isOptionalOut && !isPresent) {
                 return;
             }
             final.issues.push(...prefixIssues(key, result.issues));
         }
+        if (!isPresent && !isOptionalIn) {
+            if (!result.issues.length) {
+                final.issues.push({
+                    code: "invalid_type",
+                    expected: "nonoptional",
+                    input: undefined,
+                    path: [key],
+                });
+            }
+            return;
+        }
         if (result.value === undefined) {
-            if (key in input) {
+            if (isPresent) {
                 final.value[key] = undefined;
             }
         }
@@ -2590,12 +2660,16 @@ sap.ui.define((function () { 'use strict';
     }
     function handleCatchall(proms, input, payload, ctx, def, inst) {
         const unrecognized = [];
-        // iterate over input keys
         const keySet = def.keySet;
         const _catchall = def.catchall._zod;
         const t = _catchall.def.type;
+        const isOptionalIn = _catchall.optin === "optional";
         const isOptionalOut = _catchall.optout === "optional";
         for (const key in input) {
+            // skip __proto__ so it can't replace the result prototype via the
+            // assignment setter on the plain {} we build into
+            if (key === "__proto__")
+                continue;
             if (keySet.has(key))
                 continue;
             if (t === "never") {
@@ -2604,10 +2678,10 @@ sap.ui.define((function () { 'use strict';
             }
             const r = _catchall.run({ value: input[key], issues: [] }, ctx);
             if (r instanceof Promise) {
-                proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalOut)));
+                proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalIn, isOptionalOut)));
             }
             else {
-                handlePropertyResult(r, payload, key, input, isOptionalOut);
+                handlePropertyResult(r, payload, key, input, isOptionalIn, isOptionalOut);
             }
         }
         if (unrecognized.length) {
@@ -2675,13 +2749,14 @@ sap.ui.define((function () { 'use strict';
             const shape = value.shape;
             for (const key of value.keys) {
                 const el = shape[key];
+                const isOptionalIn = el._zod.optin === "optional";
                 const isOptionalOut = el._zod.optout === "optional";
                 const r = el._zod.run({ value: input[key], issues: [] }, ctx);
                 if (r instanceof Promise) {
-                    proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalOut)));
+                    proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalIn, isOptionalOut)));
                 }
                 else {
-                    handlePropertyResult(r, payload, key, input, isOptionalOut);
+                    handlePropertyResult(r, payload, key, input, isOptionalIn, isOptionalOut);
                 }
             }
             if (!catchall) {
@@ -2714,10 +2789,11 @@ sap.ui.define((function () { 'use strict';
                 const id = ids[key];
                 const k = esc(key);
                 const schema = shape[key];
+                const isOptionalIn = schema?._zod?.optin === "optional";
                 const isOptionalOut = schema?._zod?.optout === "optional";
                 doc.write(`const ${id} = ${parseStr(key)};`);
-                if (isOptionalOut) {
-                    // For optional-out schemas, ignore errors on absent keys
+                if (isOptionalIn && isOptionalOut) {
+                    // For optional-in/out schemas, ignore errors on absent keys
                     doc.write(`
         if (${id}.issues.length) {
           if (${k} in input) {
@@ -2734,6 +2810,34 @@ sap.ui.define((function () { 'use strict';
           }
         } else {
           newResult[${k}] = ${id}.value;
+        }
+
+      `);
+                }
+                else if (!isOptionalIn) {
+                    doc.write(`
+        const ${id}_present = ${k} in input;
+        if (${id}.issues.length) {
+          payload.issues = payload.issues.concat(${id}.issues.map(iss => ({
+            ...iss,
+            path: iss.path ? [${k}, ...iss.path] : [${k}]
+          })));
+        }
+        if (!${id}_present && !${id}.issues.length) {
+          payload.issues.push({
+            code: "invalid_type",
+            expected: "nonoptional",
+            input: undefined,
+            path: [${k}]
+          });
+        }
+
+        if (${id}_present) {
+          if (${id}.value === undefined) {
+            newResult[${k}] = undefined;
+          } else {
+            newResult[${k}] = ${id}.value;
+          }
         }
 
       `);
@@ -2831,10 +2935,9 @@ sap.ui.define((function () { 'use strict';
             }
             return undefined;
         });
-        const single = def.options.length === 1;
-        const first = def.options[0]._zod.run;
+        const first = def.options.length === 1 ? def.options[0]._zod.run : null;
         inst._zod.parse = (payload, ctx) => {
-            if (single) {
+            if (first) {
                 return first(payload, ctx);
             }
             let async = false;
@@ -2891,10 +2994,9 @@ sap.ui.define((function () { 'use strict';
     const $ZodXor = /*@__PURE__*/ $constructor("$ZodXor", (inst, def) => {
         $ZodUnion.init(inst, def);
         def.inclusive = false;
-        const single = def.options.length === 1;
-        const first = def.options[0]._zod.run;
+        const first = def.options.length === 1 ? def.options[0]._zod.run : null;
         inst._zod.parse = (payload, ctx) => {
-            if (single) {
+            if (first) {
                 return first(payload, ctx);
             }
             let async = false;
@@ -2972,7 +3074,11 @@ sap.ui.define((function () { 'use strict';
             if (opt) {
                 return opt._zod.run(payload, ctx);
             }
-            if (def.unionFallback) {
+            // Fall back to union matching when the fast discriminator path fails:
+            // - explicitly enabled via unionFallback, or
+            // - during backward direction (encode), since codec-based discriminators
+            //   have different values in forward vs backward directions
+            if (def.unionFallback || ctx.direction === "backward") {
                 return _super(payload, ctx);
             }
             // no matching discriminator
@@ -2981,6 +3087,7 @@ sap.ui.define((function () { 'use strict';
                 errors: [],
                 note: "No matching discriminator",
                 discriminator: def.discriminator,
+                options: Array.from(disc.value.keys()),
                 input,
                 path: [def.discriminator],
                 inst,
@@ -3108,66 +3215,111 @@ sap.ui.define((function () { 'use strict';
             }
             payload.value = [];
             const proms = [];
-            const reversedIndex = [...items].reverse().findIndex((item) => item._zod.optin !== "optional");
-            const optStart = reversedIndex === -1 ? 0 : items.length - reversedIndex;
+            const optinStart = getTupleOptStart(items, "optin");
+            const optoutStart = getTupleOptStart(items, "optout");
             if (!def.rest) {
-                const tooBig = input.length > items.length;
-                const tooSmall = input.length < optStart - 1;
-                if (tooBig || tooSmall) {
+                if (input.length < optinStart) {
                     payload.issues.push({
-                        ...(tooBig
-                            ? { code: "too_big", maximum: items.length, inclusive: true }
-                            : { code: "too_small", minimum: items.length }),
+                        code: "too_small",
+                        minimum: optinStart,
+                        inclusive: true,
                         input,
                         inst,
                         origin: "array",
                     });
                     return payload;
                 }
+                if (input.length > items.length) {
+                    payload.issues.push({
+                        code: "too_big",
+                        maximum: items.length,
+                        inclusive: true,
+                        input,
+                        inst,
+                        origin: "array",
+                    });
+                }
             }
-            let i = -1;
-            for (const item of items) {
-                i++;
-                if (i >= input.length)
-                    if (i >= optStart)
-                        continue;
-                const result = item._zod.run({
-                    value: input[i],
-                    issues: [],
-                }, ctx);
-                if (result instanceof Promise) {
-                    proms.push(result.then((result) => handleTupleResult(result, payload, i)));
+            // Run every item in parallel, collecting results into an indexed
+            // array. The post-processing in `handleTupleResults` walks them in
+            // order so it can decide whether an absent optional-output error can
+            // truncate the tail or must be reported to preserve required output.
+            const itemResults = new Array(items.length);
+            for (let i = 0; i < items.length; i++) {
+                const r = items[i]._zod.run({ value: input[i], issues: [] }, ctx);
+                if (r instanceof Promise) {
+                    proms.push(r.then((rr) => {
+                        itemResults[i] = rr;
+                    }));
                 }
                 else {
-                    handleTupleResult(result, payload, i);
+                    itemResults[i] = r;
                 }
             }
             if (def.rest) {
+                let i = items.length - 1;
                 const rest = input.slice(items.length);
                 for (const el of rest) {
                     i++;
-                    const result = def.rest._zod.run({
-                        value: el,
-                        issues: [],
-                    }, ctx);
+                    const result = def.rest._zod.run({ value: el, issues: [] }, ctx);
                     if (result instanceof Promise) {
-                        proms.push(result.then((result) => handleTupleResult(result, payload, i)));
+                        proms.push(result.then((r) => handleTupleResult(r, payload, i)));
                     }
                     else {
                         handleTupleResult(result, payload, i);
                     }
                 }
             }
-            if (proms.length)
-                return Promise.all(proms).then(() => payload);
-            return payload;
+            if (proms.length) {
+                return Promise.all(proms).then(() => handleTupleResults(itemResults, payload, items, input, optoutStart));
+            }
+            return handleTupleResults(itemResults, payload, items, input, optoutStart);
         };
     });
+    function getTupleOptStart(items, key) {
+        for (let i = items.length - 1; i >= 0; i--) {
+            if (items[i]._zod[key] !== "optional")
+                return i + 1;
+        }
+        return 0;
+    }
     function handleTupleResult(result, final, index) {
         if (result.issues.length) {
             final.issues.push(...prefixIssues(index, result.issues));
         }
         final.value[index] = result.value;
+    }
+    function handleTupleResults(itemResults, final, items, input, optoutStart) {
+        // Walk results in order. Mirror $ZodObject's swallow-on-absent-optional
+        // rule, but only after `optoutStart`: the first index where the output
+        // tuple tail can be absent.
+        for (let i = 0; i < items.length; i++) {
+            const r = itemResults[i];
+            const isPresent = i < input.length;
+            if (r.issues.length) {
+                if (!isPresent && i >= optoutStart) {
+                    final.value.length = i;
+                    break;
+                }
+                final.issues.push(...prefixIssues(i, r.issues));
+            }
+            final.value[i] = r.value;
+        }
+        // Drop trailing slots that produced `undefined` for absent input
+        // (the array analog of an absent optional key on an object). The
+        // `i >= input.length` floor is critical: an explicit `undefined`
+        // *inside* the input must be preserved even when the schema is
+        // optional-out (e.g. `z.string().or(z.undefined())` accepting an
+        // explicit undefined value).
+        for (let i = final.value.length - 1; i >= input.length; i--) {
+            if (items[i]._zod.optout === "optional" && final.value[i] === undefined) {
+                final.value.length = i;
+            }
+            else {
+                break;
+            }
+        }
+        return final;
     }
     const $ZodRecord = /*@__PURE__*/ $constructor("$ZodRecord", (inst, def) => {
         $ZodType.init(inst, def);
@@ -3190,20 +3342,36 @@ sap.ui.define((function () { 'use strict';
                 for (const key of values) {
                     if (typeof key === "string" || typeof key === "number" || typeof key === "symbol") {
                         recordKeys.add(typeof key === "number" ? key.toString() : key);
+                        const keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
+                        if (keyResult instanceof Promise) {
+                            throw new Error("Async schemas not supported in object keys currently");
+                        }
+                        if (keyResult.issues.length) {
+                            payload.issues.push({
+                                code: "invalid_key",
+                                origin: "record",
+                                issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config())),
+                                input: key,
+                                path: [key],
+                                inst,
+                            });
+                            continue;
+                        }
+                        const outKey = keyResult.value;
                         const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
                         if (result instanceof Promise) {
                             proms.push(result.then((result) => {
                                 if (result.issues.length) {
                                     payload.issues.push(...prefixIssues(key, result.issues));
                                 }
-                                payload.value[key] = result.value;
+                                payload.value[outKey] = result.value;
                             }));
                         }
                         else {
                             if (result.issues.length) {
                                 payload.issues.push(...prefixIssues(key, result.issues));
                             }
-                            payload.value[key] = result.value;
+                            payload.value[outKey] = result.value;
                         }
                     }
                 }
@@ -3225,8 +3393,11 @@ sap.ui.define((function () { 'use strict';
             }
             else {
                 payload.value = {};
+                // Reflect.ownKeys for Symbol-key support; filter non-enumerable to match z.object()
                 for (const key of Reflect.ownKeys(input)) {
                     if (key === "__proto__")
+                        continue;
+                    if (!Object.prototype.propertyIsEnumerable.call(input, key))
                         continue;
                     let keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
                     if (keyResult instanceof Promise) {
@@ -3448,6 +3619,7 @@ sap.ui.define((function () { 'use strict';
     });
     const $ZodTransform = /*@__PURE__*/ $constructor("$ZodTransform", (inst, def) => {
         $ZodType.init(inst, def);
+        inst._zod.optin = "optional";
         inst._zod.parse = (payload, ctx) => {
             if (ctx.direction === "backward") {
                 throw new $ZodEncodeError(inst.constructor.name);
@@ -3457,6 +3629,7 @@ sap.ui.define((function () { 'use strict';
                 const output = _out instanceof Promise ? _out : Promise.resolve(_out);
                 return output.then((output) => {
                     payload.value = output;
+                    payload.fallback = true;
                     return payload;
                 });
             }
@@ -3464,11 +3637,12 @@ sap.ui.define((function () { 'use strict';
                 throw new $ZodAsyncError();
             }
             payload.value = _out;
+            payload.fallback = true;
             return payload;
         };
     });
     function handleOptionalResult(result, input) {
-        if (result.issues.length && input === undefined) {
+        if (input === undefined && (result.issues.length || result.fallback)) {
             return { issues: [], value: undefined };
         }
         return result;
@@ -3486,10 +3660,11 @@ sap.ui.define((function () { 'use strict';
         });
         inst._zod.parse = (payload, ctx) => {
             if (def.innerType._zod.optin === "optional") {
+                const input = payload.value;
                 const result = def.innerType._zod.run(payload, ctx);
                 if (result instanceof Promise)
-                    return result.then((r) => handleOptionalResult(r, payload.value));
-                return handleOptionalResult(result, payload.value);
+                    return result.then((r) => handleOptionalResult(r, input));
+                return handleOptionalResult(result, input);
             }
             if (payload.value === undefined) {
                 return payload;
@@ -3616,7 +3791,7 @@ sap.ui.define((function () { 'use strict';
     });
     const $ZodCatch = /*@__PURE__*/ $constructor("$ZodCatch", (inst, def) => {
         $ZodType.init(inst, def);
-        defineLazy(inst._zod, "optin", () => def.innerType._zod.optin);
+        inst._zod.optin = "optional";
         defineLazy(inst._zod, "optout", () => def.innerType._zod.optout);
         defineLazy(inst._zod, "values", () => def.innerType._zod.values);
         inst._zod.parse = (payload, ctx) => {
@@ -3637,6 +3812,7 @@ sap.ui.define((function () { 'use strict';
                             input: payload.value,
                         });
                         payload.issues = [];
+                        payload.fallback = true;
                     }
                     return payload;
                 });
@@ -3651,6 +3827,7 @@ sap.ui.define((function () { 'use strict';
                     input: payload.value,
                 });
                 payload.issues = [];
+                payload.fallback = true;
             }
             return payload;
         };
@@ -3697,7 +3874,7 @@ sap.ui.define((function () { 'use strict';
             left.aborted = true;
             return left;
         }
-        return next._zod.run({ value: left.value, issues: left.issues }, ctx);
+        return next._zod.run({ value: left.value, issues: left.issues, fallback: left.fallback }, ctx);
     }
     const $ZodCodec = /*@__PURE__*/ $constructor("$ZodCodec", (inst, def) => {
         $ZodType.init(inst, def);
@@ -3753,6 +3930,9 @@ sap.ui.define((function () { 'use strict';
         }
         return nextSchema._zod.run({ value, issues: left.issues }, ctx);
     }
+    const $ZodPreprocess = /*@__PURE__*/ $constructor("$ZodPreprocess", (inst, def) => {
+        $ZodPipe.init(inst, def);
+    });
     const $ZodReadonly = /*@__PURE__*/ $constructor("$ZodReadonly", (inst, def) => {
         $ZodType.init(inst, def);
         defineLazy(inst._zod, "propValues", () => def.innerType._zod.propValues);
@@ -3910,14 +4090,15 @@ sap.ui.define((function () { 'use strict';
     });
     const $ZodLazy = /*@__PURE__*/ $constructor("$ZodLazy", (inst, def) => {
         $ZodType.init(inst, def);
-        // let _innerType!: any;
-        // util.defineLazy(def, "getter", () => {
-        //   if (!_innerType) {
-        //     _innerType = def.getter();
-        //   }
-        //   return () => _innerType;
-        // });
-        defineLazy(inst._zod, "innerType", () => def.getter());
+        // Cache the resolved inner type on the shared `def` so all clones of this
+        // lazy (e.g. via `.describe()`/`.meta()`) share the same inner instance,
+        // preserving identity for cycle detection on recursive schemas.
+        defineLazy(inst._zod, "innerType", () => {
+            const d = def;
+            if (!d._cachedInner)
+                d._cachedInner = def.getter();
+            return d._cachedInner;
+        });
         defineLazy(inst._zod, "pattern", () => inst._zod.innerType?._zod?.pattern);
         defineLazy(inst._zod, "propValues", () => inst._zod.innerType?._zod?.propValues);
         defineLazy(inst._zod, "optin", () => inst._zod.innerType?._zod?.optin ?? undefined);
@@ -3959,7 +4140,7 @@ sap.ui.define((function () { 'use strict';
         }
     }
 
-    const error$K = () => {
+    const error$N = () => {
         const Sizable = {
             string: { unit: "حرف", verb: "أن يحوي" },
             file: { unit: "بايت", verb: "أن يحوي" },
@@ -4061,11 +4242,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ar () {
         return {
-            localeError: error$K(),
+            localeError: error$N(),
         };
     }
 
-    const error$J = () => {
+    const error$M = () => {
         const Sizable = {
             string: { unit: "simvol", verb: "olmalıdır" },
             file: { unit: "bayt", verb: "olmalıdır" },
@@ -4166,7 +4347,7 @@ sap.ui.define((function () { 'use strict';
     };
     function az () {
         return {
-            localeError: error$J(),
+            localeError: error$M(),
         };
     }
 
@@ -4185,7 +4366,7 @@ sap.ui.define((function () { 'use strict';
         }
         return many;
     }
-    const error$I = () => {
+    const error$L = () => {
         const Sizable = {
             string: {
                 unit: {
@@ -4322,11 +4503,11 @@ sap.ui.define((function () { 'use strict';
     };
     function be () {
         return {
-            localeError: error$I(),
+            localeError: error$L(),
         };
     }
 
-    const error$H = () => {
+    const error$K = () => {
         const Sizable = {
             string: { unit: "символа", verb: "да съдържа" },
             file: { unit: "байта", verb: "да съдържа" },
@@ -4442,11 +4623,11 @@ sap.ui.define((function () { 'use strict';
     };
     function bg () {
         return {
-            localeError: error$H(),
+            localeError: error$K(),
         };
     }
 
-    const error$G = () => {
+    const error$J = () => {
         const Sizable = {
             string: { unit: "caràcters", verb: "contenir" },
             file: { unit: "bytes", verb: "contenir" },
@@ -4549,11 +4730,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ca () {
         return {
-            localeError: error$G(),
+            localeError: error$J(),
         };
     }
 
-    const error$F = () => {
+    const error$I = () => {
         const Sizable = {
             string: { unit: "znaků", verb: "mít" },
             file: { unit: "bajtů", verb: "mít" },
@@ -4660,11 +4841,11 @@ sap.ui.define((function () { 'use strict';
     };
     function cs () {
         return {
-            localeError: error$F(),
+            localeError: error$I(),
         };
     }
 
-    const error$E = () => {
+    const error$H = () => {
         const Sizable = {
             string: { unit: "tegn", verb: "havde" },
             file: { unit: "bytes", verb: "havde" },
@@ -4775,11 +4956,11 @@ sap.ui.define((function () { 'use strict';
     };
     function da () {
         return {
-            localeError: error$E(),
+            localeError: error$H(),
         };
     }
 
-    const error$D = () => {
+    const error$G = () => {
         const Sizable = {
             string: { unit: "Zeichen", verb: "zu haben" },
             file: { unit: "Bytes", verb: "zu haben" },
@@ -4883,11 +5064,120 @@ sap.ui.define((function () { 'use strict';
     };
     function de () {
         return {
-            localeError: error$D(),
+            localeError: error$G(),
         };
     }
 
-    const error$C = () => {
+    const error$F = () => {
+        const Sizable = {
+            string: { unit: "χαρακτήρες", verb: "να έχει" },
+            file: { unit: "bytes", verb: "να έχει" },
+            array: { unit: "στοιχεία", verb: "να έχει" },
+            set: { unit: "στοιχεία", verb: "να έχει" },
+            map: { unit: "καταχωρήσεις", verb: "να έχει" },
+        };
+        function getSizing(origin) {
+            return Sizable[origin] ?? null;
+        }
+        const FormatDictionary = {
+            regex: "είσοδος",
+            email: "διεύθυνση email",
+            url: "URL",
+            emoji: "emoji",
+            uuid: "UUID",
+            uuidv4: "UUIDv4",
+            uuidv6: "UUIDv6",
+            nanoid: "nanoid",
+            guid: "GUID",
+            cuid: "cuid",
+            cuid2: "cuid2",
+            ulid: "ULID",
+            xid: "XID",
+            ksuid: "KSUID",
+            datetime: "ISO ημερομηνία και ώρα",
+            date: "ISO ημερομηνία",
+            time: "ISO ώρα",
+            duration: "ISO διάρκεια",
+            ipv4: "διεύθυνση IPv4",
+            ipv6: "διεύθυνση IPv6",
+            mac: "διεύθυνση MAC",
+            cidrv4: "εύρος IPv4",
+            cidrv6: "εύρος IPv6",
+            base64: "συμβολοσειρά κωδικοποιημένη σε base64",
+            base64url: "συμβολοσειρά κωδικοποιημένη σε base64url",
+            json_string: "συμβολοσειρά JSON",
+            e164: "αριθμός E.164",
+            jwt: "JWT",
+            template_literal: "είσοδος",
+        };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
+        return (issue) => {
+            switch (issue.code) {
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (typeof issue.expected === "string" && /^[A-Z]/.test(issue.expected)) {
+                        return `Μη έγκυρη είσοδος: αναμενόταν instanceof ${issue.expected}, λήφθηκε ${received}`;
+                    }
+                    return `Μη έγκυρη είσοδος: αναμενόταν ${expected}, λήφθηκε ${received}`;
+                }
+                case "invalid_value":
+                    if (issue.values.length === 1)
+                        return `Μη έγκυρη είσοδος: αναμενόταν ${stringifyPrimitive(issue.values[0])}`;
+                    return `Μη έγκυρη επιλογή: αναμενόταν ένα από ${joinValues(issue.values, "|")}`;
+                case "too_big": {
+                    const adj = issue.inclusive ? "<=" : "<";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing)
+                        return `Πολύ μεγάλο: αναμενόταν ${issue.origin ?? "τιμή"} να έχει ${adj}${issue.maximum.toString()} ${sizing.unit ?? "στοιχεία"}`;
+                    return `Πολύ μεγάλο: αναμενόταν ${issue.origin ?? "τιμή"} να είναι ${adj}${issue.maximum.toString()}`;
+                }
+                case "too_small": {
+                    const adj = issue.inclusive ? ">=" : ">";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing) {
+                        return `Πολύ μικρό: αναμενόταν ${issue.origin} να έχει ${adj}${issue.minimum.toString()} ${sizing.unit}`;
+                    }
+                    return `Πολύ μικρό: αναμενόταν ${issue.origin} να είναι ${adj}${issue.minimum.toString()}`;
+                }
+                case "invalid_format": {
+                    const _issue = issue;
+                    if (_issue.format === "starts_with") {
+                        return `Μη έγκυρη συμβολοσειρά: πρέπει να ξεκινά με "${_issue.prefix}"`;
+                    }
+                    if (_issue.format === "ends_with")
+                        return `Μη έγκυρη συμβολοσειρά: πρέπει να τελειώνει με "${_issue.suffix}"`;
+                    if (_issue.format === "includes")
+                        return `Μη έγκυρη συμβολοσειρά: πρέπει να περιέχει "${_issue.includes}"`;
+                    if (_issue.format === "regex")
+                        return `Μη έγκυρη συμβολοσειρά: πρέπει να ταιριάζει με το μοτίβο ${_issue.pattern}`;
+                    return `Μη έγκυρο: ${FormatDictionary[_issue.format] ?? issue.format}`;
+                }
+                case "not_multiple_of":
+                    return `Μη έγκυρος αριθμός: πρέπει να είναι πολλαπλάσιο του ${issue.divisor}`;
+                case "unrecognized_keys":
+                    return `Άγνωστ${issue.keys.length > 1 ? "α" : "ο"} κλειδ${issue.keys.length > 1 ? "ιά" : "ί"}: ${joinValues(issue.keys, ", ")}`;
+                case "invalid_key":
+                    return `Μη έγκυρο κλειδί στο ${issue.origin}`;
+                case "invalid_union":
+                    return "Μη έγκυρη είσοδος";
+                case "invalid_element":
+                    return `Μη έγκυρη τιμή στο ${issue.origin}`;
+                default:
+                    return `Μη έγκυρη είσοδος`;
+            }
+        };
+    };
+    function el () {
+        return {
+            localeError: error$F(),
+        };
+    }
+
+    const error$E = () => {
         const Sizable = {
             string: { unit: "characters", verb: "to have" },
             file: { unit: "bytes", verb: "to have" },
@@ -4982,6 +5272,10 @@ sap.ui.define((function () { 'use strict';
                 case "invalid_key":
                     return `Invalid key in ${issue.origin}`;
                 case "invalid_union":
+                    if (issue.options && Array.isArray(issue.options) && issue.options.length > 0) {
+                        const opts = issue.options.map((o) => `'${o}'`).join(" | ");
+                        return `Invalid discriminator value. Expected ${opts}`;
+                    }
                     return "Invalid input";
                 case "invalid_element":
                     return `Invalid value in ${issue.origin}`;
@@ -4992,11 +5286,11 @@ sap.ui.define((function () { 'use strict';
     };
     function en () {
         return {
-            localeError: error$C(),
+            localeError: error$E(),
         };
     }
 
-    const error$B = () => {
+    const error$D = () => {
         const Sizable = {
             string: { unit: "karaktrojn", verb: "havi" },
             file: { unit: "bajtojn", verb: "havi" },
@@ -5101,11 +5395,11 @@ sap.ui.define((function () { 'use strict';
     };
     function eo () {
         return {
-            localeError: error$B(),
+            localeError: error$D(),
         };
     }
 
-    const error$A = () => {
+    const error$C = () => {
         const Sizable = {
             string: { unit: "caracteres", verb: "tener" },
             file: { unit: "bytes", verb: "tener" },
@@ -5233,11 +5527,11 @@ sap.ui.define((function () { 'use strict';
     };
     function es () {
         return {
-            localeError: error$A(),
+            localeError: error$C(),
         };
     }
 
-    const error$z = () => {
+    const error$B = () => {
         const Sizable = {
             string: { unit: "کاراکتر", verb: "داشته باشد" },
             file: { unit: "بایت", verb: "داشته باشد" },
@@ -5347,11 +5641,11 @@ sap.ui.define((function () { 'use strict';
     };
     function fa () {
         return {
-            localeError: error$z(),
+            localeError: error$B(),
         };
     }
 
-    const error$y = () => {
+    const error$A = () => {
         const Sizable = {
             string: { unit: "merkkiä", subject: "merkkijonon" },
             file: { unit: "tavua", subject: "tiedoston" },
@@ -5459,11 +5753,11 @@ sap.ui.define((function () { 'use strict';
     };
     function fi () {
         return {
-            localeError: error$y(),
+            localeError: error$A(),
         };
     }
 
-    const error$x = () => {
+    const error$z = () => {
         const Sizable = {
             string: { unit: "caractères", verb: "avoir" },
             file: { unit: "octets", verb: "avoir" },
@@ -5504,9 +5798,27 @@ sap.ui.define((function () { 'use strict';
             template_literal: "entrée",
         };
         const TypeDictionary = {
-            nan: "NaN",
+            string: "chaîne",
             number: "nombre",
+            int: "entier",
+            boolean: "booléen",
+            bigint: "grand entier",
+            symbol: "symbole",
+            undefined: "indéfini",
+            null: "null",
+            never: "jamais",
+            void: "vide",
+            date: "date",
             array: "tableau",
+            object: "objet",
+            tuple: "tuple",
+            record: "enregistrement",
+            map: "carte",
+            set: "ensemble",
+            file: "fichier",
+            nonoptional: "non-optionnel",
+            nan: "NaN",
+            function: "fonction",
         };
         return (issue) => {
             switch (issue.code) {
@@ -5527,16 +5839,15 @@ sap.ui.define((function () { 'use strict';
                     const adj = issue.inclusive ? "<=" : "<";
                     const sizing = getSizing(issue.origin);
                     if (sizing)
-                        return `Trop grand : ${issue.origin ?? "valeur"} doit ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "élément(s)"}`;
-                    return `Trop grand : ${issue.origin ?? "valeur"} doit être ${adj}${issue.maximum.toString()}`;
+                        return `Trop grand : ${TypeDictionary[issue.origin] ?? "valeur"} doit ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "élément(s)"}`;
+                    return `Trop grand : ${TypeDictionary[issue.origin] ?? "valeur"} doit être ${adj}${issue.maximum.toString()}`;
                 }
                 case "too_small": {
                     const adj = issue.inclusive ? ">=" : ">";
                     const sizing = getSizing(issue.origin);
-                    if (sizing) {
-                        return `Trop petit : ${issue.origin} doit ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                    }
-                    return `Trop petit : ${issue.origin} doit être ${adj}${issue.minimum.toString()}`;
+                    if (sizing)
+                        return `Trop petit : ${TypeDictionary[issue.origin] ?? "valeur"} doit ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
+                    return `Trop petit : ${TypeDictionary[issue.origin] ?? "valeur"} doit être ${adj}${issue.minimum.toString()}`;
                 }
                 case "invalid_format": {
                     const _issue = issue;
@@ -5567,11 +5878,11 @@ sap.ui.define((function () { 'use strict';
     };
     function fr () {
         return {
-            localeError: error$x(),
+            localeError: error$z(),
         };
     }
 
-    const error$w = () => {
+    const error$y = () => {
         const Sizable = {
             string: { unit: "caractères", verb: "avoir" },
             file: { unit: "octets", verb: "avoir" },
@@ -5674,11 +5985,11 @@ sap.ui.define((function () { 'use strict';
     };
     function frCA () {
         return {
-            localeError: error$w(),
+            localeError: error$y(),
         };
     }
 
-    const error$v = () => {
+    const error$x = () => {
         // Hebrew labels + grammatical gender
         const TypeNames = {
             string: { label: "מחרוזת", gender: "f" },
@@ -5888,11 +6199,133 @@ sap.ui.define((function () { 'use strict';
     };
     function he () {
         return {
-            localeError: error$v(),
+            localeError: error$x(),
         };
     }
 
-    const error$u = () => {
+    const error$w = () => {
+        const Sizable = {
+            string: { unit: "znakova", verb: "imati" },
+            file: { unit: "bajtova", verb: "imati" },
+            array: { unit: "stavki", verb: "imati" },
+            set: { unit: "stavki", verb: "imati" },
+        };
+        function getSizing(origin) {
+            return Sizable[origin] ?? null;
+        }
+        const FormatDictionary = {
+            regex: "unos",
+            email: "email adresa",
+            url: "URL",
+            emoji: "emoji",
+            uuid: "UUID",
+            uuidv4: "UUIDv4",
+            uuidv6: "UUIDv6",
+            nanoid: "nanoid",
+            guid: "GUID",
+            cuid: "cuid",
+            cuid2: "cuid2",
+            ulid: "ULID",
+            xid: "XID",
+            ksuid: "KSUID",
+            datetime: "ISO datum i vrijeme",
+            date: "ISO datum",
+            time: "ISO vrijeme",
+            duration: "ISO trajanje",
+            ipv4: "IPv4 adresa",
+            ipv6: "IPv6 adresa",
+            cidrv4: "IPv4 raspon",
+            cidrv6: "IPv6 raspon",
+            base64: "base64 kodirani tekst",
+            base64url: "base64url kodirani tekst",
+            json_string: "JSON tekst",
+            e164: "E.164 broj",
+            jwt: "JWT",
+            template_literal: "unos",
+        };
+        const TypeDictionary = {
+            nan: "NaN",
+            string: "tekst",
+            number: "broj",
+            boolean: "boolean",
+            array: "niz",
+            object: "objekt",
+            set: "skup",
+            file: "datoteka",
+            date: "datum",
+            bigint: "bigint",
+            symbol: "simbol",
+            undefined: "undefined",
+            null: "null",
+            function: "funkcija",
+            map: "mapa",
+        };
+        return (issue) => {
+            switch (issue.code) {
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Neispravan unos: očekuje se instanceof ${issue.expected}, a primljeno je ${received}`;
+                    }
+                    return `Neispravan unos: očekuje se ${expected}, a primljeno je ${received}`;
+                }
+                case "invalid_value":
+                    if (issue.values.length === 1)
+                        return `Neispravna vrijednost: očekivano ${stringifyPrimitive(issue.values[0])}`;
+                    return `Neispravna opcija: očekivano jedno od ${joinValues(issue.values, "|")}`;
+                case "too_big": {
+                    const adj = issue.inclusive ? "<=" : "<";
+                    const sizing = getSizing(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
+                    if (sizing)
+                        return `Preveliko: očekivano da ${origin ?? "vrijednost"} ima ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elemenata"}`;
+                    return `Preveliko: očekivano da ${origin ?? "vrijednost"} bude ${adj}${issue.maximum.toString()}`;
+                }
+                case "too_small": {
+                    const adj = issue.inclusive ? ">=" : ">";
+                    const sizing = getSizing(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
+                    if (sizing) {
+                        return `Premalo: očekivano da ${origin} ima ${adj}${issue.minimum.toString()} ${sizing.unit}`;
+                    }
+                    return `Premalo: očekivano da ${origin} bude ${adj}${issue.minimum.toString()}`;
+                }
+                case "invalid_format": {
+                    const _issue = issue;
+                    if (_issue.format === "starts_with")
+                        return `Neispravan tekst: mora započinjati s "${_issue.prefix}"`;
+                    if (_issue.format === "ends_with")
+                        return `Neispravan tekst: mora završavati s "${_issue.suffix}"`;
+                    if (_issue.format === "includes")
+                        return `Neispravan tekst: mora sadržavati "${_issue.includes}"`;
+                    if (_issue.format === "regex")
+                        return `Neispravan tekst: mora odgovarati uzorku ${_issue.pattern}`;
+                    return `Neispravna ${FormatDictionary[_issue.format] ?? issue.format}`;
+                }
+                case "not_multiple_of":
+                    return `Neispravan broj: mora biti višekratnik od ${issue.divisor}`;
+                case "unrecognized_keys":
+                    return `Neprepoznat${issue.keys.length > 1 ? "i ključevi" : " ključ"}: ${joinValues(issue.keys, ", ")}`;
+                case "invalid_key":
+                    return `Neispravan ključ u ${TypeDictionary[issue.origin] ?? issue.origin}`;
+                case "invalid_union":
+                    return "Neispravan unos";
+                case "invalid_element":
+                    return `Neispravna vrijednost u ${TypeDictionary[issue.origin] ?? issue.origin}`;
+                default:
+                    return `Neispravan unos`;
+            }
+        };
+    };
+    function hr () {
+        return {
+            localeError: error$w(),
+        };
+    }
+
+    const error$v = () => {
         const Sizable = {
             string: { unit: "karakter", verb: "legyen" },
             file: { unit: "byte", verb: "legyen" },
@@ -5996,7 +6429,7 @@ sap.ui.define((function () { 'use strict';
     };
     function hu () {
         return {
-            localeError: error$u(),
+            localeError: error$v(),
         };
     }
 
@@ -6010,7 +6443,7 @@ sap.ui.define((function () { 'use strict';
         const lastChar = word[word.length - 1];
         return word + (vowels.includes(lastChar) ? "ն" : "ը");
     }
-    const error$t = () => {
+    const error$u = () => {
         const Sizable = {
             string: {
                 unit: {
@@ -6143,11 +6576,11 @@ sap.ui.define((function () { 'use strict';
     };
     function hy () {
         return {
-            localeError: error$t(),
+            localeError: error$u(),
         };
     }
 
-    const error$s = () => {
+    const error$t = () => {
         const Sizable = {
             string: { unit: "karakter", verb: "memiliki" },
             file: { unit: "byte", verb: "memiliki" },
@@ -6249,11 +6682,11 @@ sap.ui.define((function () { 'use strict';
     };
     function id () {
         return {
-            localeError: error$s(),
+            localeError: error$t(),
         };
     }
 
-    const error$r = () => {
+    const error$s = () => {
         const Sizable = {
             string: { unit: "stafi", verb: "að hafa" },
             file: { unit: "bæti", verb: "að hafa" },
@@ -6358,11 +6791,11 @@ sap.ui.define((function () { 'use strict';
     };
     function is () {
         return {
-            localeError: error$r(),
+            localeError: error$s(),
         };
     }
 
-    const error$q = () => {
+    const error$r = () => {
         const Sizable = {
             string: { unit: "caratteri", verb: "avere" },
             file: { unit: "byte", verb: "avere" },
@@ -6447,7 +6880,7 @@ sap.ui.define((function () { 'use strict';
                         return `Stringa non valida: deve includere "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Stringa non valida: deve corrispondere al pattern ${_issue.pattern}`;
-                    return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
+                    return `Input non valido: ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Numero non valido: deve essere un multiplo di ${issue.divisor}`;
@@ -6466,11 +6899,11 @@ sap.ui.define((function () { 'use strict';
     };
     function it () {
         return {
-            localeError: error$q(),
+            localeError: error$r(),
         };
     }
 
-    const error$p = () => {
+    const error$q = () => {
         const Sizable = {
             string: { unit: "文字", verb: "である" },
             file: { unit: "バイト", verb: "である" },
@@ -6573,11 +7006,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ja () {
         return {
-            localeError: error$p(),
+            localeError: error$q(),
         };
     }
 
-    const error$o = () => {
+    const error$p = () => {
         const Sizable = {
             string: { unit: "სიმბოლო", verb: "უნდა შეიცავდეს" },
             file: { unit: "ბაიტი", verb: "უნდა შეიცავდეს" },
@@ -6610,9 +7043,9 @@ sap.ui.define((function () { 'use strict';
             ipv6: "IPv6 მისამართი",
             cidrv4: "IPv4 დიაპაზონი",
             cidrv6: "IPv6 დიაპაზონი",
-            base64: "base64-კოდირებული სტრინგი",
-            base64url: "base64url-კოდირებული სტრინგი",
-            json_string: "JSON სტრინგი",
+            base64: "base64-კოდირებული ველი",
+            base64url: "base64url-კოდირებული ველი",
+            json_string: "JSON ველი",
             e164: "E.164 ნომერი",
             jwt: "JWT",
             template_literal: "შეყვანა",
@@ -6620,7 +7053,7 @@ sap.ui.define((function () { 'use strict';
         const TypeDictionary = {
             nan: "NaN",
             number: "რიცხვი",
-            string: "სტრინგი",
+            string: "ველი",
             boolean: "ბულეანი",
             function: "ფუნქცია",
             array: "მასივი",
@@ -6658,14 +7091,14 @@ sap.ui.define((function () { 'use strict';
                 case "invalid_format": {
                     const _issue = issue;
                     if (_issue.format === "starts_with") {
-                        return `არასწორი სტრინგი: უნდა იწყებოდეს "${_issue.prefix}"-ით`;
+                        return `არასწორი ველი: უნდა იწყებოდეს "${_issue.prefix}"-ით`;
                     }
                     if (_issue.format === "ends_with")
-                        return `არასწორი სტრინგი: უნდა მთავრდებოდეს "${_issue.suffix}"-ით`;
+                        return `არასწორი ველი: უნდა მთავრდებოდეს "${_issue.suffix}"-ით`;
                     if (_issue.format === "includes")
-                        return `არასწორი სტრინგი: უნდა შეიცავდეს "${_issue.includes}"-ს`;
+                        return `არასწორი ველი: უნდა შეიცავდეს "${_issue.includes}"-ს`;
                     if (_issue.format === "regex")
-                        return `არასწორი სტრინგი: უნდა შეესაბამებოდეს შაბლონს ${_issue.pattern}`;
+                        return `არასწორი ველი: უნდა შეესაბამებოდეს შაბლონს ${_issue.pattern}`;
                     return `არასწორი ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
@@ -6685,11 +7118,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ka () {
         return {
-            localeError: error$o(),
+            localeError: error$p(),
         };
     }
 
-    const error$n = () => {
+    const error$o = () => {
         const Sizable = {
             string: { unit: "តួអក្សរ", verb: "គួរមាន" },
             file: { unit: "បៃ", verb: "គួរមាន" },
@@ -6795,7 +7228,7 @@ sap.ui.define((function () { 'use strict';
     };
     function km () {
         return {
-            localeError: error$n(),
+            localeError: error$o(),
         };
     }
 
@@ -6804,7 +7237,7 @@ sap.ui.define((function () { 'use strict';
         return km();
     }
 
-    const error$m = () => {
+    const error$n = () => {
         const Sizable = {
             string: { unit: "문자", verb: "to have" },
             file: { unit: "바이트", verb: "to have" },
@@ -6911,7 +7344,7 @@ sap.ui.define((function () { 'use strict';
     };
     function ko () {
         return {
-            localeError: error$m(),
+            localeError: error$n(),
         };
     }
 
@@ -6928,7 +7361,7 @@ sap.ui.define((function () { 'use strict';
             return "one";
         return "few";
     }
-    const error$l = () => {
+    const error$m = () => {
         const Sizable = {
             string: {
                 unit: {
@@ -7114,11 +7547,11 @@ sap.ui.define((function () { 'use strict';
     };
     function lt () {
         return {
-            localeError: error$l(),
+            localeError: error$m(),
         };
     }
 
-    const error$k = () => {
+    const error$l = () => {
         const Sizable = {
             string: { unit: "знаци", verb: "да имаат" },
             file: { unit: "бајти", verb: "да имаат" },
@@ -7223,11 +7656,11 @@ sap.ui.define((function () { 'use strict';
     };
     function mk () {
         return {
-            localeError: error$k(),
+            localeError: error$l(),
         };
     }
 
-    const error$j = () => {
+    const error$k = () => {
         const Sizable = {
             string: { unit: "aksara", verb: "mempunyai" },
             file: { unit: "bait", verb: "mempunyai" },
@@ -7330,11 +7763,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ms () {
         return {
-            localeError: error$j(),
+            localeError: error$k(),
         };
     }
 
-    const error$i = () => {
+    const error$j = () => {
         const Sizable = {
             string: { unit: "tekens", verb: "heeft" },
             file: { unit: "bytes", verb: "heeft" },
@@ -7440,11 +7873,11 @@ sap.ui.define((function () { 'use strict';
     };
     function nl () {
         return {
-            localeError: error$i(),
+            localeError: error$j(),
         };
     }
 
-    const error$h = () => {
+    const error$i = () => {
         const Sizable = {
             string: { unit: "tegn", verb: "å ha" },
             file: { unit: "bytes", verb: "å ha" },
@@ -7548,11 +7981,11 @@ sap.ui.define((function () { 'use strict';
     };
     function no () {
         return {
-            localeError: error$h(),
+            localeError: error$i(),
         };
     }
 
-    const error$g = () => {
+    const error$h = () => {
         const Sizable = {
             string: { unit: "harf", verb: "olmalıdır" },
             file: { unit: "bayt", verb: "olmalıdır" },
@@ -7657,11 +8090,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ota () {
         return {
-            localeError: error$g(),
+            localeError: error$h(),
         };
     }
 
-    const error$f = () => {
+    const error$g = () => {
         const Sizable = {
             string: { unit: "توکي", verb: "ولري" },
             file: { unit: "بایټس", verb: "ولري" },
@@ -7771,11 +8204,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ps () {
         return {
-            localeError: error$f(),
+            localeError: error$g(),
         };
     }
 
-    const error$e = () => {
+    const error$f = () => {
         const Sizable = {
             string: { unit: "znaków", verb: "mieć" },
             file: { unit: "bajtów", verb: "mieć" },
@@ -7880,11 +8313,11 @@ sap.ui.define((function () { 'use strict';
     };
     function pl () {
         return {
-            localeError: error$e(),
+            localeError: error$f(),
         };
     }
 
-    const error$d = () => {
+    const error$e = () => {
         const Sizable = {
             string: { unit: "caracteres", verb: "ter" },
             file: { unit: "bytes", verb: "ter" },
@@ -7987,6 +8420,125 @@ sap.ui.define((function () { 'use strict';
         };
     };
     function pt () {
+        return {
+            localeError: error$e(),
+        };
+    }
+
+    const error$d = () => {
+        const Sizable = {
+            string: { unit: "caractere", verb: "să aibă" },
+            file: { unit: "octeți", verb: "să aibă" },
+            array: { unit: "elemente", verb: "să aibă" },
+            set: { unit: "elemente", verb: "să aibă" },
+            map: { unit: "intrări", verb: "să aibă" },
+        };
+        function getSizing(origin) {
+            return Sizable[origin] ?? null;
+        }
+        const FormatDictionary = {
+            regex: "intrare",
+            email: "adresă de email",
+            url: "URL",
+            emoji: "emoji",
+            uuid: "UUID",
+            uuidv4: "UUIDv4",
+            uuidv6: "UUIDv6",
+            nanoid: "nanoid",
+            guid: "GUID",
+            cuid: "cuid",
+            cuid2: "cuid2",
+            ulid: "ULID",
+            xid: "XID",
+            ksuid: "KSUID",
+            datetime: "dată și oră ISO",
+            date: "dată ISO",
+            time: "oră ISO",
+            duration: "durată ISO",
+            ipv4: "adresă IPv4",
+            ipv6: "adresă IPv6",
+            mac: "adresă MAC",
+            cidrv4: "interval IPv4",
+            cidrv6: "interval IPv6",
+            base64: "șir codat base64",
+            base64url: "șir codat base64url",
+            json_string: "șir JSON",
+            e164: "număr E.164",
+            jwt: "JWT",
+            template_literal: "intrare",
+        };
+        const TypeDictionary = {
+            nan: "NaN",
+            string: "șir",
+            number: "număr",
+            boolean: "boolean",
+            function: "funcție",
+            array: "matrice",
+            object: "obiect",
+            undefined: "nedefinit",
+            symbol: "simbol",
+            bigint: "număr mare",
+            void: "void",
+            never: "never",
+            map: "hartă",
+            set: "set",
+        };
+        return (issue) => {
+            switch (issue.code) {
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    return `Intrare invalidă: așteptat ${expected}, primit ${received}`;
+                }
+                case "invalid_value":
+                    if (issue.values.length === 1)
+                        return `Intrare invalidă: așteptat ${stringifyPrimitive(issue.values[0])}`;
+                    return `Opțiune invalidă: așteptat una dintre ${joinValues(issue.values, "|")}`;
+                case "too_big": {
+                    const adj = issue.inclusive ? "<=" : "<";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing)
+                        return `Prea mare: așteptat ca ${issue.origin ?? "valoarea"} ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elemente"}`;
+                    return `Prea mare: așteptat ca ${issue.origin ?? "valoarea"} să fie ${adj}${issue.maximum.toString()}`;
+                }
+                case "too_small": {
+                    const adj = issue.inclusive ? ">=" : ">";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing) {
+                        return `Prea mic: așteptat ca ${issue.origin} ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
+                    }
+                    return `Prea mic: așteptat ca ${issue.origin} să fie ${adj}${issue.minimum.toString()}`;
+                }
+                case "invalid_format": {
+                    const _issue = issue;
+                    if (_issue.format === "starts_with") {
+                        return `Șir invalid: trebuie să înceapă cu "${_issue.prefix}"`;
+                    }
+                    if (_issue.format === "ends_with")
+                        return `Șir invalid: trebuie să se termine cu "${_issue.suffix}"`;
+                    if (_issue.format === "includes")
+                        return `Șir invalid: trebuie să includă "${_issue.includes}"`;
+                    if (_issue.format === "regex")
+                        return `Șir invalid: trebuie să se potrivească cu modelul ${_issue.pattern}`;
+                    return `Format invalid: ${FormatDictionary[_issue.format] ?? issue.format}`;
+                }
+                case "not_multiple_of":
+                    return `Număr invalid: trebuie să fie multiplu de ${issue.divisor}`;
+                case "unrecognized_keys":
+                    return `Chei nerecunoscute: ${joinValues(issue.keys, ", ")}`;
+                case "invalid_key":
+                    return `Cheie invalidă în ${issue.origin}`;
+                case "invalid_union":
+                    return "Intrare invalidă";
+                case "invalid_element":
+                    return `Valoare invalidă în ${issue.origin}`;
+                default:
+                    return `Intrare invalidă`;
+            }
+        };
+    };
+    function ro () {
         return {
             localeError: error$d(),
         };
@@ -8921,6 +9473,7 @@ sap.ui.define((function () { 'use strict';
             file: { unit: "bayt", verb: "bo‘lishi kerak" },
             array: { unit: "element", verb: "bo‘lishi kerak" },
             set: { unit: "element", verb: "bo‘lishi kerak" },
+            map: { unit: "yozuv", verb: "bo‘lishi kerak" },
         };
         function getSizing(origin) {
             return Sizable[origin] ?? null;
@@ -9465,6 +10018,7 @@ sap.ui.define((function () { 'use strict';
         cs: cs,
         da: da,
         de: de,
+        el: el,
         en: en,
         eo: eo,
         es: es,
@@ -9473,6 +10027,7 @@ sap.ui.define((function () { 'use strict';
         fr: fr,
         frCA: frCA,
         he: he,
+        hr: hr,
         hu: hu,
         hy: hy,
         id: id,
@@ -9492,6 +10047,7 @@ sap.ui.define((function () { 'use strict';
         pl: pl,
         ps: ps,
         pt: pt,
+        ro: ro,
         ru: ru,
         sl: sl,
         sv: sv,
@@ -9668,6 +10224,11 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    /**
+     * @deprecated CUID v1 is deprecated by its authors due to information leakage
+     * (timestamps embedded in the id). Use {@link _cuid2} instead.
+     * See https://github.com/paralleldrive/cuid.
+     */
     // @__NO_SIDE_EFFECTS__
     function _cuid(Class, params) {
         return new Class({
@@ -10506,7 +11067,7 @@ sap.ui.define((function () { 'use strict';
         return schema;
     }
     // @__NO_SIDE_EFFECTS__
-    function _superRefine(fn) {
+    function _superRefine(fn, params) {
         const ch = _check((payload) => {
             payload.addIssue = (issue$1) => {
                 if (typeof issue$1 === "string") {
@@ -10525,7 +11086,7 @@ sap.ui.define((function () { 'use strict';
                 }
             };
             return fn(payload.value, payload);
-        });
+        }, params);
         return ch;
     }
     // @__NO_SIDE_EFFECTS__
@@ -10720,7 +11281,7 @@ sap.ui.define((function () { 'use strict';
             delete result.schema.default;
         }
         // set prefault as default
-        if (ctx.io === "input" && result.schema._prefault)
+        if (ctx.io === "input" && "_prefault" in result.schema)
             (_a = result.schema).default ?? (_a.default = result.schema._prefault);
         delete result.schema._prefault;
         // pulling fresh from ctx.seen in case it was overwritten
@@ -10948,11 +11509,20 @@ sap.ui.define((function () { 'use strict';
             result.$id = ctx.external.uri(id);
         }
         Object.assign(result, root.def ?? root.schema);
+        // The `id` in `.meta()` is a Zod-specific registration tag used to extract
+        // schemas into $defs — it is not user-facing JSON Schema metadata. Strip it
+        // from the output body where it would otherwise leak. The id is preserved
+        // implicitly via the $defs key (and via $ref paths).
+        const rootMetaId = ctx.metadataRegistry.get(schema)?.id;
+        if (rootMetaId !== undefined && result.id === rootMetaId)
+            delete result.id;
         // build defs object
         const defs = ctx.external?.defs ?? {};
         for (const entry of ctx.seen.entries()) {
             const seen = entry[1];
             if (seen.def && seen.defId) {
+                if (seen.def.id === seen.defId)
+                    delete seen.def.id;
                 defs[seen.defId] = seen.def;
             }
         }
@@ -11020,6 +11590,8 @@ sap.ui.define((function () { 'use strict';
             return isTransforming(def.keyType, ctx) || isTransforming(def.valueType, ctx);
         }
         if (def.type === "pipe") {
+            if (_schema._zod.traits.has("$ZodCodec"))
+                return true;
             return isTransforming(def.in, ctx) || isTransforming(def.out, ctx);
         }
         if (def.type === "object") {
@@ -11118,8 +11690,12 @@ sap.ui.define((function () { 'use strict';
             json.type = "integer";
         else
             json.type = "number";
-        if (typeof exclusiveMinimum === "number") {
-            if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
+        // when both minimum and exclusiveMinimum exist, pick the more restrictive one
+        const exMin = typeof exclusiveMinimum === "number" && exclusiveMinimum >= (minimum ?? Number.NEGATIVE_INFINITY);
+        const exMax = typeof exclusiveMaximum === "number" && exclusiveMaximum <= (maximum ?? Number.POSITIVE_INFINITY);
+        const legacy = ctx.target === "draft-04" || ctx.target === "openapi-3.0";
+        if (exMin) {
+            if (legacy) {
                 json.minimum = exclusiveMinimum;
                 json.exclusiveMinimum = true;
             }
@@ -11127,17 +11703,11 @@ sap.ui.define((function () { 'use strict';
                 json.exclusiveMinimum = exclusiveMinimum;
             }
         }
-        if (typeof minimum === "number") {
+        else if (typeof minimum === "number") {
             json.minimum = minimum;
-            if (typeof exclusiveMinimum === "number" && ctx.target !== "draft-04") {
-                if (exclusiveMinimum >= minimum)
-                    delete json.minimum;
-                else
-                    delete json.exclusiveMinimum;
-            }
         }
-        if (typeof exclusiveMaximum === "number") {
-            if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
+        if (exMax) {
+            if (legacy) {
                 json.maximum = exclusiveMaximum;
                 json.exclusiveMaximum = true;
             }
@@ -11145,14 +11715,8 @@ sap.ui.define((function () { 'use strict';
                 json.exclusiveMaximum = exclusiveMaximum;
             }
         }
-        if (typeof maximum === "number") {
+        else if (typeof maximum === "number") {
             json.maximum = maximum;
-            if (typeof exclusiveMaximum === "number" && ctx.target !== "draft-04") {
-                if (exclusiveMaximum <= maximum)
-                    delete json.maximum;
-                else
-                    delete json.exclusiveMaximum;
-            }
         }
         if (typeof multipleOf === "number")
             json.multipleOf = multipleOf;
@@ -11335,7 +11899,10 @@ sap.ui.define((function () { 'use strict';
         if (typeof maximum === "number")
             json.maxItems = maximum;
         json.type = "array";
-        json.items = process(def.element, ctx, { ...params, path: [...params.path, "items"] });
+        json.items = process(def.element, ctx, {
+            ...params,
+            path: [...params.path, "items"],
+        });
     };
     const objectProcessor = (schema, ctx, _json, params) => {
         const json = _json;
@@ -11552,7 +12119,8 @@ sap.ui.define((function () { 'use strict';
     };
     const pipeProcessor = (schema, ctx, _json, params) => {
         const def = schema._zod.def;
-        const innerType = ctx.io === "input" ? (def.in._zod.def.type === "transform" ? def.out : def.in) : def.out;
+        const inIsTransform = def.in._zod.traits.has("$ZodTransform");
+        const innerType = ctx.io === "input" ? (inIsTransform ? def.out : def.in) : def.out;
         process(innerType, ctx, params);
         const seen = ctx.seen.get(schema);
         seen.ref = innerType;
@@ -11841,6 +12409,7 @@ sap.ui.define((function () { 'use strict';
         $ZodOptional: $ZodOptional,
         $ZodPipe: $ZodPipe,
         $ZodPrefault: $ZodPrefault,
+        $ZodPreprocess: $ZodPreprocess,
         $ZodPromise: $ZodPromise,
         $ZodReadonly: $ZodReadonly,
         $ZodRealError: $ZodRealError,
@@ -12152,8 +12721,8 @@ sap.ui.define((function () { 'use strict';
         //   },
         // });
     };
-    const ZodError = $constructor("ZodError", initializer);
-    const ZodRealError = $constructor("ZodError", initializer, {
+    const ZodError = /*@__PURE__*/ $constructor("ZodError", initializer);
+    const ZodRealError = /*@__PURE__*/ $constructor("ZodError", initializer, {
         Parent: Error,
     });
     // /** @deprecated Use `z.core.$ZodErrorMapCtx` instead. */
@@ -12173,6 +12742,54 @@ sap.ui.define((function () { 'use strict';
     const safeEncodeAsync = /* @__PURE__ */ _safeEncodeAsync(ZodRealError);
     const safeDecodeAsync = /* @__PURE__ */ _safeDecodeAsync(ZodRealError);
 
+    // Lazy-bind builder methods.
+    //
+    // Builder methods (`.optional`, `.array`, `.refine`, ...) live as
+    // non-enumerable getters on each concrete schema constructor's
+    // prototype. On first access from an instance the getter allocates
+    // `fn.bind(this)` and caches it as an own property on that instance,
+    // so detached usage (`const m = schema.optional; m()`) still works
+    // and the per-instance allocation only happens for methods actually
+    // touched.
+    //
+    // One install per (prototype, group), memoized by `_installedGroups`.
+    const _installedGroups = /* @__PURE__ */ new WeakMap();
+    function _installLazyMethods(inst, group, methods) {
+        const proto = Object.getPrototypeOf(inst);
+        let installed = _installedGroups.get(proto);
+        if (!installed) {
+            installed = new Set();
+            _installedGroups.set(proto, installed);
+        }
+        if (installed.has(group))
+            return;
+        installed.add(group);
+        for (const key in methods) {
+            const fn = methods[key];
+            Object.defineProperty(proto, key, {
+                configurable: true,
+                enumerable: false,
+                get() {
+                    const bound = fn.bind(this);
+                    Object.defineProperty(this, key, {
+                        configurable: true,
+                        writable: true,
+                        enumerable: true,
+                        value: bound,
+                    });
+                    return bound;
+                },
+                set(v) {
+                    Object.defineProperty(this, key, {
+                        configurable: true,
+                        writable: true,
+                        enumerable: true,
+                        value: v,
+                    });
+                },
+            });
+        }
+    }
     const ZodType = /*@__PURE__*/ $constructor("ZodType", (inst, def) => {
         $ZodType.init(inst, def);
         Object.assign(inst["~standard"], {
@@ -12185,31 +12802,16 @@ sap.ui.define((function () { 'use strict';
         inst.def = def;
         inst.type = def.type;
         Object.defineProperty(inst, "_def", { value: def });
-        // base methods
-        inst.check = (...checks) => {
-            return inst.clone(mergeDefs(def, {
-                checks: [
-                    ...(def.checks ?? []),
-                    ...checks.map((ch) => typeof ch === "function" ? { _zod: { check: ch, def: { check: "custom" }, onattach: [] } } : ch),
-                ],
-            }), {
-                parent: true,
-            });
-        };
-        inst.with = inst.check;
-        inst.clone = (def, params) => clone(inst, def, params);
-        inst.brand = () => inst;
-        inst.register = ((reg, meta) => {
-            reg.add(inst, meta);
-            return inst;
-        });
-        // parsing
+        // Parse-family is intentionally kept as per-instance closures: these are
+        // the hot path AND the most-detached methods (`arr.map(schema.parse)`,
+        // `const { parse } = schema`, etc.). Eager closures here mean callers pay
+        // ~12 closure allocations per schema but get monomorphic call sites and
+        // detached usage that "just works".
         inst.parse = (data, params) => parse(inst, data, params, { callee: inst.parse });
         inst.safeParse = (data, params) => safeParse(inst, data, params);
         inst.parseAsync = async (data, params) => parseAsync(inst, data, params, { callee: inst.parseAsync });
         inst.safeParseAsync = async (data, params) => safeParseAsync(inst, data, params);
         inst.spa = inst.safeParseAsync;
-        // encoding/decoding
         inst.encode = (data, params) => encode(inst, data, params);
         inst.decode = (data, params) => decode(inst, data, params);
         inst.encodeAsync = async (data, params) => encodeAsync(inst, data, params);
@@ -12218,50 +12820,118 @@ sap.ui.define((function () { 'use strict';
         inst.safeDecode = (data, params) => safeDecode(inst, data, params);
         inst.safeEncodeAsync = async (data, params) => safeEncodeAsync(inst, data, params);
         inst.safeDecodeAsync = async (data, params) => safeDecodeAsync(inst, data, params);
-        // refinements
-        inst.refine = (check, params) => inst.check(refine(check, params));
-        inst.superRefine = (refinement) => inst.check(superRefine(refinement));
-        inst.overwrite = (fn) => inst.check(_overwrite(fn));
-        // wrappers
-        inst.optional = () => optional(inst);
-        inst.exactOptional = () => exactOptional(inst);
-        inst.nullable = () => nullable(inst);
-        inst.nullish = () => optional(nullable(inst));
-        inst.nonoptional = (params) => nonoptional(inst, params);
-        inst.array = () => array(inst);
-        inst.or = (arg) => union([inst, arg]);
-        inst.and = (arg) => intersection(inst, arg);
-        inst.transform = (tx) => pipe(inst, transform(tx));
-        inst.default = (def) => _default(inst, def);
-        inst.prefault = (def) => prefault(inst, def);
-        // inst.coalesce = (def, params) => coalesce(inst, def, params);
-        inst.catch = (params) => _catch(inst, params);
-        inst.pipe = (target) => pipe(inst, target);
-        inst.readonly = () => readonly(inst);
-        // meta
-        inst.describe = (description) => {
-            const cl = inst.clone();
-            globalRegistry.add(cl, { description });
-            return cl;
-        };
+        // All builder methods are placed on the internal prototype as lazy-bind
+        // getters. On first access per-instance, a bound thunk is allocated and
+        // cached as an own property; subsequent accesses skip the getter. This
+        // means: no per-instance allocation for unused methods, full
+        // detachability preserved (`const m = schema.optional; m()` works), and
+        // shared underlying function references across all instances.
+        _installLazyMethods(inst, "ZodType", {
+            check(...chks) {
+                const def = this.def;
+                return this.clone(mergeDefs(def, {
+                    checks: [
+                        ...(def.checks ?? []),
+                        ...chks.map((ch) => typeof ch === "function" ? { _zod: { check: ch, def: { check: "custom" }, onattach: [] } } : ch),
+                    ],
+                }), { parent: true });
+            },
+            with(...chks) {
+                return this.check(...chks);
+            },
+            clone(def, params) {
+                return clone(this, def, params);
+            },
+            brand() {
+                return this;
+            },
+            register(reg, meta) {
+                reg.add(this, meta);
+                return this;
+            },
+            refine(check, params) {
+                return this.check(refine(check, params));
+            },
+            superRefine(refinement, params) {
+                return this.check(superRefine(refinement, params));
+            },
+            overwrite(fn) {
+                return this.check(_overwrite(fn));
+            },
+            optional() {
+                return optional(this);
+            },
+            exactOptional() {
+                return exactOptional(this);
+            },
+            nullable() {
+                return nullable(this);
+            },
+            nullish() {
+                return optional(nullable(this));
+            },
+            nonoptional(params) {
+                return nonoptional(this, params);
+            },
+            array() {
+                return array(this);
+            },
+            or(arg) {
+                return union([this, arg]);
+            },
+            and(arg) {
+                return intersection(this, arg);
+            },
+            transform(tx) {
+                return pipe(this, transform(tx));
+            },
+            default(d) {
+                return _default(this, d);
+            },
+            prefault(d) {
+                return prefault(this, d);
+            },
+            catch(params) {
+                return _catch(this, params);
+            },
+            pipe(target) {
+                return pipe(this, target);
+            },
+            readonly() {
+                return readonly(this);
+            },
+            describe(description) {
+                const cl = this.clone();
+                globalRegistry.add(cl, { description });
+                return cl;
+            },
+            meta(...args) {
+                // overloaded: meta() returns the registered metadata, meta(data)
+                // returns a clone with `data` registered. The mapped type picks
+                // up the second overload, so we accept variadic any-args and
+                // return `any` to satisfy both at runtime.
+                if (args.length === 0)
+                    return globalRegistry.get(this);
+                const cl = this.clone();
+                globalRegistry.add(cl, args[0]);
+                return cl;
+            },
+            isOptional() {
+                return this.safeParse(undefined).success;
+            },
+            isNullable() {
+                return this.safeParse(null).success;
+            },
+            apply(fn) {
+                return fn(this);
+            },
+        });
         Object.defineProperty(inst, "description", {
             get() {
                 return globalRegistry.get(inst)?.description;
             },
             configurable: true,
         });
-        inst.meta = (...args) => {
-            if (args.length === 0) {
-                return globalRegistry.get(inst);
-            }
-            const cl = inst.clone();
-            globalRegistry.add(cl, args[0]);
-            return cl;
-        };
-        // helpers
-        inst.isOptional = () => inst.safeParse(undefined).success;
-        inst.isNullable = () => inst.safeParse(null).success;
-        inst.apply = (fn) => fn(inst);
         return inst;
     });
     /** @internal */
@@ -12273,23 +12943,53 @@ sap.ui.define((function () { 'use strict';
         inst.format = bag.format ?? null;
         inst.minLength = bag.minimum ?? null;
         inst.maxLength = bag.maximum ?? null;
-        // validations
-        inst.regex = (...args) => inst.check(_regex(...args));
-        inst.includes = (...args) => inst.check(_includes(...args));
-        inst.startsWith = (...args) => inst.check(_startsWith(...args));
-        inst.endsWith = (...args) => inst.check(_endsWith(...args));
-        inst.min = (...args) => inst.check(_minLength(...args));
-        inst.max = (...args) => inst.check(_maxLength(...args));
-        inst.length = (...args) => inst.check(_length(...args));
-        inst.nonempty = (...args) => inst.check(_minLength(1, ...args));
-        inst.lowercase = (params) => inst.check(_lowercase(params));
-        inst.uppercase = (params) => inst.check(_uppercase(params));
-        // transforms
-        inst.trim = () => inst.check(_trim());
-        inst.normalize = (...args) => inst.check(_normalize(...args));
-        inst.toLowerCase = () => inst.check(_toLowerCase());
-        inst.toUpperCase = () => inst.check(_toUpperCase());
-        inst.slugify = () => inst.check(_slugify());
+        _installLazyMethods(inst, "_ZodString", {
+            regex(...args) {
+                return this.check(_regex(...args));
+            },
+            includes(...args) {
+                return this.check(_includes(...args));
+            },
+            startsWith(...args) {
+                return this.check(_startsWith(...args));
+            },
+            endsWith(...args) {
+                return this.check(_endsWith(...args));
+            },
+            min(...args) {
+                return this.check(_minLength(...args));
+            },
+            max(...args) {
+                return this.check(_maxLength(...args));
+            },
+            length(...args) {
+                return this.check(_length(...args));
+            },
+            nonempty(...args) {
+                return this.check(_minLength(1, ...args));
+            },
+            lowercase(params) {
+                return this.check(_lowercase(params));
+            },
+            uppercase(params) {
+                return this.check(_uppercase(params));
+            },
+            trim() {
+                return this.check(_trim());
+            },
+            normalize(...args) {
+                return this.check(_normalize(...args));
+            },
+            toLowerCase() {
+                return this.check(_toLowerCase());
+            },
+            toUpperCase() {
+                return this.check(_toUpperCase());
+            },
+            slugify() {
+                return this.check(_slugify());
+            },
+        });
     });
     const ZodString = /*@__PURE__*/ $constructor("ZodString", (inst, def) => {
         $ZodString.init(inst, def);
@@ -12375,7 +13075,7 @@ sap.ui.define((function () { 'use strict';
     }
     function httpUrl(params) {
         return _url(ZodURL, {
-            protocol: /^https?$/,
+            protocol: httpProtocol,
             hostname: domain,
             ...normalizeParams(params),
         });
@@ -12396,11 +13096,23 @@ sap.ui.define((function () { 'use strict';
     function nanoid(params) {
         return _nanoid(ZodNanoID, params);
     }
+    /**
+     * @deprecated CUID v1 is deprecated by its authors due to information leakage
+     * (timestamps embedded in the id). Use {@link ZodCUID2} instead.
+     * See https://github.com/paralleldrive/cuid.
+     */
     const ZodCUID = /*@__PURE__*/ $constructor("ZodCUID", (inst, def) => {
         // ZodStringFormat.init(inst, def);
         $ZodCUID.init(inst, def);
         ZodStringFormat.init(inst, def);
     });
+    /**
+     * Validates a CUID v1 string.
+     *
+     * @deprecated CUID v1 is deprecated by its authors due to information leakage
+     * (timestamps embedded in the id). Use {@link cuid2 | `z.cuid2()`} instead.
+     * See https://github.com/paralleldrive/cuid.
+     */
     function cuid(params) {
         return _cuid(ZodCUID, params);
     }
@@ -12532,22 +13244,53 @@ sap.ui.define((function () { 'use strict';
         $ZodNumber.init(inst, def);
         ZodType.init(inst, def);
         inst._zod.processJSONSchema = (ctx, json, params) => numberProcessor(inst, ctx, json);
-        inst.gt = (value, params) => inst.check(_gt(value, params));
-        inst.gte = (value, params) => inst.check(_gte(value, params));
-        inst.min = (value, params) => inst.check(_gte(value, params));
-        inst.lt = (value, params) => inst.check(_lt(value, params));
-        inst.lte = (value, params) => inst.check(_lte(value, params));
-        inst.max = (value, params) => inst.check(_lte(value, params));
-        inst.int = (params) => inst.check(int(params));
-        inst.safe = (params) => inst.check(int(params));
-        inst.positive = (params) => inst.check(_gt(0, params));
-        inst.nonnegative = (params) => inst.check(_gte(0, params));
-        inst.negative = (params) => inst.check(_lt(0, params));
-        inst.nonpositive = (params) => inst.check(_lte(0, params));
-        inst.multipleOf = (value, params) => inst.check(_multipleOf(value, params));
-        inst.step = (value, params) => inst.check(_multipleOf(value, params));
-        // inst.finite = (params) => inst.check(core.finite(params));
-        inst.finite = () => inst;
+        _installLazyMethods(inst, "ZodNumber", {
+            gt(value, params) {
+                return this.check(_gt(value, params));
+            },
+            gte(value, params) {
+                return this.check(_gte(value, params));
+            },
+            min(value, params) {
+                return this.check(_gte(value, params));
+            },
+            lt(value, params) {
+                return this.check(_lt(value, params));
+            },
+            lte(value, params) {
+                return this.check(_lte(value, params));
+            },
+            max(value, params) {
+                return this.check(_lte(value, params));
+            },
+            int(params) {
+                return this.check(int(params));
+            },
+            safe(params) {
+                return this.check(int(params));
+            },
+            positive(params) {
+                return this.check(_gt(0, params));
+            },
+            nonnegative(params) {
+                return this.check(_gte(0, params));
+            },
+            negative(params) {
+                return this.check(_lt(0, params));
+            },
+            nonpositive(params) {
+                return this.check(_lte(0, params));
+            },
+            multipleOf(value, params) {
+                return this.check(_multipleOf(value, params));
+            },
+            step(value, params) {
+                return this.check(_multipleOf(value, params));
+            },
+            finite() {
+                return this;
+            },
+        });
         const bag = inst._zod.bag;
         inst.minValue =
             Math.max(bag.minimum ?? Number.NEGATIVE_INFINITY, bag.exclusiveMinimum ?? Number.NEGATIVE_INFINITY) ?? null;
@@ -12698,11 +13441,23 @@ sap.ui.define((function () { 'use strict';
         ZodType.init(inst, def);
         inst._zod.processJSONSchema = (ctx, json, params) => arrayProcessor(inst, ctx, json, params);
         inst.element = def.element;
-        inst.min = (minLength, params) => inst.check(_minLength(minLength, params));
-        inst.nonempty = (params) => inst.check(_minLength(1, params));
-        inst.max = (maxLength, params) => inst.check(_maxLength(maxLength, params));
-        inst.length = (len, params) => inst.check(_length(len, params));
-        inst.unwrap = () => inst.element;
+        _installLazyMethods(inst, "ZodArray", {
+            min(n, params) {
+                return this.check(_minLength(n, params));
+            },
+            nonempty(params) {
+                return this.check(_minLength(1, params));
+            },
+            max(n, params) {
+                return this.check(_maxLength(n, params));
+            },
+            length(n, params) {
+                return this.check(_length(n, params));
+            },
+            unwrap() {
+                return this.element;
+            },
+        });
     });
     function array(element, params) {
         return _array(ZodArray, element, params);
@@ -12719,23 +13474,47 @@ sap.ui.define((function () { 'use strict';
         defineLazy(inst, "shape", () => {
             return def.shape;
         });
-        inst.keyof = () => _enum(Object.keys(inst._zod.def.shape));
-        inst.catchall = (catchall) => inst.clone({ ...inst._zod.def, catchall: catchall });
-        inst.passthrough = () => inst.clone({ ...inst._zod.def, catchall: unknown() });
-        inst.loose = () => inst.clone({ ...inst._zod.def, catchall: unknown() });
-        inst.strict = () => inst.clone({ ...inst._zod.def, catchall: never() });
-        inst.strip = () => inst.clone({ ...inst._zod.def, catchall: undefined });
-        inst.extend = (incoming) => {
-            return extend(inst, incoming);
-        };
-        inst.safeExtend = (incoming) => {
-            return safeExtend(inst, incoming);
-        };
-        inst.merge = (other) => merge(inst, other);
-        inst.pick = (mask) => pick(inst, mask);
-        inst.omit = (mask) => omit(inst, mask);
-        inst.partial = (...args) => partial(ZodOptional, inst, args[0]);
-        inst.required = (...args) => required(ZodNonOptional, inst, args[0]);
+        _installLazyMethods(inst, "ZodObject", {
+            keyof() {
+                return _enum(Object.keys(this._zod.def.shape));
+            },
+            catchall(catchall) {
+                return this.clone({ ...this._zod.def, catchall: catchall });
+            },
+            passthrough() {
+                return this.clone({ ...this._zod.def, catchall: unknown() });
+            },
+            loose() {
+                return this.clone({ ...this._zod.def, catchall: unknown() });
+            },
+            strict() {
+                return this.clone({ ...this._zod.def, catchall: never() });
+            },
+            strip() {
+                return this.clone({ ...this._zod.def, catchall: undefined });
+            },
+            extend(incoming) {
+                return extend(this, incoming);
+            },
+            safeExtend(incoming) {
+                return safeExtend(this, incoming);
+            },
+            merge(other) {
+                return merge(this, other);
+            },
+            pick(mask) {
+                return pick(this, mask);
+            },
+            omit(mask) {
+                return omit(this, mask);
+            },
+            partial(...args) {
+                return partial(ZodOptional, this, args[0]);
+            },
+            required(...args) {
+                return required(ZodNonOptional, this, args[0]);
+            },
+        });
     });
     function object(shape, params) {
         const def = {
@@ -12846,6 +13625,15 @@ sap.ui.define((function () { 'use strict';
         inst.valueType = def.valueType;
     });
     function record(keyType, valueType, params) {
+        // v3-compat: z.record(valueType, params?) — defaults keyType to z.string()
+        if (!valueType || !valueType._zod) {
+            return new ZodRecord({
+                type: "record",
+                keyType: string$1(),
+                valueType: keyType,
+                ...normalizeParams(valueType),
+            });
+        }
         return new ZodRecord({
             type: "record",
             keyType,
@@ -13030,10 +13818,12 @@ sap.ui.define((function () { 'use strict';
             if (output instanceof Promise) {
                 return output.then((output) => {
                     payload.value = output;
+                    payload.fallback = true;
                     return payload;
                 });
             }
             payload.value = output;
+            payload.fallback = true;
             return payload;
         };
     });
@@ -13189,6 +13979,20 @@ sap.ui.define((function () { 'use strict';
             reverseTransform: params.encode,
         });
     }
+    function invertCodec(codec) {
+        const def = codec._zod.def;
+        return new ZodCodec({
+            type: "pipe",
+            in: def.out,
+            out: def.in,
+            transform: def.reverseTransform,
+            reverseTransform: def.transform,
+        });
+    }
+    const ZodPreprocess = /*@__PURE__*/ $constructor("ZodPreprocess", (inst, def) => {
+        ZodPipe.init(inst, def);
+        $ZodPreprocess.init(inst, def);
+    });
     const ZodReadonly = /*@__PURE__*/ $constructor("ZodReadonly", (inst, def) => {
         $ZodReadonly.init(inst, def);
         ZodType.init(inst, def);
@@ -13270,8 +14074,8 @@ sap.ui.define((function () { 'use strict';
         return _refine(ZodCustom, fn, _params);
     }
     // superRefine
-    function superRefine(fn) {
-        return _superRefine(fn);
+    function superRefine(fn, params) {
+        return _superRefine(fn, params);
     }
     // Re-export describe and meta from core
     const describe = describe$1;
@@ -13312,9 +14116,12 @@ sap.ui.define((function () { 'use strict';
         return jsonSchema;
     }
     // preprocess
-    // /** @deprecated Use `z.pipe()` and `z.transform()` instead. */
     function preprocess(fn, schema) {
-        return pipe(transform(fn), schema);
+        return new ZodPreprocess({
+            type: "pipe",
+            in: transform(fn),
+            out: schema,
+        });
     }
 
     var _schemas = /*#__PURE__*/Object.freeze({
@@ -13366,6 +14173,7 @@ sap.ui.define((function () { 'use strict';
         ZodOptional: ZodOptional,
         ZodPipe: ZodPipe,
         ZodPrefault: ZodPrefault,
+        ZodPreprocess: ZodPreprocess,
         ZodPromise: ZodPromise,
         ZodReadonly: ZodReadonly,
         ZodRecord: ZodRecord,
@@ -13426,6 +14234,7 @@ sap.ui.define((function () { 'use strict';
         int32: int32,
         int64: int64,
         intersection: intersection,
+        invertCodec: invertCodec,
         ipv4: ipv4,
         ipv6: ipv6,
         json: json,
@@ -13522,7 +14331,7 @@ sap.ui.define((function () { 'use strict';
         iso: _iso,
     };
     // Keys that are recognized and handled by the conversion logic
-    const RECOGNIZED_KEYS = new Set([
+    const RECOGNIZED_KEYS = /*@__PURE__*/ new Set([
         // Schema identification
         "$schema",
         "$ref",
@@ -13998,13 +14807,6 @@ sap.ui.define((function () { 'use strict';
             default:
                 throw new Error(`Unsupported type: ${type}`);
         }
-        // Apply metadata
-        if (schema.description) {
-            zodSchema = zodSchema.describe(schema.description);
-        }
-        if (schema.default !== undefined) {
-            zodSchema = zodSchema.default(schema.default);
-        }
         return zodSchema;
     }
     function convertSchema(schema, ctx) {
@@ -14049,23 +14851,28 @@ sap.ui.define((function () { 'use strict';
         if (schema.readOnly === true) {
             baseSchema = z$1.readonly(baseSchema);
         }
-        // Collect metadata: core schema keywords and unrecognized keys
+        // Apply `default` so it wraps the fully-composed schema. This ensures
+        // `parse(undefined) -> default` works regardless of which branch of
+        // `convertBaseSchema` produced the inner schema (enum/const/not/typed/etc.).
+        if (schema.default !== undefined) {
+            baseSchema = baseSchema.default(schema.default);
+        }
+        // Collect non-description annotation metadata into the user-supplied
+        // registry. Description is handled separately below via `.describe()` to
+        // preserve the contract that `schema.description` reads from globalRegistry.
         const extraMeta = {};
-        // Core schema keywords that should be captured as metadata
         const coreMetadataKeys = ["$id", "id", "$comment", "$anchor", "$vocabulary", "$dynamicRef", "$dynamicAnchor"];
         for (const key of coreMetadataKeys) {
             if (key in schema) {
                 extraMeta[key] = schema[key];
             }
         }
-        // Content keywords - store as metadata
         const contentMetadataKeys = ["contentEncoding", "contentMediaType", "contentSchema"];
         for (const key of contentMetadataKeys) {
             if (key in schema) {
                 extraMeta[key] = schema[key];
             }
         }
-        // Unrecognized keys (custom metadata)
         for (const key of Object.keys(schema)) {
             if (!RECOGNIZED_KEYS.has(key)) {
                 extraMeta[key] = schema[key];
@@ -14073,6 +14880,12 @@ sap.ui.define((function () { 'use strict';
         }
         if (Object.keys(extraMeta).length > 0) {
             ctx.registry.add(baseSchema, extraMeta);
+        }
+        // Apply description last. `.describe()` clones the schema and sets
+        // `_zod.parent` on the clone, so registry lookups on the returned reference
+        // still resolve `extraMeta` via parent inheritance.
+        if (schema.description) {
+            baseSchema = baseSchema.describe(schema.description);
         }
         return baseSchema;
     }
@@ -14083,17 +14896,28 @@ sap.ui.define((function () { 'use strict';
         if (typeof schema === "boolean") {
             return schema ? z$1.any() : z$1.never();
         }
-        const version = detectVersion(schema, params?.defaultTarget);
-        const defs = (schema.$defs || schema.definitions || {});
+        // Normalize input via a JSON round-trip. This guarantees the converter
+        // walks a plain, finite, JSON-valid object graph: cyclic inputs fail here,
+        // getter/Proxy-based properties are materialized into static values, and
+        // class instances collapse to plain objects.
+        let normalized;
+        try {
+            normalized = JSON.parse(JSON.stringify(schema));
+        }
+        catch {
+            throw new Error("fromJSONSchema input is not valid JSON (possibly cyclic); use $defs/$ref for recursive schemas");
+        }
+        const version = detectVersion(normalized, params?.defaultTarget);
+        const defs = (normalized.$defs || normalized.definitions || {});
         const ctx = {
             version,
             defs,
             refs: new Map(),
             processing: new Set(),
-            rootSchema: schema,
+            rootSchema: normalized,
             registry: params?.registry ?? globalRegistry,
         };
-        return convertSchema(schema, ctx);
+        return convertSchema(normalized, ctx);
     }
 
     function string(params) {
@@ -14184,6 +15008,7 @@ sap.ui.define((function () { 'use strict';
         ZodOptional: ZodOptional,
         ZodPipe: ZodPipe,
         ZodPrefault: ZodPrefault,
+        ZodPreprocess: ZodPreprocess,
         ZodPromise: ZodPromise,
         ZodReadonly: ZodReadonly,
         ZodRealError: ZodRealError,
@@ -14262,6 +15087,7 @@ sap.ui.define((function () { 'use strict';
         int32: int32,
         int64: int64,
         intersection: intersection,
+        invertCodec: invertCodec,
         ipv4: ipv4,
         ipv6: ipv6,
         iso: _iso,
@@ -14424,6 +15250,7 @@ sap.ui.define((function () { 'use strict';
         ZodOptional: ZodOptional,
         ZodPipe: ZodPipe,
         ZodPrefault: ZodPrefault,
+        ZodPreprocess: ZodPreprocess,
         ZodPromise: ZodPromise,
         ZodReadonly: ZodReadonly,
         ZodRealError: ZodRealError,
@@ -14503,6 +15330,7 @@ sap.ui.define((function () { 'use strict';
         int32: int32,
         int64: int64,
         intersection: intersection,
+        invertCodec: invertCodec,
         ipv4: ipv4,
         ipv6: ipv6,
         iso: _iso,

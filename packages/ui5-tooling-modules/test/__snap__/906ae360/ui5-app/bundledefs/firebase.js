@@ -562,53 +562,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   /**
    * @license
-   * Copyright 2025 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  /**
-   * Checks whether host is a cloud workstation or not.
-   * @public
-   */
-  function isCloudWorkstation(url) {
-      // `isCloudWorkstation` is called without protocol in certain connect*Emulator functions
-      // In HTTP request builders, it's called with the protocol.
-      // If called with protocol prefix, it's a valid URL, so we extract the hostname
-      // If called without, we assume the string is the hostname.
-      try {
-          const host = url.startsWith('http://') || url.startsWith('https://')
-              ? new URL(url).hostname
-              : url;
-          return host.endsWith('.cloudworkstations.dev');
-      }
-      catch {
-          return false;
-      }
-  }
-  /**
-   * Makes a fetch request to the given server.
-   * Mostly used for forwarding cookies in Firebase Studio.
-   * @public
-   */
-  async function pingServer(endpoint) {
-      const result = await fetch(endpoint, {
-          credentials: 'include'
-      });
-      return result.ok;
-  }
-
-  /**
-   * @license
    * Copyright 2021 Google LLC
    *
    * Licensed under the Apache License, Version 2.0 (the "License");
@@ -661,152 +614,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           base64urlEncodeWithoutPadding(JSON.stringify(payload)),
           signature
       ].join('.');
-  }
-  const emulatorStatus = {};
-  // Checks whether any products are running on an emulator
-  function getEmulatorSummary() {
-      const summary = {
-          prod: [],
-          emulator: []
-      };
-      for (const key of Object.keys(emulatorStatus)) {
-          if (emulatorStatus[key]) {
-              summary.emulator.push(key);
-          }
-          else {
-              summary.prod.push(key);
-          }
-      }
-      return summary;
-  }
-  function getOrCreateEl(id) {
-      let parentDiv = document.getElementById(id);
-      let created = false;
-      if (!parentDiv) {
-          parentDiv = document.createElement('div');
-          parentDiv.setAttribute('id', id);
-          created = true;
-      }
-      return { created, element: parentDiv };
-  }
-  let previouslyDismissed = false;
-  /**
-   * Updates Emulator Banner. Primarily used for Firebase Studio
-   * @param name
-   * @param isRunningEmulator
-   * @public
-   */
-  function updateEmulatorBanner(name, isRunningEmulator) {
-      if (typeof window === 'undefined' ||
-          typeof document === 'undefined' ||
-          !isCloudWorkstation(window.location.host) ||
-          emulatorStatus[name] === isRunningEmulator ||
-          emulatorStatus[name] || // If already set to use emulator, can't go back to prod.
-          previouslyDismissed) {
-          return;
-      }
-      emulatorStatus[name] = isRunningEmulator;
-      function prefixedId(id) {
-          return `__firebase__banner__${id}`;
-      }
-      const bannerId = '__firebase__banner';
-      const summary = getEmulatorSummary();
-      const showError = summary.prod.length > 0;
-      function tearDown() {
-          const element = document.getElementById(bannerId);
-          if (element) {
-              element.remove();
-          }
-      }
-      function setupBannerStyles(bannerEl) {
-          bannerEl.style.display = 'flex';
-          bannerEl.style.background = '#7faaf0';
-          bannerEl.style.position = 'fixed';
-          bannerEl.style.bottom = '5px';
-          bannerEl.style.left = '5px';
-          bannerEl.style.padding = '.5em';
-          bannerEl.style.borderRadius = '5px';
-          bannerEl.style.alignItems = 'center';
-      }
-      function setupIconStyles(prependIcon, iconId) {
-          prependIcon.setAttribute('width', '24');
-          prependIcon.setAttribute('id', iconId);
-          prependIcon.setAttribute('height', '24');
-          prependIcon.setAttribute('viewBox', '0 0 24 24');
-          prependIcon.setAttribute('fill', 'none');
-          prependIcon.style.marginLeft = '-6px';
-      }
-      function setupCloseBtn() {
-          const closeBtn = document.createElement('span');
-          closeBtn.style.cursor = 'pointer';
-          closeBtn.style.marginLeft = '16px';
-          closeBtn.style.fontSize = '24px';
-          closeBtn.innerHTML = ' &times;';
-          closeBtn.onclick = () => {
-              previouslyDismissed = true;
-              tearDown();
-          };
-          return closeBtn;
-      }
-      function setupLinkStyles(learnMoreLink, learnMoreId) {
-          learnMoreLink.setAttribute('id', learnMoreId);
-          learnMoreLink.innerText = 'Learn more';
-          learnMoreLink.href =
-              'https://firebase.google.com/docs/studio/preview-apps#preview-backend';
-          learnMoreLink.setAttribute('target', '__blank');
-          learnMoreLink.style.paddingLeft = '5px';
-          learnMoreLink.style.textDecoration = 'underline';
-      }
-      function setupDom() {
-          const banner = getOrCreateEl(bannerId);
-          const firebaseTextId = prefixedId('text');
-          const firebaseText = document.getElementById(firebaseTextId) || document.createElement('span');
-          const learnMoreId = prefixedId('learnmore');
-          const learnMoreLink = document.getElementById(learnMoreId) ||
-              document.createElement('a');
-          const prependIconId = prefixedId('preprendIcon');
-          const prependIcon = document.getElementById(prependIconId) ||
-              document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          if (banner.created) {
-              // update styles
-              const bannerEl = banner.element;
-              setupBannerStyles(bannerEl);
-              setupLinkStyles(learnMoreLink, learnMoreId);
-              const closeBtn = setupCloseBtn();
-              setupIconStyles(prependIcon, prependIconId);
-              bannerEl.append(prependIcon, firebaseText, learnMoreLink, closeBtn);
-              document.body.appendChild(bannerEl);
-          }
-          if (showError) {
-              firebaseText.innerText = `Preview backend disconnected.`;
-              prependIcon.innerHTML = `<g clip-path="url(#clip0_6013_33858)">
-<path d="M4.8 17.6L12 5.6L19.2 17.6H4.8ZM6.91667 16.4H17.0833L12 7.93333L6.91667 16.4ZM12 15.6C12.1667 15.6 12.3056 15.5444 12.4167 15.4333C12.5389 15.3111 12.6 15.1667 12.6 15C12.6 14.8333 12.5389 14.6944 12.4167 14.5833C12.3056 14.4611 12.1667 14.4 12 14.4C11.8333 14.4 11.6889 14.4611 11.5667 14.5833C11.4556 14.6944 11.4 14.8333 11.4 15C11.4 15.1667 11.4556 15.3111 11.5667 15.4333C11.6889 15.5444 11.8333 15.6 12 15.6ZM11.4 13.6H12.6V10.4H11.4V13.6Z" fill="#212121"/>
-</g>
-<defs>
-<clipPath id="clip0_6013_33858">
-<rect width="24" height="24" fill="white"/>
-</clipPath>
-</defs>`;
-          }
-          else {
-              prependIcon.innerHTML = `<g clip-path="url(#clip0_6083_34804)">
-<path d="M11.4 15.2H12.6V11.2H11.4V15.2ZM12 10C12.1667 10 12.3056 9.94444 12.4167 9.83333C12.5389 9.71111 12.6 9.56667 12.6 9.4C12.6 9.23333 12.5389 9.09444 12.4167 8.98333C12.3056 8.86111 12.1667 8.8 12 8.8C11.8333 8.8 11.6889 8.86111 11.5667 8.98333C11.4556 9.09444 11.4 9.23333 11.4 9.4C11.4 9.56667 11.4556 9.71111 11.5667 9.83333C11.6889 9.94444 11.8333 10 12 10ZM12 18.4C11.1222 18.4 10.2944 18.2333 9.51667 17.9C8.73889 17.5667 8.05556 17.1111 7.46667 16.5333C6.88889 15.9444 6.43333 15.2611 6.1 14.4833C5.76667 13.7056 5.6 12.8778 5.6 12C5.6 11.1111 5.76667 10.2833 6.1 9.51667C6.43333 8.73889 6.88889 8.06111 7.46667 7.48333C8.05556 6.89444 8.73889 6.43333 9.51667 6.1C10.2944 5.76667 11.1222 5.6 12 5.6C12.8889 5.6 13.7167 5.76667 14.4833 6.1C15.2611 6.43333 15.9389 6.89444 16.5167 7.48333C17.1056 8.06111 17.5667 8.73889 17.9 9.51667C18.2333 10.2833 18.4 11.1111 18.4 12C18.4 12.8778 18.2333 13.7056 17.9 14.4833C17.5667 15.2611 17.1056 15.9444 16.5167 16.5333C15.9389 17.1111 15.2611 17.5667 14.4833 17.9C13.7167 18.2333 12.8889 18.4 12 18.4ZM12 17.2C13.4444 17.2 14.6722 16.6944 15.6833 15.6833C16.6944 14.6722 17.2 13.4444 17.2 12C17.2 10.5556 16.6944 9.32778 15.6833 8.31667C14.6722 7.30555 13.4444 6.8 12 6.8C10.5556 6.8 9.32778 7.30555 8.31667 8.31667C7.30556 9.32778 6.8 10.5556 6.8 12C6.8 13.4444 7.30556 14.6722 8.31667 15.6833C9.32778 16.6944 10.5556 17.2 12 17.2Z" fill="#212121"/>
-</g>
-<defs>
-<clipPath id="clip0_6083_34804">
-<rect width="24" height="24" fill="white"/>
-</clipPath>
-</defs>`;
-              firebaseText.innerText = 'Preview backend running in this workspace.';
-          }
-          firebaseText.setAttribute('id', firebaseTextId);
-      }
-      if (document.readyState === 'loading') {
-          window.addEventListener('DOMContentLoaded', setupDom);
-      }
-      else {
-          setupDom();
-      }
   }
   /**
    * This method checks if indexedDB is supported by current browser/service worker context
@@ -1018,6 +825,53 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       else {
           return service;
       }
+  }
+
+  /**
+   * @license
+   * Copyright 2025 Google LLC
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *   http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  /**
+   * Checks whether host is a cloud workstation or not.
+   * @public
+   */
+  function isCloudWorkstation(url) {
+      // `isCloudWorkstation` is called without protocol in certain connect*Emulator functions
+      // In HTTP request builders, it's called with the protocol.
+      // If called with protocol prefix, it's a valid URL, so we extract the hostname
+      // If called without, we assume the string is the hostname.
+      try {
+          const host = url.startsWith('http://') || url.startsWith('https://')
+              ? new URL(url).hostname
+              : url;
+          return host.endsWith('.cloudworkstations.dev');
+      }
+      catch {
+          return false;
+      }
+  }
+  /**
+   * Makes a fetch request to the given server.
+   * Mostly used for forwarding cookies in Firebase Studio.
+   * @public
+   */
+  async function pingServer(endpoint) {
+      const result = await fetch(endpoint, {
+          credentials: 'include'
+      });
+      return result.ok;
   }
 
   /**
@@ -1898,7 +1752,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.14.9";
+  const version$1 = "0.14.12";
 
   /**
    * @license
@@ -1969,7 +1823,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name$r = "firebase";
-  const version$2 = "12.10.0";
+  const version$2 = "12.13.0";
 
   /**
    * @license
@@ -2765,7 +2619,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   registerCoreComponents('');
 
   var name = "firebase";
-  var version = "12.10.0";
+  var version = "12.13.0";
 
   /**
    * @license
@@ -2881,10 +2735,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  let d = "12.10.0";
+  let f = "12.13.0";
 
   function __PRIVATE_setSDKVersion(e) {
-      d = e;
+      f = e;
   }
 
   /**
@@ -2920,28 +2774,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const m = new Logger("@firebase/firestore");
+  const d = new Logger("@firebase/firestore");
 
   function __PRIVATE_logDebug(e, ...t) {
-      if (m.logLevel <= LogLevel.DEBUG) {
+      if (d.logLevel <= LogLevel.DEBUG) {
           const r = t.map(__PRIVATE_argToString);
-          m.debug(`Firestore (${d}): ${e}`, ...r);
+          d.debug(`Firestore (${f}): ${e}`, ...r);
       }
   }
 
   function __PRIVATE_logError(e, ...t) {
-      if (m.logLevel <= LogLevel.ERROR) {
+      if (d.logLevel <= LogLevel.ERROR) {
           const r = t.map(__PRIVATE_argToString);
-          m.error(`Firestore (${d}): ${e}`, ...r);
+          d.error(`Firestore (${f}): ${e}`, ...r);
       }
   }
 
   /**
    * @internal
    */ function __PRIVATE_logWarn(e, ...t) {
-      if (m.logLevel <= LogLevel.WARN) {
+      if (d.logLevel <= LogLevel.WARN) {
           const r = t.map(__PRIVATE_argToString);
-          m.warn(`Firestore (${d}): ${e}`, ...r);
+          d.warn(`Firestore (${f}): ${e}`, ...r);
       }
   }
 
@@ -2982,7 +2836,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function __PRIVATE__fail(e, t, r) {
       // Log the failure in addition to throw an exception, just in case the
       // exception is swallowed.
-      let n = `FIRESTORE (${d}) INTERNAL ASSERTION FAILED: ${t} (ID: ${e.toString(16)})`;
+      let n = `FIRESTORE (${f}) INTERNAL ASSERTION FAILED: ${t} (ID: ${e.toString(16)})`;
       if (void 0 !== r) try {
           n += " CONTEXT: " + JSON.stringify(r);
       } catch (e) {
@@ -3340,20 +3194,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
-  /** The default database name for a project. */ const P = "(default)";
+  /** The default database name for a project. */ const m = "(default)";
 
   /**
    * Represents the database ID a Firestore client is associated with.
    * @internal
    */ class DatabaseId {
       constructor(e, t) {
-          this.projectId = e, this.database = t || P;
+          this.projectId = e, this.database = t || m;
       }
       static empty() {
           return new DatabaseId("", "");
       }
       get isDefaultDatabase() {
-          return this.database === P;
+          return this.database === m;
       }
       isEqual(e) {
           return e instanceof DatabaseId && e.projectId === this.projectId && e.database === this.database;
@@ -3478,11 +3332,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return __PRIVATE_primitiveComparator(e.length, t.length);
   }
 
-  const T = 55296, R = 57343;
+  const P = 55296, T = 57343;
 
   function __PRIVATE_isSurrogate(e) {
       const t = e.charCodeAt(0);
-      return t >= T && t <= R;
+      return t >= P && t <= T;
   }
 
   /** Helper to compare arrays using isEqual(). */ function __PRIVATE_arrayEquals(e, t, r) {
@@ -3504,7 +3358,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const V = "__name__";
+   */ const R = "__name__";
 
   /**
    * Path represents an ordered sequence of string segments.
@@ -3638,7 +3492,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
-  const A = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
+  const V = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
 
   /**
    * A dot-separated path for navigating sub-objects within a document.
@@ -3651,7 +3505,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Returns true if the string could be used as a segment in a field path
        * without escaping.
        */    static isValidIdentifier(e) {
-          return A.test(e);
+          return V.test(e);
       }
       canonicalString() {
           return this.toArray().map((e => (e = e.replace(/\\/g, "\\\\").replace(/`/g, "\\`"),
@@ -3663,12 +3517,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Returns true if this field references the key of a document.
        */    isKeyField() {
-          return 1 === this.length && this.get(0) === V;
+          return 1 === this.length && this.get(0) === R;
       }
       /**
        * The field designating the key of a document.
        */    static keyField() {
-          return new FieldPath$1([ V ]);
+          return new FieldPath$1([ R ]);
       }
       /**
        * Parses a field string from the given server-formatted string.
@@ -3902,7 +3756,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * The value returned from the most recent invocation of
    * `generateUniqueDebugId()`, or null if it has never been invoked.
-   */ let I = null;
+   */ let A = null;
 
   /**
    * Generates and returns an initial value for `lastUniqueDebugId`.
@@ -3927,9 +3781,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @returns the 10-character generated ID (e.g. "0xa1b2c3d4").
    */
   function __PRIVATE_generateUniqueDebugId() {
-      return null === I ? I = function __PRIVATE_generateInitialUniqueDebugId() {
+      return null === A ? A = function __PRIVATE_generateInitialUniqueDebugId() {
           return 268435456 + Math.round(2147483648 * Math.random());
-      }() : I++, "0x" + I.toString(16);
+      }() : A++, "0x" + A.toString(16);
   }
 
   /** Returns whether the value represents -0. */ function __PRIVATE_isNegativeZero(e) {
@@ -3953,7 +3807,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const p = "RestConnection", y = {
+   */ const I = "RestConnection", p = {
       BatchGetDocuments: "batchGet",
       Commit: "commit",
       RunQuery: "runQuery",
@@ -3979,20 +3833,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       constructor(e) {
           this.databaseInfo = e, this.databaseId = e.databaseId;
           const t = e.ssl ? "https" : "http", r = encodeURIComponent(this.databaseId.projectId), n = encodeURIComponent(this.databaseId.database);
-          this.R = t + "://" + e.host, this.V = `projects/${r}/databases/${n}`, this.A = this.databaseId.database === P ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
+          this.R = t + "://" + e.host, this.V = `projects/${r}/databases/${n}`, this.A = this.databaseId.database === m ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
       }
       I(e, r, n, i, s) {
           const o = __PRIVATE_generateUniqueDebugId(), a = this.p(e, r.toUriEncodedString());
-          __PRIVATE_logDebug(p, `Sending RPC '${e}' ${o}:`, a, n);
+          __PRIVATE_logDebug(I, `Sending RPC '${e}' ${o}:`, a, n);
           const u = {
               "google-cloud-resource-prefix": this.V,
               "x-goog-request-params": this.A
           };
           this.F(u, i, s);
           const {host: _} = new URL(a), c = isCloudWorkstation(_);
-          return this.v(e, a, u, n, c).then((t => (__PRIVATE_logDebug(p, `Received RPC '${e}' ${o}: `, t),
+          return this.v(e, a, u, n, c).then((t => (__PRIVATE_logDebug(I, `Received RPC '${e}' ${o}: `, t),
           t)), (t => {
-              throw __PRIVATE_logWarn(p, `RPC '${e}' ${o} failed with error: `, t, "url: ", a, "request:", n),
+              throw __PRIVATE_logWarn(I, `RPC '${e}' ${o} failed with error: `, t, "url: ", a, "request:", n),
               t;
           }));
       }
@@ -4009,7 +3863,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // SDK_VERSION is updated to different value at runtime depending on the entry point,
           // so we need to get its value when we need it in a function.
           function __PRIVATE_getGoogApiClientValue() {
-              return "gl-js/ fire/" + d;
+              return "gl-js/ fire/" + f;
           }(),
           // Content-Type: text/plain will avoid preflight requests which might
           // mess with CORS and redirects by proxies. If we add custom headers
@@ -4019,7 +3873,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           t && t.headers.forEach(((t, r) => e[r] = t)), r && r.headers.forEach(((t, r) => e[r] = t));
       }
       p(e, t) {
-          const r = y[e];
+          const r = p[e];
           let n = `${this.R}/v1/${t}:${r}`;
           return this.databaseInfo.apiKey && (n = `${n}?key=${encodeURIComponent(this.databaseInfo.apiKey)}`),
           n;
@@ -4058,7 +3912,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * Important! The names of these identifiers matter because the string forms
    * are used for reverse lookups from the webchannel stream. Do NOT change the
    * names of these identifiers or change this into a const enum.
-   */ var w, g;
+   */ var y, w;
 
   /**
    * Converts an HTTP Status Code to the equivalent error code.
@@ -4160,13 +4014,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * A Rest-based connection that relies on the native HTTP stack
    * (e.g. `fetch` or a polyfill).
-   */ (g = w || (w = {}))[g.OK = 0] = "OK", g[g.CANCELLED = 1] = "CANCELLED", g[g.UNKNOWN = 2] = "UNKNOWN",
-  g[g.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", g[g.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED",
-  g[g.NOT_FOUND = 5] = "NOT_FOUND", g[g.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", g[g.PERMISSION_DENIED = 7] = "PERMISSION_DENIED",
-  g[g.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", g[g.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED",
-  g[g.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", g[g.ABORTED = 10] = "ABORTED",
-  g[g.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", g[g.UNIMPLEMENTED = 12] = "UNIMPLEMENTED",
-  g[g.INTERNAL = 13] = "INTERNAL", g[g.UNAVAILABLE = 14] = "UNAVAILABLE", g[g.DATA_LOSS = 15] = "DATA_LOSS";
+   */ (w = y || (y = {}))[w.OK = 0] = "OK", w[w.CANCELLED = 1] = "CANCELLED", w[w.UNKNOWN = 2] = "UNKNOWN",
+  w[w.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", w[w.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED",
+  w[w.NOT_FOUND = 5] = "NOT_FOUND", w[w.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", w[w.PERMISSION_DENIED = 7] = "PERMISSION_DENIED",
+  w[w.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", w[w.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED",
+  w[w.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", w[w.ABORTED = 10] = "ABORTED",
+  w[w.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", w[w.UNIMPLEMENTED = 12] = "UNIMPLEMENTED",
+  w[w.INTERNAL = 13] = "INTERNAL", w[w.UNAVAILABLE = 14] = "UNAVAILABLE", w[w.DATA_LOSS = 15] = "DATA_LOSS";
 
   class __PRIVATE_FetchConnection extends __PRIVATE_RestConnection {
       S(e, t) {
@@ -4396,7 +4250,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   ByteString.EMPTY_BYTE_STRING = new ByteString("");
 
-  const F = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
+  const g = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
 
   /**
    * Converts the possible Proto values for a timestamp value into a "seconds and
@@ -4410,7 +4264,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // (millis), so we do some custom parsing here.
           // Parse the nanos right out of the string.
           let t = 0;
-          const r = F.exec(e);
+          const r = g.exec(e);
           if (__PRIVATE_hardAssert(!!r, 46558, {
               timestamp: e
           }), r[1]) {
@@ -4522,7 +4376,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * limitations under the License.
    */
   // The earliest date supported by Firestore timestamps (0001-01-01T00:00:00Z).
-  const v = -62135596800, b = 1e6;
+  const F = -62135596800, v = 1e6;
 
   // Number of nanoseconds in a millisecond.
   /**
@@ -4565,7 +4419,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @returns A new `Timestamp` representing the same point in time as the given
        *     number of milliseconds.
        */    static fromMillis(e) {
-          const t = Math.floor(e / 1e3), r = Math.floor((e - 1e3 * t) * b);
+          const t = Math.floor(e / 1e3), r = Math.floor((e - 1e3 * t) * v);
           return new Timestamp(t, r);
       }
       /**
@@ -4589,7 +4443,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       t) {
           if (this.seconds = e, this.nanoseconds = t, t < 0) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp nanoseconds out of range: " + t);
           if (t >= 1e9) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp nanoseconds out of range: " + t);
-          if (e < v) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp seconds out of range: " + e);
+          if (e < F) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp seconds out of range: " + e);
           // This will break in the year 10,000.
                   if (e >= 253402300800) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp seconds out of range: " + e);
       }
@@ -4610,7 +4464,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @returns The point in time corresponding to this timestamp, represented as
        *     the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
        */    toMillis() {
-          return 1e3 * this.seconds + this.nanoseconds / b;
+          return 1e3 * this.seconds + this.nanoseconds / v;
       }
       _compareTo(e) {
           return this.seconds === e.seconds ? __PRIVATE_primitiveComparator(this.nanoseconds, e.nanoseconds) : __PRIVATE_primitiveComparator(this.seconds, e.seconds);
@@ -4651,7 +4505,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // the expected ordering. The <seconds> translation is done to avoid having
           // a leading negative sign (i.e. a leading '-' character) in its string
           // representation, which would affect its lexicographical ordering.
-          const e = this.seconds - v;
+          const e = this.seconds - F;
           // Note: Up to 12 decimal digits are required to represent all valid
           // 'seconds' values.
                   return String(e).padStart(12, "0") + "." + String(this.nanoseconds).padStart(9, "0");
@@ -4701,14 +4555,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const D = "__type__", S = "__max__", N = "__vector__", O = "value";
+   */ const b = "__type__", D = "__max__", C = "__vector__", N = "value";
 
   /** Extracts the backend's type order for the provided value. */
   function __PRIVATE_typeOrder(e) {
       return "nullValue" in e ? 0 /* TypeOrder.NullValue */ : "booleanValue" in e ? 1 /* TypeOrder.BooleanValue */ : "integerValue" in e || "doubleValue" in e ? 2 /* TypeOrder.NumberValue */ : "timestampValue" in e ? 3 /* TypeOrder.TimestampValue */ : "stringValue" in e ? 5 /* TypeOrder.StringValue */ : "bytesValue" in e ? 6 /* TypeOrder.BlobValue */ : "referenceValue" in e ? 7 /* TypeOrder.RefValue */ : "geoPointValue" in e ? 8 /* TypeOrder.GeoPointValue */ : "arrayValue" in e ? 9 /* TypeOrder.ArrayValue */ : "mapValue" in e ? __PRIVATE_isServerTimestamp(e) ? 4 /* TypeOrder.ServerTimestampValue */ :
       /** Returns true if the Value represents the canonical {@link #MAX_VALUE} . */
       function __PRIVATE_isMaxValue(e) {
-          return (((e.mapValue || {}).fields || {}).__type__ || {}).stringValue === S;
+          return (((e.mapValue || {}).fields || {}).__type__ || {}).stringValue === D;
       }
       /**
    * @license
@@ -4742,8 +4596,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */ (e) ? 9007199254740991 /* TypeOrder.MaxValue */ :
       /** Returns true if `value` is a VetorValue. */
       function __PRIVATE_isVectorValue(e) {
-          const t = (e?.mapValue?.fields || {})[D]?.stringValue;
-          return t === N;
+          const t = (e?.mapValue?.fields || {})[b]?.stringValue;
+          return t === C;
       }
       /** Creates a deep copy of `source`. */ (e) ? 10 /* TypeOrder.VectorValue */ : 11 /* TypeOrder.ObjectValue */ : fail(28295, {
           value: e
@@ -5378,7 +5232,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const $ = "ComponentProvider", Q = new Map;
+   */ const B = "ComponentProvider", $ = new Map;
 
   /**
    * An instance map that ensures only one Datastore exists per Firestore
@@ -5391,8 +5245,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function __PRIVATE_getDatastore(e) {
       if (e._terminated) throw new FirestoreError(E.FAILED_PRECONDITION, "The client has already been terminated.");
-      if (!Q.has(e)) {
-          __PRIVATE_logDebug($, "Initializing Datastore");
+      if (!$.has(e)) {
+          __PRIVATE_logDebug(B, "Initializing Datastore");
           const t = function __PRIVATE_newConnection(e) {
               return new __PRIVATE_FetchConnection(e);
           }(function __PRIVATE_makeDatabaseInfo(e, t, r, n, i) {
@@ -5416,15 +5270,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */ (e._databaseId, e.app.options.appId || "", e._persistenceKey, e.app.options.apiKey, e._freezeSettings())), r = __PRIVATE_newSerializer(e._databaseId), n = function __PRIVATE_newDatastore(e, t, r, n) {
               return new __PRIVATE_DatastoreImpl(e, t, r, n);
           }(e._authCredentials, e._appCheckCredentials, t, r);
-          Q.set(e, n);
+          $.set(e, n);
       }
-      return Q.get(e);
+      return $.get(e);
   }
 
   /**
    * Removes all components associated with the provided instance. Must be called
    * when the `Firestore` instance is terminated.
-   */ const U = 1048576, M = "firestore.googleapis.com", x = true;
+   */ const Q = 1048576, U = "firestore.googleapis.com", M = true;
 
   /**
    * A concrete type describing all the values that can be applied via a
@@ -5435,12 +5289,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       constructor(e) {
           if (void 0 === e.host) {
               if (void 0 !== e.ssl) throw new FirestoreError(E.INVALID_ARGUMENT, "Can't provide ssl option if host option is not set");
-              this.host = M, this.ssl = x;
-          } else this.host = e.host, this.ssl = e.ssl ?? x;
+              this.host = U, this.ssl = M;
+          } else this.host = e.host, this.ssl = e.ssl ?? M;
           if (this.isUsingEmulator = void 0 !== e.emulatorOptions, this.credentials = e.credentials,
           this.ignoreUndefinedProperties = !!e.ignoreUndefinedProperties, this.localCache = e.localCache,
           void 0 === e.cacheSizeBytes) this.cacheSizeBytes = 41943040; else {
-              if (-1 !== e.cacheSizeBytes && e.cacheSizeBytes < U) throw new FirestoreError(E.INVALID_ARGUMENT, "cacheSizeBytes must be at least 1048576");
+              if (-1 !== e.cacheSizeBytes && e.cacheSizeBytes < Q) throw new FirestoreError(E.INVALID_ARGUMENT, "cacheSizeBytes must be at least 1048576");
               this.cacheSizeBytes = e.cacheSizeBytes;
           }
           !function __PRIVATE_validateIsNotUsedTogether(e, t, r, n) {
@@ -5570,8 +5424,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Only ever called once.
        */    _terminate() {
           return function __PRIVATE_removeComponents(e) {
-              const t = Q.get(e);
-              t && (__PRIVATE_logDebug($, "Removing Datastore"), Q.delete(e), t.terminate());
+              const t = $.get(e);
+              t && (__PRIVATE_logDebug(B, "Removing Datastore"), $.delete(e), t.terminate());
           }(this), Promise.resolve();
       }
   }
@@ -5599,28 +5453,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @param port - the emulator port (ex: 9000).
    * @param options.mockUserToken - the mock auth token to use for unit testing
    * Security Rules.
-   */ function connectFirestoreEmulator(e, r, a, u = {}) {
+   */ function connectFirestoreEmulator(e, r, o, a = {}) {
       e = __PRIVATE_cast(e, Firestore);
-      const _ = isCloudWorkstation(r), c = e._getSettings(), l = {
-          ...c,
+      const u = isCloudWorkstation(r), _ = e._getSettings(), c = {
+          ..._,
           emulatorOptions: e._getEmulatorOptions()
-      }, h = `${r}:${a}`;
-      _ && (pingServer(`https://${h}`), updateEmulatorBanner("Firestore", true)), c.host !== M && c.host !== h && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used.");
-      const f = {
-          ...c,
-          host: h,
-          ssl: _,
-          emulatorOptions: u
+      }, l = `${r}:${o}`;
+      u && pingServer(`https://${l}`), _.host !== U && _.host !== l && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used.");
+      const h = {
+          ..._,
+          host: l,
+          ssl: u,
+          emulatorOptions: a
       };
       // No-op if the new configuration matches the current configuration. This supports SSR
       // enviornments which might call `connectFirestoreEmulator` multiple times as a standard practice.
-          if (!deepEqual(f, l) && (e._setSettings(f), u.mockUserToken)) {
+          if (!deepEqual(h, c) && (e._setSettings(h), a.mockUserToken)) {
           let t, r;
-          if ("string" == typeof u.mockUserToken) t = u.mockUserToken, r = User.MOCK_USER; else {
+          if ("string" == typeof a.mockUserToken) t = a.mockUserToken, r = User.MOCK_USER; else {
               // Let createMockUserToken validate first (catches common mistakes like
               // invalid field "uid" and missing field "sub" / "user_id".)
-              t = createMockUserToken(u.mockUserToken, e._app?.options.projectId);
-              const n = u.mockUserToken.sub || u.mockUserToken.user_id;
+              t = createMockUserToken(a.mockUserToken, e._app?.options.projectId);
+              const n = a.mockUserToken.sub || a.mockUserToken.user_id;
               if (!n) throw new FirestoreError(E.INVALID_ARGUMENT, "mockUserToken must contain 'sub' or 'user_id' field!");
               r = new User(n);
           }
@@ -6106,12 +5960,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       // FieldPath.
       t = getModularInstance(t)) instanceof FieldPath) return t._internalPath;
       if ("string" == typeof t) return __PRIVATE_fieldPathFromDotSeparatedString(e, t);
-      throw createError("Field path arguments must be of type string or ", e);
+      throw __PRIVATE_createError("Field path arguments must be of type string or ", e);
   }
 
   /**
    * Matches any characters in a field path string that are reserved.
-   */ const j = new RegExp("[~\\*/\\[\\]]");
+   */ const k = new RegExp("[~\\*/\\[\\]]");
 
   /**
    * Wraps fromDotSeparatedString with an error message about the method that
@@ -6122,15 +5976,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @param targetDoc - The document against which the field path will be
    * evaluated.
    */ function __PRIVATE_fieldPathFromDotSeparatedString(e, t, r) {
-      if (t.search(j) >= 0) throw createError(`Invalid field path (${t}). Paths must not contain '~', '*', '/', '[', or ']'`, e);
+      if (t.search(k) >= 0) throw __PRIVATE_createError(`Invalid field path (${t}). Paths must not contain '~', '*', '/', '[', or ']'`, e);
       try {
           return new FieldPath(...t.split("."))._internalPath;
       } catch (n) {
-          throw createError(`Invalid field path (${t}). Paths must not be empty, begin with '.', end with '.', or contain '..'`, e);
+          throw __PRIVATE_createError(`Invalid field path (${t}). Paths must not be empty, begin with '.', end with '.', or contain '..'`, e);
       }
   }
 
-  function createError(e, t, r, n, i) {
+  function __PRIVATE_createError(e, t, r, n, i) {
       let a = `Function ${t}() called with invalid data`;
       a += ". ";
       let u = "";
@@ -6317,7 +6171,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * @internal
        */    convertVectorValue(e) {
-          const t = e.fields?.[O].arrayValue?.values?.map((e => __PRIVATE_normalizeNumber(e.doubleValue)));
+          const t = e.fields?.[N].arrayValue?.values?.map((e => __PRIVATE_normalizeNumber(e.doubleValue)));
           return new VectorValue(t);
       }
       convertGeoPoint(e) {
@@ -6390,7 +6244,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }));
   }
 
-  const _t = "4.12.0";
+  const _t = "4.14.1";
 
   /**
    * Firestore Lite
@@ -6400,9 +6254,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * directly to the backend, and `onSnapshot()` APIs are not supported.
    * @packageDocumentation
    */ !function __PRIVATE_registerFirestore() {
-      __PRIVATE_setSDKVersion(`${SDK_VERSION}_lite`), _registerComponent(new Component("firestore/lite", ((t, {instanceIdentifier: e, options: s}) => {
-          const i = t.getProvider("app").getImmediate(), r = new Firestore(new __PRIVATE_LiteAuthCredentialsProvider(t.getProvider("auth-internal")), new __PRIVATE_LiteAppCheckTokenProvider(i, t.getProvider("app-check-internal")), __PRIVATE_databaseIdFromApp(i, e), i);
-          return s && r._setSettings(s), r;
+      __PRIVATE_setSDKVersion(`${SDK_VERSION}_lite`), _registerComponent(new Component("firestore/lite", ((t, {instanceIdentifier: e, options: i}) => {
+          const r = t.getProvider("app").getImmediate(), a = new Firestore(new __PRIVATE_LiteAuthCredentialsProvider(t.getProvider("auth-internal")), new __PRIVATE_LiteAppCheckTokenProvider(r, t.getProvider("app-check-internal")), __PRIVATE_databaseIdFromApp(r, e), r);
+          return i && a._setSettings(i), a;
       }), "PUBLIC").setMultipleInstances(true)),
       // RUNTIME_ENV and BUILD_TARGET are replaced by real values during the compilation
       registerVersion("firestore-lite", _t, ""), registerVersion("firestore-lite", _t, "esm2020");

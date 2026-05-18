@@ -1,5 +1,7 @@
 sap.ui.define(['exports'], (function (exports) { 'use strict';
 
+  var exports = exports || {};
+
   var global$1 = (typeof global !== "undefined" ? global :
     typeof self !== "undefined" ? self :
     typeof window !== "undefined" ? window : {});
@@ -588,7 +590,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function requireBrowser () {
   	if (hasRequiredBrowser) return browser.exports;
   	hasRequiredBrowser = 1;
-  	(function (module, exports$1) {
+  	(function (module, exports) {
 
   		// ref: https://github.com/tc39/proposal-global
   		var getGlobal = function () {
@@ -603,16 +605,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   		var globalObject = getGlobal();
 
-  		module.exports = exports$1 = globalObject.fetch;
+  		module.exports = exports = globalObject.fetch;
 
   		// Needed for TypeScript and Webpack.
   		if (globalObject.fetch) {
-  			exports$1.default = globalObject.fetch.bind(globalObject);
+  			exports.default = globalObject.fetch.bind(globalObject);
   		}
 
-  		exports$1.Headers = globalObject.Headers;
-  		exports$1.Request = globalObject.Request;
-  		exports$1.Response = globalObject.Response;
+  		exports.Headers = globalObject.Headers;
+  		exports.Request = globalObject.Request;
+  		exports.Response = globalObject.Response;
   	} (browser, browser.exports));
   	return browser.exports;
   }

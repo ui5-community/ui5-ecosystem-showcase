@@ -56,6 +56,10 @@ sap.ui.define(
               type: "string",
               mapping: "property"
             },
+            form: {
+              type: "string",
+              mapping: "property"
+            },
             icon: {
               type: "string",
               mapping: "property"

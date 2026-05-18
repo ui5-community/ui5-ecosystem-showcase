@@ -37,6 +37,20 @@ async function runModule(resourceName, code, ctx) {
 			Object.assign({}, ctx.scope, {
 				sap: {
 					ui: {
+						require: Object.assign(
+							function () {
+								return {
+									toUrl: function () {
+										return "";
+									},
+								};
+							},
+							{
+								toUrl: function () {
+									return "";
+								},
+							},
+						),
 						define: async function (name, deps, callback) {
 							if (typeof name === "function") {
 								callback = name;
@@ -358,6 +372,7 @@ test.serial("Verify generation of ui5-app/bundledefs/firebase", async (t) => {
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
 		scope: {
+			URL: URL,
 			fetch: function () {},
 			XMLHttpRequest: function () {
 				return { open: function () {} };
@@ -394,6 +409,7 @@ test.serial("Verify generation of firebase/firestore", async (t) => {
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
 			scope: {
+				URL: URL,
 				fetch: function () {},
 				XMLHttpRequest: function () {
 					return { open: function () {} };
@@ -429,6 +445,7 @@ test.serial("Verify generation of @supabase/supabase-js", async (t) => {
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
 		scope: {
+			URL: URL,
 			WebSocket: function () {},
 			fetch: function () {},
 		},
@@ -450,6 +467,7 @@ test.serial("Verify generation of @octokit/core", async (t) => {
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
 		scope: {
+			URL: URL,
 			fetch: function () {},
 			XMLHttpRequest: function () {
 				return { open: function () {} };
@@ -573,6 +591,7 @@ test.serial("Verify generation of pdfMake", async (t) => {
 		log: t.context.log,
 		scope: {
 			navigator: {},
+			JS_MD5_NO_NODE_JS: true,
 			TextEncoder: function () {},
 			TextDecoder: function () {},
 		},
@@ -625,6 +644,7 @@ const webcomponentsContext = {
 		},
 		navigator: {},
 		document: {
+			baseURI: "http://localhost/",
 			body: {
 				insertBefore: function () {},
 				appendChild: function () {},
@@ -655,6 +675,7 @@ const webcomponentsContext = {
 				forEach: function () {},
 			};
 		},
+		URL: URL,
 	},
 	// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
 	// because the Web Components _generateAccessors doesn't mark the property as configurable

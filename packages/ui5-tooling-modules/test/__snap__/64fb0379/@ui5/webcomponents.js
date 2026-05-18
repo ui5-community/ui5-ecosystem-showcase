@@ -13,7 +13,7 @@ sap.ui.define(
     // export the UI5 metadata along with the package
     pkg["_ui5metadata"] = {
       name: "@ui5/webcomponents",
-      version: "2.20.0",
+      version: "2.22.0",
       dependencies: ["sap.ui.core"],
       types: [
         "@ui5.webcomponents.AvatarColorScheme",

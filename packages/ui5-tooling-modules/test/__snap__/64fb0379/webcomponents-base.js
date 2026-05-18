@@ -53,7 +53,7 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
    *
    */ /*!
        * OpenUI5
-       * (c) Copyright 2009-2024 SAP SE or an SAP affiliate company.
+       * (c) Copyright 2026 SAP SE or an SAP affiliate company.
        * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
        */
 
@@ -68,7 +68,7 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
 
   /*!
    * OpenUI5
-   * (c) Copyright 2009-2024 SAP SE or an SAP affiliate company.
+   * (c) Copyright 2026 SAP SE or an SAP affiliate company.
    * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
    */
   /*
@@ -132,15 +132,15 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
     getCustomElementsScopingRules: webcomponents.m,
     getCustomElementsScopingSuffix: webcomponents.c,
     getDefaultIconCollection: webcomponents.c$1,
-    getDefaultLanguage: webcomponents.c$2,
-    getDefaultTheme: webcomponents.d$1,
+    getDefaultLanguage: webcomponents.C$1,
+    getDefaultTheme: webcomponents.y$1,
     getEffectiveDir: webcomponents.r$2,
     getEffectiveIconCollection: webcomponents.i$3,
-    getEffectiveScopingSuffixForTag: webcomponents.d$2,
-    getFetchDefaultLanguage: webcomponents.h$1,
+    getEffectiveScopingSuffixForTag: webcomponents.d$1,
+    getFetchDefaultLanguage: webcomponents.D,
     getFirstDayOfWeek: webcomponents.n$1,
     getI18nBundle: webcomponents.f,
-    getLanguage: webcomponents.l$2,
+    getLanguage: webcomponents.L,
     getLegacyDateCalendarCustomizing: webcomponents.m$1,
     getNoConflict: webcomponents.o$1,
     getTheme: webcomponents.r$3,
@@ -150,28 +150,28 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
     isDesktop: webcomponents.f$1,
     isFirefox: webcomponents.b,
     isIOS: webcomponents.w,
-    isPhone: webcomponents.d$3,
-    isSafari: webcomponents.h$2,
+    isPhone: webcomponents.d$2,
+    isSafari: webcomponents.h$1,
     isTablet: webcomponents.a,
     property: Keys.s,
-    registerCustomI18nBundleGetter: webcomponents.y$1,
+    registerCustomI18nBundleGetter: webcomponents.y$2,
     registerI18nLoader: webcomponents.$,
-    registerIconLoader: webcomponents.C$1,
+    registerIconLoader: webcomponents.C$2,
     registerLocaleDataLoader: webcomponents.m$3,
     registerThemePropertiesLoader: webcomponents.f$2,
-    renderDeferred: webcomponents.l$3,
+    renderDeferred: webcomponents.l$2,
     renderFinished: webcomponents.f$3,
-    renderImmediately: webcomponents.c$3,
+    renderImmediately: webcomponents.c$2,
     sanitizeHTML: fnSanitizeHTML,
     scroll: n$2,
     setAnimationMode: webcomponents.m$4,
     setCustomElementsScopingRules: webcomponents.g$2,
     setCustomElementsScopingSuffix: webcomponents.p,
     setDefaultIconCollection: webcomponents.e,
-    setFetchDefaultLanguage: webcomponents.m$5,
-    setLanguage: webcomponents.L,
+    setFetchDefaultLanguage: webcomponents.p$1,
+    setLanguage: webcomponents.h$2,
     setNoConflict: webcomponents.f$4,
-    setTheme: webcomponents.g$3,
+    setTheme: webcomponents.l$3,
     slideDown: b$2,
     slideUp: u$1,
     slot: d,

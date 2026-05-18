@@ -28,10 +28,10 @@ sap.ui.define((function () { 'use strict';
 	function requireStomp_umd () {
 		if (hasRequiredStomp_umd) return stomp_umd$2.exports;
 		hasRequiredStomp_umd = 1;
-		(function (module, exports$1) {
+		(function (module, exports) {
 			(function (global, factory) {
-			    factory(exports$1) ;
-			})(stomp_umd$1, (function (exports$1) {
+			    factory(exports) ;
+			})(stomp_umd$1, (function (exports) {
 			    /**
 			     * @internal
 			     */
@@ -468,41 +468,41 @@ sap.ui.define((function () { 'use strict';
 			    /**
 			     * Possible states for the IStompSocket
 			     */
-			    exports$1.StompSocketState = void 0;
+			    exports.StompSocketState = void 0;
 			    (function (StompSocketState) {
 			        StompSocketState[StompSocketState["CONNECTING"] = 0] = "CONNECTING";
 			        StompSocketState[StompSocketState["OPEN"] = 1] = "OPEN";
 			        StompSocketState[StompSocketState["CLOSING"] = 2] = "CLOSING";
 			        StompSocketState[StompSocketState["CLOSED"] = 3] = "CLOSED";
-			    })(exports$1.StompSocketState || (exports$1.StompSocketState = {}));
+			    })(exports.StompSocketState || (exports.StompSocketState = {}));
 			    /**
 			     * Possible activation state
 			     */
-			    exports$1.ActivationState = void 0;
+			    exports.ActivationState = void 0;
 			    (function (ActivationState) {
 			        ActivationState[ActivationState["ACTIVE"] = 0] = "ACTIVE";
 			        ActivationState[ActivationState["DEACTIVATING"] = 1] = "DEACTIVATING";
 			        ActivationState[ActivationState["INACTIVE"] = 2] = "INACTIVE";
-			    })(exports$1.ActivationState || (exports$1.ActivationState = {}));
+			    })(exports.ActivationState || (exports.ActivationState = {}));
 			    /**
 			     * Possible reconnection wait time modes
 			     */
-			    exports$1.ReconnectionTimeMode = void 0;
+			    exports.ReconnectionTimeMode = void 0;
 			    (function (ReconnectionTimeMode) {
 			        ReconnectionTimeMode[ReconnectionTimeMode["LINEAR"] = 0] = "LINEAR";
 			        ReconnectionTimeMode[ReconnectionTimeMode["EXPONENTIAL"] = 1] = "EXPONENTIAL";
-			    })(exports$1.ReconnectionTimeMode || (exports$1.ReconnectionTimeMode = {}));
+			    })(exports.ReconnectionTimeMode || (exports.ReconnectionTimeMode = {}));
 			    /**
 			     * Possible ticker strategies for outgoing heartbeat ping
 			     */
-			    exports$1.TickerStrategy = void 0;
+			    exports.TickerStrategy = void 0;
 			    (function (TickerStrategy) {
 			        TickerStrategy["Interval"] = "interval";
 			        TickerStrategy["Worker"] = "worker";
-			    })(exports$1.TickerStrategy || (exports$1.TickerStrategy = {}));
+			    })(exports.TickerStrategy || (exports.TickerStrategy = {}));
 
 			    class Ticker {
-			        constructor(_interval, _strategy = exports$1.TickerStrategy.Interval, _debug) {
+			        constructor(_interval, _strategy = exports.TickerStrategy.Interval, _debug) {
 			            this._interval = _interval;
 			            this._strategy = _strategy;
 			            this._debug = _debug;
@@ -527,7 +527,7 @@ sap.ui.define((function () { 'use strict';
 			            this.disposeInterval();
 			        }
 			        shouldUseWorker() {
-			            return (typeof Worker !== 'undefined' && this._strategy === exports$1.TickerStrategy.Worker);
+			            return (typeof Worker !== 'undefined' && this._strategy === exports.TickerStrategy.Worker);
 			        }
 			        runWorker(tick) {
 			            this._debug('Using runWorker for outgoing pings');
@@ -765,7 +765,7 @@ sap.ui.define((function () { 'use strict';
 			                ].join(',');
 			                this._transmit({ command: 'CONNECT', headers: connectHeaders });
 			            };
-			            if (this._webSocket.readyState === exports$1.StompSocketState.OPEN) {
+			            if (this._webSocket.readyState === exports.StompSocketState.OPEN) {
 			                onOpen();
 			            }
 			            else {
@@ -793,7 +793,7 @@ sap.ui.define((function () { 'use strict';
 			                this.debug(`send PING every ${ttl}ms`);
 			                this._pinger = new Ticker(ttl, this._client.heartbeatStrategy, this.debug);
 			                this._pinger.start(() => {
-			                    if (this._webSocket.readyState === exports$1.StompSocketState.OPEN) {
+			                    if (this._webSocket.readyState === exports.StompSocketState.OPEN) {
 			                        this._webSocket.send(BYTE.LF);
 			                        this.debug('>>> PING');
 			                    }
@@ -825,8 +825,8 @@ sap.ui.define((function () { 'use strict';
 			        }
 			        forceDisconnect() {
 			            if (this._webSocket) {
-			                if (this._webSocket.readyState === exports$1.StompSocketState.CONNECTING ||
-			                    this._webSocket.readyState === exports$1.StompSocketState.OPEN) {
+			                if (this._webSocket.readyState === exports.StompSocketState.CONNECTING ||
+			                    this._webSocket.readyState === exports.StompSocketState.OPEN) {
 			                    this._closeOrDiscardWebsocket();
 			                }
 			            }
@@ -895,8 +895,8 @@ sap.ui.define((function () { 'use strict';
 			                }
 			            }
 			            else {
-			                if (this._webSocket.readyState === exports$1.StompSocketState.CONNECTING ||
-			                    this._webSocket.readyState === exports$1.StompSocketState.OPEN) {
+			                if (this._webSocket.readyState === exports.StompSocketState.CONNECTING ||
+			                    this._webSocket.readyState === exports.StompSocketState.OPEN) {
 			                    this._closeWebsocket();
 			                }
 			            }
@@ -1117,7 +1117,7 @@ sap.ui.define((function () { 'use strict';
 			         * @returns `true` if the client is active, otherwise `false`.
 			         */
 			        get active() {
-			            return this.state === exports$1.ActivationState.ACTIVE;
+			            return this.state === exports.ActivationState.ACTIVE;
 			        }
 			        _changeState(state) {
 			            this.state = state;
@@ -1206,7 +1206,7 @@ sap.ui.define((function () { 'use strict';
 			             * client.maxReconnectDelay = 2 * 60 * 1000; // Cap delay at 10 minutes
 			             * ```
 			             */
-			            this.reconnectTimeMode = exports$1.ReconnectionTimeMode.LINEAR;
+			            this.reconnectTimeMode = exports.ReconnectionTimeMode.LINEAR;
 			            /**
 			             * Interval (in milliseconds) for receiving heartbeat signals from the server.
 			             *
@@ -1260,7 +1260,7 @@ sap.ui.define((function () { 'use strict';
 			             * client.heartbeatStrategy = TickerStrategy.Worker;
 			             * ```
 			             */
-			            this.heartbeatStrategy = exports$1.TickerStrategy.Interval;
+			            this.heartbeatStrategy = exports.TickerStrategy.Interval;
 			            /**
 			             * Enables splitting of large text WebSocket frames into smaller chunks.
 			             *
@@ -1336,7 +1336,7 @@ sap.ui.define((function () { 'use strict';
 			             * Note: The client may transition directly from `ACTIVE` to `INACTIVE` without entering
 			             * the `DEACTIVATING` state.
 			             */
-			            this.state = exports$1.ActivationState.INACTIVE;
+			            this.state = exports.ActivationState.INACTIVE;
 			            // No op callbacks
 			            const noOp = () => { };
 			            this.debug = noOp;
@@ -1409,12 +1409,12 @@ sap.ui.define((function () { 'use strict';
 			                    this.debug('Already ACTIVE, ignoring request to activate');
 			                    return;
 			                }
-			                this._changeState(exports$1.ActivationState.ACTIVE);
+			                this._changeState(exports.ActivationState.ACTIVE);
 			                this._nextReconnectDelay = this.reconnectDelay;
 			                this._connect();
 			            };
 			            // if it is deactivating, wait for it to complete before activating.
-			            if (this.state === exports$1.ActivationState.DEACTIVATING) {
+			            if (this.state === exports.ActivationState.DEACTIVATING) {
 			                this.debug('Waiting for deactivation to finish before activating');
 			                this.deactivate().then(() => {
 			                    _activate();
@@ -1491,9 +1491,9 @@ sap.ui.define((function () { 'use strict';
 			                },
 			                onWebSocketClose: evt => {
 			                    this._stompHandler = undefined; // a new one will be created in case of a reconnect
-			                    if (this.state === exports$1.ActivationState.DEACTIVATING) {
+			                    if (this.state === exports.ActivationState.DEACTIVATING) {
 			                        // Mark deactivation complete
-			                        this._changeState(exports$1.ActivationState.INACTIVE);
+			                        this._changeState(exports.ActivationState.INACTIVE);
 			                    }
 			                    // The callback is called before attempting to reconnect, this would allow the client
 			                    // to be `deactivated` in the callback.
@@ -1541,7 +1541,7 @@ sap.ui.define((function () { 'use strict';
 			            if (this._nextReconnectDelay > 0) {
 			                this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
 			                this._reconnector = setTimeout(() => {
-			                    if (this.reconnectTimeMode === exports$1.ReconnectionTimeMode.EXPONENTIAL) {
+			                    if (this.reconnectTimeMode === exports.ReconnectionTimeMode.EXPONENTIAL) {
 			                        this._nextReconnectDelay = this._nextReconnectDelay * 2;
 			                        // Truncated exponential backoff with a set limit unless disabled
 			                        if (this.maxReconnectDelay !== 0) {
@@ -1588,11 +1588,11 @@ sap.ui.define((function () { 'use strict';
 			            const force = options.force || false;
 			            const needToDispose = this.active;
 			            let retPromise;
-			            if (this.state === exports$1.ActivationState.INACTIVE) {
+			            if (this.state === exports.ActivationState.INACTIVE) {
 			                this.debug(`Already INACTIVE, nothing more to do`);
 			                return Promise.resolve();
 			            }
-			            this._changeState(exports$1.ActivationState.DEACTIVATING);
+			            this._changeState(exports.ActivationState.DEACTIVATING);
 			            // Clear reconnection timer just to be safe
 			            this._nextReconnectDelay = 0;
 			            // Clear if a reconnection was scheduled
@@ -1602,7 +1602,7 @@ sap.ui.define((function () { 'use strict';
 			            }
 			            if (this._stompHandler &&
 			                // @ts-ignore - if there is a _stompHandler, there is the webSocket
-			                this.webSocket.readyState !== exports$1.StompSocketState.CLOSED) {
+			                this.webSocket.readyState !== exports.StompSocketState.CLOSED) {
 			                const origOnWebSocketClose = this._stompHandler.onWebSocketClose;
 			                // we need to wait for the underlying websocket to close
 			                retPromise = new Promise((resolve, reject) => {
@@ -1615,7 +1615,7 @@ sap.ui.define((function () { 'use strict';
 			            }
 			            else {
 			                // indicate that auto reconnect loop should terminate
-			                this._changeState(exports$1.ActivationState.INACTIVE);
+			                this._changeState(exports.ActivationState.INACTIVE);
 			                return Promise.resolve();
 			            }
 			            if (force) {
@@ -2281,14 +2281,14 @@ sap.ui.define((function () { 'use strict';
 			    // tslint:disable-next-line:variable-name
 			    Stomp.WebSocketClass = null;
 
-			    exports$1.Client = Client;
-			    exports$1.CompatClient = CompatClient;
-			    exports$1.FrameImpl = FrameImpl;
-			    exports$1.Parser = Parser;
-			    exports$1.Stomp = Stomp;
-			    exports$1.StompConfig = StompConfig;
-			    exports$1.StompHeaders = StompHeaders;
-			    exports$1.Versions = Versions;
+			    exports.Client = Client;
+			    exports.CompatClient = CompatClient;
+			    exports.FrameImpl = FrameImpl;
+			    exports.Parser = Parser;
+			    exports.Stomp = Stomp;
+			    exports.StompConfig = StompConfig;
+			    exports.StompHeaders = StompHeaders;
+			    exports.Versions = Versions;
 
 			}));
 

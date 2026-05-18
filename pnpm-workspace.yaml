@@ -4,3 +4,18 @@ packages:
   # all showcases (demo apps, libs, modules, cds-ui5 apps, ...)
   - "showcases/*"
   - "showcases/cds-bookshop/app/*"
+
+allowBuilds:
+  "@firebase/util": false
+  better-sqlite3: true
+  canvas: true
+  core-js: false
+  edgedriver: true
+  geckodriver: true
+  nx: true
+  playwright-chromium: true
+  protobufjs: true
+  tree-sitter: true
+  tree-sitter-java: true
+
+enablePrePostScripts: false
