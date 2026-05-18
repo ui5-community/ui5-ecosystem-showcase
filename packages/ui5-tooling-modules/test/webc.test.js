@@ -1,4 +1,4 @@
-const test = require("ava");
+const { default: test } = require("ava");
 const path = require("path");
 const { rmSync, readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } = require("fs");
 

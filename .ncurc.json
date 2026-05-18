@@ -13,7 +13,6 @@
     "@wdio/spec-reporter",
     "wdio-ui5-service",
     "eslint-plugin-wdio",
-    "http-proxy-middleware",
-    "ava"
+    "http-proxy-middleware"
   ]
 }

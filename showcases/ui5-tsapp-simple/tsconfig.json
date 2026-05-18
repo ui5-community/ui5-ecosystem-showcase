@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2023",
     "module": "es2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "allowJs": true,
     "strict": true,

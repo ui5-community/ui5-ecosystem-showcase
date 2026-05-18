@@ -1,4 +1,4 @@
-const test = require("ava");
+const { default: test } = require("ava");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");

@@ -1,13 +1,13 @@
 const path = require("path");
 const { mkdirSync, rmSync, existsSync, readFileSync } = require("fs");
 const { spawnSync } = require("child_process");
-const crypto = require("crypto");
+const { randomBytes } = require("node:crypto");
 
-const test = require("ava");
+const { default: test } = require("ava");
 
 test.beforeEach(async (t) => {
 	// prepare
-	t.context.tmpDir = path.resolve(`./test/__dist__/${crypto.randomBytes(5).toString("hex")}`);
+	t.context.tmpDir = path.resolve(`./test/__dist__/${randomBytes(5).toString("hex")}`);
 	mkdirSync(t.context.tmpDir);
 });
 
