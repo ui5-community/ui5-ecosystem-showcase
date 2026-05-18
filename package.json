@@ -72,7 +72,7 @@
     "ncu": "ncu -w --root"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.4.4",
+    "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^20.4.4",
     "@eslint/js": "^10.0.1",
     "@prettier/plugin-xml": "^3.4.2",
