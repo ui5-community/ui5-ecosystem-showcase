@@ -84,6 +84,10 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 	webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/CustomData.hbs")());
 	//}
 
+	// version-dependent monkey patch: only needed when @ui5/webcomponents >= 2.20.0
+	// reflects array properties as HTML attributes (breaking the UI5 re-render cycle)
+	const webcTmplArrayProperties = loadAndCompileTemplate("templates/monkey_patches/ArrayProperties.hbs")();
+
 	// =========================================================================
 	// Helpers to determine the Web Component classes and their metadata
 	// =========================================================================
@@ -246,6 +250,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 
 		// generate the library code
 		const webcPackage = chunkName && posix.relative(dirname(source), chunkName);
+		const monkeyPatches = isBaseLib ? [...webcTmplMonkeyPatches, ...(gte(version || "0.0.0", "2.20.0") ? [webcTmplArrayProperties] : [])].join("\n") : "";
 		const code = webcTmplFnUI5Package({
 			isBaseLib,
 			metadata,
@@ -254,7 +259,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			hasEnums: Object.keys(package.enums).length > 0,
 			enums: package.enums,
 			dependencies: package.dependencies?.map((dep) => `${rootPath}${dep}`),
-			monkeyPatches: isBaseLib ? webcTmplMonkeyPatches.join("\n") : "",
+			monkeyPatches,
 			webcPackage,
 		});
 

@@ -454,6 +454,21 @@ class RegistryEntry {
 			return undefined;
 		}
 
+		if (ui5TypeInfo.multiple) {
+			if (!defaultValue || defaultValue === "[]") {
+				return [];
+			}
+			const inner = defaultValue.replace(/^\[|\]$/g, "").trim();
+			if (!inner) {
+				return [];
+			}
+			return inner.split(",").map((item) => {
+				const trimmed = item.trim();
+				const dotIndex = trimmed.lastIndexOf(".");
+				return dotIndex !== -1 ? trimmed.substring(dotIndex + 1) : trimmed;
+			});
+		}
+
 		switch (ui5TypeInfo.ui5Type) {
 			case "float":
 				return parseFloat(defaultValue);
@@ -640,7 +655,7 @@ class RegistryEntry {
 					name: propDef.name,
 					description: propDef.description,
 					types: typeDef.types,
-					defaultValue: defaultValue,
+					defaultValue: Array.isArray(defaultValue) ? JSON.stringify(defaultValue) : defaultValue,
 				});
 			}
 		} else if (propDef.kind === "method") {
