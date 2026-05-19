@@ -797,10 +797,10 @@ importers:
         version: 4.0.53
       '@wdio/cli':
         specifier: ^8
-        version: 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+        version: 8.46.0(encoding@0.1.13)
       '@wdio/local-runner':
         specifier: ^8
-        version: 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+        version: 8.46.0(encoding@0.1.13)
       '@wdio/mocha-framework':
         specifier: ^8
         version: 8.46.0
@@ -901,8 +901,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/ui5-tooling-transpile
       wdio-ui5-service:
-        specifier: ^2
-        version: 2.2.1(@wdio/cli@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13))(@wdio/local-runner@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13))(@wdio/mocha-framework@8.46.0)(@wdio/spec-reporter@8.43.0)(@wdio/types@8.41.0)(encoding@0.1.13)(webdriverio@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13))
+        specifier: ^3
+        version: 3.0.8(@wdio/cli@8.46.0(encoding@0.1.13))(@wdio/globals@8.46.0(encoding@0.1.13))(@wdio/local-runner@8.46.0(encoding@0.1.13))(@wdio/mocha-framework@8.46.0)(@wdio/spec-reporter@8.43.0)(webdriverio@8.46.0(encoding@0.1.13))
       xlsx:
         specifier: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
         version: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
@@ -3741,10 +3741,6 @@ packages:
     engines: {node: ^16.13 || >=18}
     hasBin: true
 
-  '@wdio/config@8.41.0':
-    resolution: {integrity: sha512-/6Z3sfSyhX5oVde0l01fyHimbqRYIVUDBnhDG2EMSCoC2lsaJX3Bm3IYpYHYHHFsgoDCi3B3Gv++t9dn2eSZZw==}
-    engines: {node: ^16.13 || >=18}
-
   '@wdio/config@8.46.0':
     resolution: {integrity: sha512-WrNPCqm22vuNimGJc8UCc6duEcvOy2foY5I8mv2AUaoTtvCZOfVGRrFnPreypOKVdZChubFCaWrKVNqjgMK5RA==}
     engines: {node: ^16.13 || >=18}
@@ -3764,9 +3760,6 @@ packages:
   '@wdio/mocha-framework@8.46.0':
     resolution: {integrity: sha512-vosPCWouz7eKd3mdVrmYQuBgd7Y7V1cvwWxhslBslH5BX9kiWeUABLmsGoGKsjHDyEl9goc1Hhv/GKgyvXmFFg==}
     engines: {node: ^16.13 || >=18}
-
-  '@wdio/protocols@8.40.3':
-    resolution: {integrity: sha512-wK7+eyrB3TAei8RwbdkcyoNk2dPu+mduMBOdPJjp8jf/mavd15nIUXLID1zA+w5m1Qt1DsT1NbvaeO9+aJQ33A==}
 
   '@wdio/protocols@8.44.0':
     resolution: {integrity: sha512-Do+AW3xuDUHWkrX++LeMBSrX2yRILlDqunRHPMv4adGFEA45m7r4WP8wGCDb+chrHGhXq5TwB9Ne4J7x1dHGng==}
@@ -3789,10 +3782,6 @@ packages:
 
   '@wdio/types@8.41.0':
     resolution: {integrity: sha512-t4NaNTvJZci3Xv/yUZPH4eTL0hxrVTf5wdwNnYIBrzMnlRDbNefjQ0P7FM7ZjQCLaH92AEH6t/XanUId7Webug==}
-    engines: {node: ^16.13 || >=18}
-
-  '@wdio/utils@8.41.0':
-    resolution: {integrity: sha512-0TcTjBiax1VxtJQ/iQA0ZyYOSHjjX2ARVmEI0AMo9+AuIq+xBfnY561+v8k9GqOMPKsiH/HrK3xwjx8xCVS03g==}
     engines: {node: ^16.13 || >=18}
 
   '@wdio/utils@8.46.0':
@@ -4593,11 +4582,6 @@ packages:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
 
-  chrome-launcher@1.2.1:
-    resolution: {integrity: sha512-qmFR5PLMzHyuNJHwOloHPAHhbaNglkfeV/xDtt5b7xiFFyU1I+AZZX0PYseMuhenJSSirgxELYIbswcoc+5H4A==}
-    engines: {node: '>=12.13.0'}
-    hasBin: true
-
   chromium-bidi@0.5.8:
     resolution: {integrity: sha512-blqh+1cEQbHBKmok3rVJkBlBxt9beKBgOsxbFgs7UJcoVbbeZ+K7+6liAsjgpc8l1Xd55cQUy14fXZdGSb4zIw==}
     peerDependencies:
@@ -4768,6 +4752,9 @@ packages:
 
   compare-func@2.0.0:
     resolution: {integrity: sha512-zHig5N+tPWARooBnb0Zx1MFcdfpyJrfTJ3Y5L+IFvUm8rM74hHz66z0gw0x4tijh5CorKkKUCnW82R2vmpeCRA==}
+
+  compare-versions@6.1.1:
+    resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
 
   component-emitter@1.3.1:
     resolution: {integrity: sha512-T0+barUSQRTUQASh8bx02dl+DhF54GtIDY13Y3m9oWTklKbb3Wv974meRpeZ3lp1JpLVECWWNHC4vaG2XHXouQ==}
@@ -4977,6 +4964,9 @@ packages:
   crc32-stream@6.0.0:
     resolution: {integrity: sha512-piICUB6ei4IlTv1+653yq5+KoqfBYmj9bw6LqXoOneTMDXk5nM1qt12mFW1caG3LlJXEKW1Bp0WggEmIfQB34g==}
     engines: {node: '>= 14'}
+
+  cross-dirname@0.1.0:
+    resolution: {integrity: sha512-+R08/oI0nl3vfPcqftZRpytksBXDzOUveBq/NBVx0sUp1axwzPQrKinNx5yd5sxPu8j1wIy8AfnVQ+5eFdha6Q==}
 
   cross-fetch@1.1.1:
     resolution: {integrity: sha512-+VJE04+UfxxmBfcnmAu/lKor53RUCx/1ilOti4p+JgrnLQ4AZZIRoe2OEd76VaHyWQmQxqKnV+TaqjHC4r0HWw==}
@@ -5289,10 +5279,6 @@ packages:
 
   devtools-protocol@0.0.1400418:
     resolution: {integrity: sha512-U8j75zDOXF8IP3o0Cgb7K4tFA9uUHEOru2Wx64+EUqL4LNOh9dRe1i8WKR1k3mSpjcCe3aIkTDvEwq0YkI4hfw==}
-
-  devtools@8.42.0:
-    resolution: {integrity: sha512-Y9LRUJlGI0wjXLbeU6TEHufF9HnG2H22+/EABD0KtHlJt5AIRQnTGi8uLAJsE1aeQMF1YXd8l7ExaxBkfEBq8w==}
-    engines: {node: ^16.13 || >=18}
 
   dezalgo@1.0.4:
     resolution: {integrity: sha512-rXSP0bf+5n0Qonsb+SVVfNfIsimO4HEtmnIpPHY8Q1UCzKlQrDMfdobr8nJOOsRgWCyMRqeSBQzmWUMq7zvVig==}
@@ -7259,9 +7245,6 @@ packages:
   lie@3.3.0:
     resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
 
-  lighthouse-logger@2.0.2:
-    resolution: {integrity: sha512-vWl2+u5jgOQuZR55Z1WM0XDdrJT6mzMP8zHUct7xTlWhuQs+eV0g+QL0RQdFjT54zVmbhLCP8vIVpy1wGn/gCg==}
-
   limiter@1.1.5:
     resolution: {integrity: sha512-FWWMIEOxz3GwUI4Ts/IvgVy6LPvoMPgjMdQ185nN6psJyBJ4yOpzqm695/h5umdLJg2vW3GR5iG11MAkR2AzJA==}
 
@@ -7530,9 +7513,6 @@ packages:
     resolution: {integrity: sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==}
     engines: {node: '>= 12'}
     hasBin: true
-
-  marky@1.3.0:
-    resolution: {integrity: sha512-ocnPZQLNpvbedwTy9kNrQEsknEfgvcLMvOtz3sFeWApDq1MXH1TqkCIx58xlpESsfwQOnuBO9beyQuNGzVvuhQ==}
 
   matcher@6.0.0:
     resolution: {integrity: sha512-TzDerdcNtI79w7Av4GT57bLdElPA/VAkjqdMZv8yhuc8geU2z0ljW9anXbX/55aHEMTpYypZb1lxsA/46r9oOQ==}
@@ -8529,9 +8509,6 @@ packages:
     resolution: {integrity: sha512-xxz9pc2HIxQW/Qg9ijG2fZOHRT//KhLo0KfvJRa45YYRrcA7ZONoilgJR40SW5pmecb6HkuROaeViXoCaXTZyQ==}
     engines: {node: '>=18'}
     hasBin: true
-
-  playwright-client-certificate-login@0.0.3:
-    resolution: {integrity: sha512-nbaqeio741V5Qyp/gt4RyMwib0Bp3ISIV7NwsNFMYJzVHidNUwU4t2NOEh1iaZBIyd9M0cAroG4stMCfkAWIOw==}
 
   playwright-core@1.60.0:
     resolution: {integrity: sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==}
@@ -10199,11 +10176,6 @@ packages:
   utrie@1.0.2:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
 
-  uuid@10.0.0:
-    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   uuid@3.4.0:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
@@ -10273,16 +10245,16 @@ packages:
   wcwidth@1.0.1:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
 
-  wdio-ui5-service@2.2.1:
-    resolution: {integrity: sha512-ABfotEUh0ailbx+lVqwqaBIXFBr9kK5xracMT3EbLXcglFe469gV9FFnyaHvIF1Ow0jnqOqjE1OyjhVd1CRtMw==}
-    engines: {node: '>=18', npm: '>=7'}
+  wdio-ui5-service@3.0.8:
+    resolution: {integrity: sha512-EqLxbId+fLTWniQg7XdRuHVsOTw/Ug92/fHv+cb/B+eD0EkEG2y/zGSBCQK3f2taeeiEGz6hsQ2D6a+lBImHeA==}
+    engines: {node: '>=20', npm: '>=10'}
     peerDependencies:
-      '@wdio/cli': '>=8.14.0 <9'
-      '@wdio/local-runner': ^8
-      '@wdio/mocha-framework': ^8
-      '@wdio/spec-reporter': ^8
-      '@wdio/types': ^8
-      webdriverio: '>8.32.2 <9'
+      '@wdio/cli': ^9
+      '@wdio/globals': ^9
+      '@wdio/local-runner': ^9
+      '@wdio/mocha-framework': ^9
+      '@wdio/spec-reporter': ^9
+      webdriverio: ^9
 
   weakmap-polyfill@2.0.4:
     resolution: {integrity: sha512-ZzxBf288iALJseijWelmECm/1x7ZwQn3sMYIkDr2VvZp7r6SEKuT8D0O9Wiq6L9Nl5mazrOMcmiZE/2NCenaxw==}
@@ -13838,12 +13810,12 @@ snapshots:
       magic-string: 0.30.21
       pathe: 1.1.2
 
-  '@wdio/cli@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)':
+  '@wdio/cli@8.46.0(encoding@0.1.13)':
     dependencies:
       '@types/node': 22.19.19
       '@vitest/snapshot': 2.1.9
       '@wdio/config': 8.46.0
-      '@wdio/globals': 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      '@wdio/globals': 8.46.0(encoding@0.1.13)
       '@wdio/logger': 8.38.0
       '@wdio/protocols': 8.44.0
       '@wdio/types': 8.41.0
@@ -13862,7 +13834,7 @@ snapshots:
       lodash.union: 4.6.0
       read-pkg-up: 10.0.0
       recursive-readdir: 2.2.3
-      webdriverio: 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      webdriverio: 8.46.0(encoding@0.1.13)
       yargs: 17.7.2
     transitivePeerDependencies:
       - bare-abort-controller
@@ -13873,21 +13845,6 @@ snapshots:
       - react-native-b4a
       - supports-color
       - utf-8-validate
-
-  '@wdio/config@8.41.0':
-    dependencies:
-      '@wdio/logger': 8.38.0
-      '@wdio/types': 8.41.0
-      '@wdio/utils': 8.41.0
-      decamelize: 6.0.1
-      deepmerge-ts: 5.1.0
-      glob: 10.5.0
-      import-meta-resolve: 4.2.0
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - react-native-b4a
-      - supports-color
 
   '@wdio/config@8.46.0':
     dependencies:
@@ -13904,10 +13861,10 @@ snapshots:
       - react-native-b4a
       - supports-color
 
-  '@wdio/globals@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)':
+  '@wdio/globals@8.46.0(encoding@0.1.13)':
     optionalDependencies:
-      expect-webdriverio: 4.15.4(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
-      webdriverio: 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      expect-webdriverio: 4.15.4(encoding@0.1.13)
+      webdriverio: 8.46.0(encoding@0.1.13)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -13918,12 +13875,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@wdio/local-runner@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)':
+  '@wdio/local-runner@8.46.0(encoding@0.1.13)':
     dependencies:
       '@types/node': 22.19.19
       '@wdio/logger': 8.38.0
       '@wdio/repl': 8.40.3
-      '@wdio/runner': 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      '@wdio/runner': 8.46.0(encoding@0.1.13)
       '@wdio/types': 8.41.0
       async-exit-hook: 2.0.1
       split2: 4.2.0
@@ -13959,8 +13916,6 @@ snapshots:
       - react-native-b4a
       - supports-color
 
-  '@wdio/protocols@8.40.3': {}
-
   '@wdio/protocols@8.44.0': {}
 
   '@wdio/repl@8.40.3':
@@ -13975,19 +13930,19 @@ snapshots:
       diff: 7.0.0
       object-inspect: 1.13.4
 
-  '@wdio/runner@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)':
+  '@wdio/runner@8.46.0(encoding@0.1.13)':
     dependencies:
       '@types/node': 22.19.19
       '@wdio/config': 8.46.0
-      '@wdio/globals': 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      '@wdio/globals': 8.46.0(encoding@0.1.13)
       '@wdio/logger': 8.38.0
       '@wdio/types': 8.41.0
       '@wdio/utils': 8.46.0
       deepmerge-ts: 5.1.0
-      expect-webdriverio: 4.15.4(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      expect-webdriverio: 4.15.4(encoding@0.1.13)
       gaze: 1.1.3
       webdriver: 8.46.0
-      webdriverio: 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      webdriverio: 8.46.0(encoding@0.1.13)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -14009,27 +13964,6 @@ snapshots:
   '@wdio/types@8.41.0':
     dependencies:
       '@types/node': 22.19.19
-
-  '@wdio/utils@8.41.0':
-    dependencies:
-      '@puppeteer/browsers': 1.9.1
-      '@wdio/logger': 8.38.0
-      '@wdio/types': 8.41.0
-      decamelize: 6.0.1
-      deepmerge-ts: 5.1.0
-      edgedriver: 5.6.1
-      geckodriver: 4.2.1
-      get-port: 7.2.0
-      import-meta-resolve: 4.2.0
-      locate-app: 2.5.0
-      safaridriver: 0.1.2
-      split2: 4.2.0
-      wait-port: 1.1.0
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - react-native-b4a
-      - supports-color
 
   '@wdio/utils@8.46.0':
     dependencies:
@@ -15016,15 +14950,6 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  chrome-launcher@1.2.1:
-    dependencies:
-      '@types/node': 22.19.19
-      escape-string-regexp: 4.0.0
-      is-wsl: 2.2.0
-      lighthouse-logger: 2.0.2
-    transitivePeerDependencies:
-      - supports-color
-
   chromium-bidi@0.5.8(devtools-protocol@0.0.1232444):
     dependencies:
       devtools-protocol: 0.0.1232444
@@ -15185,6 +15110,8 @@ snapshots:
     dependencies:
       array-ify: 1.0.0
       dot-prop: 5.3.0
+
+  compare-versions@6.1.1: {}
 
   component-emitter@1.3.1: {}
 
@@ -15432,6 +15359,8 @@ snapshots:
     dependencies:
       crc-32: 1.2.2
       readable-stream: 4.7.0
+
+  cross-dirname@0.1.0: {}
 
   cross-fetch@1.1.1:
     dependencies:
@@ -15749,31 +15678,6 @@ snapshots:
   devtools-protocol@0.0.1232444: {}
 
   devtools-protocol@0.0.1400418: {}
-
-  devtools@8.42.0(encoding@0.1.13):
-    dependencies:
-      '@types/node': 22.19.19
-      '@wdio/config': 8.41.0
-      '@wdio/logger': 8.38.0
-      '@wdio/protocols': 8.40.3
-      '@wdio/types': 8.41.0
-      '@wdio/utils': 8.41.0
-      chrome-launcher: 1.2.1
-      edge-paths: 3.0.5
-      import-meta-resolve: 4.2.0
-      puppeteer-core: 21.11.0(encoding@0.1.13)
-      query-selector-shadow-dom: 1.0.1
-      ua-parser-js: 1.0.41
-      uuid: 10.0.0
-      which: 4.0.0
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - bufferutil
-      - encoding
-      - react-native-b4a
-      - supports-color
-      - utf-8-validate
 
   dezalgo@1.0.4:
     dependencies:
@@ -16323,16 +16227,16 @@ snapshots:
     dependencies:
       homedir-polyfill: 1.0.3
 
-  expect-webdriverio@4.15.4(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13):
+  expect-webdriverio@4.15.4(encoding@0.1.13):
     dependencies:
       '@vitest/snapshot': 2.1.9
       expect: 29.7.0
       jest-matcher-utils: 29.7.0
       lodash.isequal: 4.5.0
     optionalDependencies:
-      '@wdio/globals': 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      '@wdio/globals': 8.46.0(encoding@0.1.13)
       '@wdio/logger': 8.38.0
-      webdriverio: 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      webdriverio: 8.46.0(encoding@0.1.13)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -18299,13 +18203,6 @@ snapshots:
     dependencies:
       immediate: 3.0.6
 
-  lighthouse-logger@2.0.2:
-    dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
-      marky: 1.3.0
-    transitivePeerDependencies:
-      - supports-color
-
   limiter@1.1.5: {}
 
   linebreak@1.1.0:
@@ -18621,8 +18518,6 @@ snapshots:
       uc.micro: 2.1.0
 
   marked@4.3.0: {}
-
-  marky@1.3.0: {}
 
   matcher@6.0.0:
     dependencies:
@@ -19854,10 +19749,6 @@ snapshots:
   playwright-chromium@1.60.0:
     dependencies:
       playwright-core: 1.60.0
-
-  playwright-client-certificate-login@0.0.3:
-    dependencies:
-      '@playwright/test': 1.60.0
 
   playwright-core@1.60.0: {}
 
@@ -21795,8 +21686,6 @@ snapshots:
       base64-arraybuffer: 1.0.2
     optional: true
 
-  uuid@10.0.0: {}
-
   uuid@3.4.0:
     optional: true
 
@@ -21876,26 +21765,16 @@ snapshots:
     dependencies:
       defaults: 1.0.4
 
-  wdio-ui5-service@2.2.1(@wdio/cli@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13))(@wdio/local-runner@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13))(@wdio/mocha-framework@8.46.0)(@wdio/spec-reporter@8.43.0)(@wdio/types@8.41.0)(encoding@0.1.13)(webdriverio@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)):
+  wdio-ui5-service@3.0.8(@wdio/cli@8.46.0(encoding@0.1.13))(@wdio/globals@8.46.0(encoding@0.1.13))(@wdio/local-runner@8.46.0(encoding@0.1.13))(@wdio/mocha-framework@8.46.0)(@wdio/spec-reporter@8.43.0)(webdriverio@8.46.0(encoding@0.1.13)):
     dependencies:
-      '@wdio/cli': 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
-      '@wdio/local-runner': 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
+      '@wdio/cli': 8.46.0(encoding@0.1.13)
+      '@wdio/globals': 8.46.0(encoding@0.1.13)
+      '@wdio/local-runner': 8.46.0(encoding@0.1.13)
       '@wdio/mocha-framework': 8.46.0
       '@wdio/spec-reporter': 8.43.0
-      '@wdio/types': 8.41.0
-      devtools: 8.42.0(encoding@0.1.13)
-      dotenv: 16.6.1
-      playwright-client-certificate-login: 0.0.3
-      semver: 7.8.0
-      webdriverio: 8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13)
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - bufferutil
-      - encoding
-      - react-native-b4a
-      - supports-color
-      - utf-8-validate
+      compare-versions: 6.1.1
+      cross-dirname: 0.1.0
+      webdriverio: 8.46.0(encoding@0.1.13)
 
   weakmap-polyfill@2.0.4: {}
 
@@ -21924,7 +21803,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  webdriverio@8.46.0(devtools@8.42.0(encoding@0.1.13))(encoding@0.1.13):
+  webdriverio@8.46.0(encoding@0.1.13):
     dependencies:
       '@types/node': 22.19.19
       '@wdio/config': 8.46.0
@@ -21951,8 +21830,6 @@ snapshots:
       rgb2hex: 0.2.5
       serialize-error: 11.0.3
       webdriver: 8.46.0
-    optionalDependencies:
-      devtools: 8.42.0(encoding@0.1.13)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
