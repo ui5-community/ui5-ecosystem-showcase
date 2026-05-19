@@ -70,7 +70,9 @@ showcases
 ├── ui5-module                      // UI5 module providing a custom control as NPM package
 ├── ui5-tsapp                       // TypeScript UI5 application
 ├── ui5-tsapp-simple                // simple TypeScript UI5 application using UI5 CLI V3
-└── ui5-tslib                       // TypeScript UI5 library
+├── ui5-tsapp-webc                  // TypeScript UI5 application using UI5 Web Components
+├── ui5-tslib                       // TypeScript UI5 library
+└── ui5-tsmodule                    // TypeScript UI5 module providing a custom control as NPM package
 ```
 
 ## Getting Started
@@ -200,7 +202,7 @@ Available middlewares in this project:
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
-| [ui5-middleware-serveframework](packages/ui5-middleware-serveframework/README.md) | serve resources of a locally built framework | [![npm version](https://badge.fury.io/js/ui5-middleware-serveframework.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
+| [ui5-middleware-serveframework](packages/ui5-middleware-serveframework/README.md) | serve resources of a locally built framework | [![npm version](https://badge.fury.io/js/ui5-middleware-serveframework.svg)](https://badge.fury.io/js/ui5-middleware-serveframework) |
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 | [ui5-middleware-onelogin](packages/ui5-middleware-onelogin/README.md) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
@@ -258,7 +260,7 @@ A calling component accesses a target service by means of the application router
 
 #### `dev-approuter`
 
-[dev-approuter](packages/ui5-middleware-simpleproxy/README.md)
+[dev-approuter](packages/dev-approuter/README.md)
 
 The `dev-approuter` is a development time tooling only for the [SAP Application Router](https://www.npmjs.com/package/@sap/approuter) that can serve [UI5](https://ui5.sap.com/) and [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/) apps that are added as (dev)dependencies to the approuter's `package.json`.
 
