@@ -28,7 +28,7 @@
   "dependencies": {
     "@luigi-project/container": "1.7.6",
     "@stomp/stompjs": "^7.3.0",
-    "chart.js": "^3.9.1",
+    "chart.js": "^4.5.1",
     "jspdf": "^4.2.1",
     "luxon": "^3.7.2",
     "moment": "^2.30.1",

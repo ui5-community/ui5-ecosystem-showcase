@@ -14,7 +14,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "chart.js": "^3.9.1"
+    "chart.js": "^4.5.1"
   },
   "devDependencies": {
     "eslint": "^10.4.0",
