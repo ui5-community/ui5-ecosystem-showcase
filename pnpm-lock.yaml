@@ -817,8 +817,8 @@ importers:
         specifier: ^11.2.0
         version: 11.2.0(eslint@10.4.0(jiti@2.6.1))
       eslint-plugin-wdio:
-        specifier: ^8
-        version: 8.37.0
+        specifier: ^9
+        version: 9.27.1(eslint@10.4.0(jiti@2.6.1))(globals@17.6.0)(typescript-eslint@8.59.3(eslint@10.4.0(jiti@2.6.1))(typescript@6.0.3))
       globals:
         specifier: ^17.6.0
         version: 17.6.0
@@ -5604,9 +5604,16 @@ packages:
     peerDependencies:
       eslint: '>=9.0.0'
 
-  eslint-plugin-wdio@8.37.0:
-    resolution: {integrity: sha512-X217zXxSqj1IPWu3bxN7D/xEUmNk7Jg5lBf2JwYH3mCogaqL2tnHZnwt0EQ5D9oEejfEl2+4zqHSzhXq1X7F2A==}
-    engines: {node: ^16.13 || >=18}
+  eslint-plugin-wdio@9.27.1:
+    resolution: {integrity: sha512-p/e1nKlb4tGFHv06DJh8ChuoJnQJGrj2ed/RrFQrX3Q3Kx0+GcRYWjyWMhO4DIA1DjU+7JEr957IPanHmz7UHw==}
+    engines: {node: '>=18.20.0'}
+    peerDependencies:
+      eslint: ^9.39.2
+      globals: ^16.5.0
+      typescript-eslint: ^8.54.0
+    peerDependenciesMeta:
+      typescript-eslint:
+        optional: true
 
   eslint-scope@9.1.2:
     resolution: {integrity: sha512-xS90H51cKw0jltxmvmHy2Iai1LIqrfbw57b79w/J7MfvDfkIkFZ+kj6zC3BjtUwh150HsSSdxXZcsuv72miDFQ==}
@@ -16161,7 +16168,12 @@ snapshots:
       eslint: 10.4.0(jiti@2.6.1)
       globals: 15.15.0
 
-  eslint-plugin-wdio@8.37.0: {}
+  eslint-plugin-wdio@9.27.1(eslint@10.4.0(jiti@2.6.1))(globals@17.6.0)(typescript-eslint@8.59.3(eslint@10.4.0(jiti@2.6.1))(typescript@6.0.3)):
+    dependencies:
+      eslint: 10.4.0(jiti@2.6.1)
+      globals: 17.6.0
+    optionalDependencies:
+      typescript-eslint: 8.59.3(eslint@10.4.0(jiti@2.6.1))(typescript@6.0.3)
 
   eslint-scope@9.1.2:
     dependencies:
