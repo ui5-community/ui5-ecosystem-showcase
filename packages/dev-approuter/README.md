@@ -22,6 +22,7 @@ The `dev-approuter` is a dev time wrapper for the [SAP Application Router](https
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/en) version 18 or higher.
+- [`@sap/approuter`](https://www.npmjs.com/package/@sap/approuter) version 22 or higher (pulled in as a dependency).
 
 ## Starting the `dev-approuter`
 
