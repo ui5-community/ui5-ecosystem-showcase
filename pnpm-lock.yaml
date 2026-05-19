@@ -153,8 +153,8 @@ importers:
         specifier: ^3
         version: 3.9.5
       '@ui5/server':
-        specifier: ^3
-        version: 3.6.1
+        specifier: ^4
+        version: 4.0.15
       ava:
         specifier: ^8.0.1
         version: 8.0.1(encoding@0.1.13)(rollup@4.60.4)
@@ -330,8 +330,8 @@ importers:
         specifier: ^3
         version: 3.9.5
       '@ui5/server':
-        specifier: ^3
-        version: 3.6.1
+        specifier: ^4
+        version: 4.0.15
       ava:
         specifier: ^8.0.1
         version: 8.0.1(encoding@0.1.13)(rollup@4.60.4)
