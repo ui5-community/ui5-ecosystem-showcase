@@ -72,7 +72,7 @@
     "@wdio/cli": "^8",
     "@wdio/local-runner": "^8",
     "@wdio/mocha-framework": "^8",
-    "@wdio/spec-reporter": "^8",
+    "@wdio/spec-reporter": "^9",
     "eslint": "^10.4.0",
     "eslint-plugin-jsdoc": "^62.9.0",
     "eslint-plugin-mocha": "^11.2.0",
