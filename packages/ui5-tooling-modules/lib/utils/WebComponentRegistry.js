@@ -132,6 +132,7 @@ class RegistryEntry {
 				const enumDef = moduleContent.enums[enumName];
 				// enum definitions do not automatically track their module path in the custom-elements-metadata!
 				enumDef.module = module.path;
+				enumDef._ui5QualifiedName = this.#deriveUi5ClassNames(enumDef)._ui5QualifiedName;
 				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(enumDef);
 				this.enums[cacheKey] = enumDef;
 			}
@@ -141,6 +142,8 @@ class RegistryEntry {
 				const interfaceDef = moduleContent.interfaces[interfaceName];
 				// interface definitions do not automatically track their module path in the custom-elements-metadata!
 				interfaceDef.module = module.path;
+				// interfaces are typically exported in a module by a different name, so we add the interface's name to the end
+				interfaceDef._ui5QualifiedName = this.#deriveUi5ClassNames(interfaceDef)._ui5QualifiedName + "." + interfaceName;
 				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(interfaceDef);
 				this.interfaces[cacheKey] = interfaceDef;
 			}

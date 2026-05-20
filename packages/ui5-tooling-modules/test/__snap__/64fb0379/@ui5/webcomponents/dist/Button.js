@@ -18,7 +18,7 @@ sap.ui.define(
           namespace: "@ui5/webcomponents",
           qualifiedNamespace: "@ui5.webcomponents",
           tag: "ui5-button",
-          interfaces: ["@ui5.webcomponents.IButton"],
+          interfaces: ["@ui5.webcomponents.dist.Button"],
           properties: {
             accessibilityAttributes: {
               type: "any",
@@ -26,20 +26,20 @@ sap.ui.define(
               defaultValue: "{}"
             },
             accessibleDescription: {
-              type: "string",
+              type: "any",
               mapping: "property"
             },
             accessibleName: {
-              type: "string",
+              type: "any",
               mapping: "property"
             },
             accessibleRole: {
-              type: "@ui5.webcomponents.ButtonAccessibleRole",
+              type: "any",
               mapping: "property",
               defaultValue: "Button"
             },
             design: {
-              type: "@ui5.webcomponents.ButtonDesign",
+              type: "any",
               mapping: "property",
               defaultValue: "Default"
             },
@@ -53,34 +53,34 @@ sap.ui.define(
               }
             },
             endIcon: {
-              type: "string",
+              type: "any",
               mapping: "property"
             },
             form: {
-              type: "string",
+              type: "any",
               mapping: "property"
             },
             icon: {
-              type: "string",
+              type: "any",
               mapping: "property"
             },
             loading: {
-              type: "boolean",
+              type: "any",
               mapping: "property",
               defaultValue: false
             },
             loadingDelay: {
-              type: "float",
+              type: "any",
               mapping: "property",
               defaultValue: 1000
             },
             submits: {
-              type: "boolean",
+              type: "any",
               mapping: "property",
               defaultValue: false
             },
             type: {
-              type: "@ui5.webcomponents.ButtonType",
+              type: "any",
               mapping: "property",
               defaultValue: "Button"
             },

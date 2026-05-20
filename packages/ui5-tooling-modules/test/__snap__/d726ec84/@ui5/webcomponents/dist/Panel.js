@@ -20,40 +20,40 @@ sap.ui.define(
           interfaces: [],
           properties: {
             accessibleName: {
-              type: "string",
+              type: "any",
               mapping: "property"
             },
             accessibleRole: {
-              type: "@ui5.webcomponents.PanelAccessibleRole",
+              type: "any",
               mapping: "property",
               defaultValue: "Form"
             },
             collapsed: {
-              type: "boolean",
+              type: "any",
               mapping: "property",
               defaultValue: false
             },
             fixed: {
-              type: "boolean",
+              type: "any",
               mapping: "property",
               defaultValue: false
             },
             headerLevel: {
-              type: "@ui5.webcomponents.TitleLevel",
+              type: "any",
               mapping: "property",
               defaultValue: "H2"
             },
             headerText: {
-              type: "string",
+              type: "any",
               mapping: "property"
             },
             noAnimation: {
-              type: "boolean",
+              type: "any",
               mapping: "property",
               defaultValue: false
             },
             stickyHeader: {
-              type: "boolean",
+              type: "any",
               mapping: "property",
               defaultValue: false
             },

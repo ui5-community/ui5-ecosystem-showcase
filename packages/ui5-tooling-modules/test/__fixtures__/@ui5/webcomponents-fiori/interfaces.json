@@ -1,1 +1,1 @@
-["IMediaGalleryItem","IProductSwitchItem","ISearchScope","ITimelineItem"]
+["dist/MediaGallery.js>>IMediaGalleryItem","dist/ProductSwitch.js>>IProductSwitchItem","dist/SearchField.js>>ISearchScope","dist/Timeline.js>>ITimelineItem"]
