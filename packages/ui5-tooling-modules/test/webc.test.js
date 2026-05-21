@@ -24,6 +24,15 @@ function ensurePathExists(path) {
 }
 
 /**
+ * Retrieves a valid filename based on the qualified name of the UI5 entity.
+ * @param {object} def the entity definition object, either class, enum or interface
+ * @returns {string} the resolved file name
+ */
+function getFileName(def) {
+	return def._ui5QualifiedName.replace(/\./g, "-").replace("@", "");
+}
+
+/**
  * Creates test fixtures for each class contained in the given package's metadata.
  * @param {RegistryEntry} webcRegistryEntry the WebComponent RegistryEntry
  */
@@ -32,21 +41,31 @@ function writeFixtures(webcRegistryEntry) {
 
 	// create fixtures in the base folder per class
 	ensurePathExists(path.resolve(fixtureBase, "classes"));
-	Object.keys(webcRegistryEntry.classes).forEach((className) => {
-		const classJSON = JSON.stringify(webcRegistryEntry.classes[className]._ui5metadata);
+	Object.keys(webcRegistryEntry.classes).forEach((classCacheKey) => {
+		const classDef = webcRegistryEntry.classes[classCacheKey];
+		const classJSON = JSON.stringify(classDef._ui5metadata);
 		if (classJSON) {
-			writeFileSync(path.join(fixtureBase, `classes/${className}.json`), classJSON, { encoding: "utf8" });
+			// resolve sub namespaces to avoid name conflicts if a class name is occuring multiple times
+			// also remove the possible "@" prefix
+			const outputName = getFileName(classDef);
+			writeFileSync(path.join(fixtureBase, `classes/${outputName}.json`), classJSON, { encoding: "utf8" });
 		}
 	});
 
 	// enums
 	ensurePathExists(path.resolve(fixtureBase, "enums"));
-	Object.keys(webcRegistryEntry.enums).forEach((enumName) => {
-		const enumJSON = JSON.stringify(webcRegistryEntry.enums[enumName]);
-		writeFileSync(path.join(fixtureBase, `enums/${enumName}.json`), enumJSON, { encoding: "utf8" });
+	Object.keys(webcRegistryEntry.enums).forEach((enumCacheKey) => {
+		const enumDef = webcRegistryEntry.enums[enumCacheKey];
+		const enumJSON = JSON.stringify(enumDef);
+		const outputName = getFileName(enumDef);
+		writeFileSync(path.join(fixtureBase, `enums/${outputName}.json`), enumJSON, { encoding: "utf8" });
 	});
 
 	// interfaces
+	const qualifiedInterfaces = [];
+	Object.keys(webcRegistryEntry.interfaces).forEach((interfaceName) => {
+		qualifiedInterfaces.push(webcRegistryEntry.interfaces[interfaceName]._ui5QualifiedName);
+	});
 	const interfacesJson = JSON.stringify([...Object.keys(webcRegistryEntry.interfaces)]);
 	writeFileSync(path.join(fixtureBase, `interfaces.json`), interfacesJson, { encoding: "utf8" });
 }
@@ -92,18 +111,24 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 
 		// compare fixtures in the base folder per class
 		Object.keys(webcRegistryEntry.classes).forEach((className) => {
-			const classJSON = JSON.stringify(webcRegistryEntry.classes[className]._ui5metadata);
+			const classDef = webcRegistryEntry.classes[className];
+			const classJSON = JSON.stringify(classDef._ui5metadata);
 			if (classJSON) {
-				const classFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `classes/${className}.json`), { encoding: "utf-8" });
-				t.is(classFixtureForComparisonJSON, classJSON, `Class ${webcRegistryEntry.namespace}.${className} JSON is equal to fixture`);
+				const filename = getFileName(classDef);
+				const classFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `classes/${filename}.json`), { encoding: "utf-8" });
+				t.is(classFixtureForComparisonJSON, classJSON, `Class ${classDef._ui5QualifiedName} JSON is equal to fixture`);
 			}
 		});
 
 		// compare enums
 		Object.keys(webcRegistryEntry.enums).forEach((enumName) => {
-			const enumJSON = JSON.stringify(webcRegistryEntry.enums[enumName]);
-			const enumFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `enums/${enumName}.json`), { encoding: "utf-8" });
-			t.is(enumFixtureForComparisonJSON, enumJSON, `Enum ${enumJSON} JSON is equal to fixture`);
+			const enumDef = webcRegistryEntry.enums[enumName];
+			const enumJSON = JSON.stringify(enumDef);
+
+			const filename = getFileName(enumDef);
+
+			const enumFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `enums/${filename}.json`), { encoding: "utf-8" });
+			t.is(enumFixtureForComparisonJSON, enumJSON, `Enum ${enumDef._ui5QualifiedName} JSON is equal to fixture`);
 		});
 
 		// compare interfaces

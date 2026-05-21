@@ -7,7 +7,7 @@ const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
 // List of all supported primitive types including "integer"
 const primitiveTypes = ["object", "boolean", "number", "integer", "bigint", "string", "null"];
-// Known native browser elemts used as types in web components
+// Known native browser elements used as types in web components
 const nativeBrowserElements = ["DataTransfer", "Date", "Event", "File", "FileList"];
 
 const logger = SimpleLogger.create("🧬 WCR");
@@ -53,7 +53,7 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags, frameworkVersion, isOpenUI5OrSAPUI5Lib }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags, frameworkVersion, isOpenUI5OrSAPUI5Lib, isUI5WebComponents }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
@@ -70,9 +70,11 @@ class RegistryEntry {
 		// libray version is used for version dependent generations
 		this.frameworkVersion = frameworkVersion || "0.0.0";
 		this.isOpenUI5OrSAPUI5Lib = !!isOpenUI5OrSAPUI5Lib;
+		this.isUI5WebComponents = !!isUI5WebComponents;
 
 		this.customElements = {};
 		this.classes = {};
+		this.classesByModule = {};
 		this.enums = {};
 		this.interfaces = {};
 
@@ -89,21 +91,63 @@ class RegistryEntry {
 		// Calculate fully qualified class name based on the module name from the custom elements manifest
 		// e.g. dist/Avatar.js -> dist.Avatar
 		let convertedClassName = classDef.module.replace(/\//g, ".");
-		convertedClassName = convertedClassName.replace(/\.js$/, "");
-		classDef._derivedUi5ClassName = convertedClassName;
+		const _derivedUi5ClassName = convertedClassName.replace(/\.(js|ts)$/, "");
 
-		classDef._ui5QualifiedName = `${this.qualifiedNamespace}.${classDef._derivedUi5ClassName}`;
+		const _ui5QualifiedName = `${this.qualifiedNamespace}.${_derivedUi5ClassName}`;
 
 		// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 		//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-		classDef._ui5QualifiedNameSlashes = classDef._ui5QualifiedName.replace(/\./g, "/");
+		const _ui5QualifiedNameSlashes = _ui5QualifiedName.replace(/\./g, "/");
+
+		return {
+			_derivedUi5ClassName,
+			_ui5QualifiedName,
+			_ui5QualifiedNameSlashes,
+		};
 	}
 
 	#processMetadata() {
 		// [1] parsing the metadata
 		this.#customElementsMetadata.modules?.forEach((module) => {
-			module.declarations?.forEach(this.#parseDeclaration.bind(this));
-			module.exports?.forEach(this.#parseExports.bind(this));
+			// [1.1] collect declarations and exports per module
+			const moduleContent = { module, classes: {}, enums: {}, interfaces: {} };
+			module.declarations?.forEach(this.#parseDeclaration.bind(this, moduleContent));
+			module.exports?.forEach(this.#parseExports.bind(this, moduleContent));
+
+			// [1.2] transform raw module content into sensible structure for building UI5 metadata
+			for (const className in moduleContent.classes) {
+				const classDef = moduleContent.classes[className];
+				if (classDef.module) {
+					// calculate fully qualified class names
+					Object.assign(classDef, this.#deriveUi5ClassNames(classDef));
+					// store classes under their module + export key
+					const cacheKey = WebComponentRegistryHelper.deriveCacheKey(classDef);
+					this.classes[cacheKey] = classDef;
+				} else {
+					logger.warn(`class without module: ${classDef}`);
+				}
+			}
+
+			// store enums like classes -> s.a. deriveCacheKey(...)
+			for (const enumName in moduleContent.enums) {
+				const enumDef = moduleContent.enums[enumName];
+				// enum definitions do not automatically track their module path in the custom-elements-metadata!
+				enumDef.module = module.path;
+				enumDef._ui5QualifiedName = this.#deriveUi5ClassNames(enumDef)._ui5QualifiedName;
+				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(enumDef);
+				this.enums[cacheKey] = enumDef;
+			}
+
+			// store interfaces like classes -> s.a. deriveCacheKey(...)
+			for (const interfaceName in moduleContent.interfaces) {
+				const interfaceDef = moduleContent.interfaces[interfaceName];
+				// interface definitions do not automatically track their module path in the custom-elements-metadata!
+				interfaceDef.module = module.path;
+				// interfaces are typically exported in a module by a different name, so we add the interface's name to the end
+				interfaceDef._ui5QualifiedName = this.#deriveUi5ClassNames(interfaceDef)._ui5QualifiedName + "." + interfaceName;
+				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(interfaceDef);
+				this.interfaces[cacheKey] = interfaceDef;
+			}
 		});
 
 		// [2] prepare enum objects
@@ -117,8 +161,6 @@ class RegistryEntry {
 			const classDef = this.classes[className];
 
 			classDef._ui5implements ??= [];
-
-			this.#deriveUi5ClassNames(classDef);
 
 			this.#connectSuperclass(classDef);
 
@@ -138,38 +180,58 @@ class RegistryEntry {
 		});
 	}
 
-	#parseDeclaration(decl) {
-		switch (decl.kind) {
+	/**
+	 * Parses the declarations of a module defined in the custom-elements manifest.
+	 * The parsing result will be stored inside the <code>moduleContent</code> object for later processing.
+	 *
+	 * Note: This method is bound to "this", which is the RegistryEntry instance.
+	 *
+	 * @param {object} moduleContent simple object holding the content of the currently processed module.
+	 *                               Structure: {classes:{...}, enums:{...}, interfaces:{...}}
+	 * @param {object} declarationDef the declaration definition object from the parsed custom-elements manifest, raw content
+	 */
+	#parseDeclaration(moduleContent, declarationDef) {
+		switch (declarationDef.kind) {
 			case "class":
-				this.classes[decl.name] = decl;
+				moduleContent.classes[declarationDef.name] = declarationDef;
 				break;
 			case "enum":
-				this.enums[decl.name] = decl;
+				moduleContent.enums[declarationDef.name] = declarationDef;
 				break;
 			case "interface":
-				this.interfaces[decl.name] = decl;
+				moduleContent.interfaces[declarationDef.name] = declarationDef;
 				break;
 			default:
-				logger.error("unknown declaration kind:", decl.kind);
+				logger.error("unknown declaration kind:", declarationDef.kind);
 		}
 	}
 
-	#parseExports(exp) {
-		const exportName = exp.declaration.name;
-
-		// try to identify class for the custom element
-		const correspondingClass = this.classes[exportName];
+	/**
+	 * Parses the exports of a module defined in the custom-elements manifest.
+	 * The parsing result will be stored inside the <code>moduleContent</code> object for later processing.
+	 *
+	 * Note: This method is bound to "this", which is the RegistryEntry instance.
+	 *
+	 * @param {object} moduleContent simple object holding the content of the currently processed module.
+	 *                               Structure: {classes:{...}, enums:{...}, interfaces:{...}}
+	 * @param {object} exportDef the export definition object from the parse custom-elements manifest, raw content
+	 */
+	#parseExports(moduleContent, exportDef) {
+		// try to identify a class declaration for given module export (can be undefined)
+		const exportName = exportDef.declaration.name;
+		const correspondingClass = moduleContent.classes[exportName];
 
 		if (correspondingClass) {
 			// find module name
-			correspondingClass.module = exp.declaration?.module;
+			correspondingClass.module = exportDef.declaration?.module;
 			// we track both npm-package name and the namespace
 			// they are identical for now, might change later
 			correspondingClass.namespace = correspondingClass.package = this.namespace;
 		}
 
-		if (exp.kind === "custom-element-definition") {
-			this.customElements[exportName] = correspondingClass || {};
+		// track a list of all custom elements (~web components with a tag-name) for debugging only
+		if (exportDef.kind === "custom-element-definition") {
+			this.customElements[correspondingClass.tagName] = correspondingClass || {};
 		}
 	}
 
@@ -186,17 +248,26 @@ class RegistryEntry {
 			logger.warn(`The class '${this.namespace}/${classDef.name}' detected superclass '${classDef.superclass.package}/${classDef.superclass.name}' from string '${superclassName}'!`);
 		}
 		if (classDef.superclass) {
-			const superclassName = classDef.superclass.name;
-			// determine superclass cross-package
-			const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
+			// determine superclass package (can be cross-package reference)
+			const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package) || this;
 
-			let superclassRef = (refPackage || this).classes[superclassName];
+			// Reg. resolving superclass names: we have 2 situations
+			//   1. class resolved in the same package -> we have a qualified name already 👍
+			//   2. class resolved cross package: here we still have the raw metadata superclass info object at hand and
+			//                                    need to resolve the name for the first time.
+			//                                    However: The cross package must already be completely processed because of the dependency chain (roll-up plugin takes care of this)
+			//const superclassQualifiedName = classDef.superclass._ui5QualifiedName ?? refPackage.#deriveUi5ClassNames(classDef.superclass)._ui5QualifiedName;
+			const superclassLookupName = WebComponentRegistryHelper.deriveCacheKey(classDef.superclass);
+
+			// Note: This sanitization is needed for some module where the metadata is not consistent
+			//       e.g. "media-chrome" references the module names sometimes with a leading slash.
+			const superclassLookupNameFallback = superclassLookupName.startsWith("/") ? superclassLookupName.substring(1).replace(".js", ".ts") : superclassLookupName;
+
+			let superclassRef = refPackage.classes[superclassLookupName] || refPackage.classes[superclassLookupNameFallback];
 			if (!superclassRef) {
-				logger.error(
-					`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
-				);
+				logger.error(`The class '${classDef._ui5QualifiedName}' has an unknown superclass '${superclassLookupName}' using default '@ui5/webcomponents-base/UI5Element'!`);
 				const refPackage = WebComponentRegistry.getPackage(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE);
-				let superclassRef = (refPackage || this).classes[WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME];
+				superclassRef = (refPackage || this).classes[WebComponentRegistryHelper.UI5_ELEMENT_CACHE_KEY];
 				classDef.superclass = superclassRef;
 			} else {
 				this.#connectSuperclass(superclassRef);
@@ -210,6 +281,7 @@ class RegistryEntry {
 			*/
 			// non UI5Elements are extending the base class for Web Components
 			classDef.superclass = {
+				module: "sap/ui/core/webc/WebComponent.js",
 				name: "sap.ui.core.webc.WebComponent",
 			};
 		}
@@ -248,25 +320,32 @@ class RegistryEntry {
 		return "string";
 	}
 
-	#parseComplexType(type, packageRef) {
+	#parseComplexType(typeInfo, packageRef) {
+		// TODO: the ui5 names are wrong: the ui5 names cannot only be derived from the module,
+		//       but have to take the "name" into account, but still construct the name from the module path (minus "the_last_part.js")
+		const ui5names = packageRef.#deriveUi5ClassNames(typeInfo);
+		const cacheKey = WebComponentRegistryHelper.deriveCacheKey(typeInfo);
+
 		const base = {
-			dtsType: type,
-			ui5Type: packageRef.prefixns(type),
-			moduleType: packageRef.prefixnsAsModule(type),
+			dtsType: typeInfo.name,
+			// TODO: enum/interfaces namespace currently cannot work with the "correct" fully qualified name.
+			//       the quick fix for now is to use the simplistic concatenated (and wrong) prefixed name :(
+			ui5Type: ui5names._ui5QualifiedName,
+			moduleType: ui5names._ui5QualifiedNameSlashes, //packageRef.prefixnsAsModule(type),
 			packageName: packageRef.namespace,
 		};
-		if (packageRef.interfaces[type]) {
+		if (packageRef.interfaces[cacheKey]) {
 			return {
 				...base,
 				isInterface: true,
 			};
-		} else if (packageRef.enums[type]) {
+		} else if (packageRef.enums[cacheKey]) {
 			return {
 				...base,
 				isEnum: true,
 			};
-		} else if (packageRef.classes[type]) {
-			const classDef = packageRef.classes[type];
+		} else if (packageRef.classes[cacheKey]) {
+			const classDef = packageRef.classes[cacheKey];
 			// TODO: In case we have a reference to @ui5/webcomponent-base/UI5Element -> We need to point to sap.ui.core.webc.WebComponent
 			return {
 				...base,
@@ -290,13 +369,18 @@ class RegistryEntry {
 		}
 
 		const deriveType = (type) => {
-			// [Complex types]:
-			// we have a reference to other things -> enums, interfaces, classes
-			if (typeInfo?.references?.length > 0 || this.classes[type] || this.enums[type] || this.interfaces[type]) {
-				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
-				type = typeInfo?.references?.[0]?.name || type;
+			// we only respect 1 cache key, as UI5 only supports 1 type per property/aggregation -> first one wins
+			const typeInfoRef = typeInfo?.references?.[0] || { module: `dist/${type}.js`, name: type };
+			const typeCacheKey = WebComponentRegistryHelper.deriveCacheKey(typeInfoRef);
+			const hasCacheContent = this.classes[typeCacheKey] || this.enums[typeCacheKey] || this.interfaces[typeCacheKey];
 
-				if (typeInfo.references?.[0].package === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE) {
+			// [Complex types]:
+			// we have a reference to something, or we find it directly in our own package's caches: classes, enums, interfaces
+			if (typeInfo?.references?.length > 0 || hasCacheContent) {
+				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
+				type = typeInfoRef.name;
+
+				if (typeInfoRef.package === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE) {
 					// case 0: we just have a reference to the UI5Element base class in the @ui5/webcomponent-base package
 					//         This means that the Web Component can only nest other Web Component subclasses in that slot.
 					if (type === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
@@ -321,18 +405,18 @@ class RegistryEntry {
 				}
 
 				// case 1b: complex type is enum, interface or class
-				let complexType = this.#parseComplexType(type, this);
-				if (!complexType && this.namespace !== typeInfo.references[0].package) {
+				let complexType = this.#parseComplexType(typeInfoRef, this);
+				if (!complexType && this.namespace !== typeInfoRef.package) {
 					// case 1c: check for cross package type reference
-					const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
+					const refPackage = WebComponentRegistry.getPackage(typeInfoRef.package);
 					if (refPackage) {
-						complexType = this.#parseComplexType(type, refPackage);
+						complexType = this.#parseComplexType(typeInfoRef, refPackage);
 					} else {
-						logger.log(`Reference package '${typeInfo.references[0].package}' for complex type '${type}' not found`);
+						logger.log(`Reference package '${typeInfoRef.package}' for complex type '${type}' not found`);
 					}
-				} else if (!complexType && typeInfo.references[0]) {
+				} else if (!complexType && typeInfoRef) {
 					// case 1d: not able to find the type but there is a reference ==> try to import original webc type from the importing module itself
-					const refClass = this.classes[typeInfo.references[0].module.match(/\/(.*).js$/)?.[1]];
+					const refClass = this.classes[typeCacheKey]; //typeInfoRef.module.match(/\/(.*).js$/)?.[1]
 					if (refClass) {
 						return {
 							dtsType: type,
@@ -376,6 +460,18 @@ class RegistryEntry {
 					ui5Type: "object",
 				};
 			} else {
+				const aWebcomponentPackages = WebComponentRegistry.getPackages();
+				for (const sPackage in aWebcomponentPackages) {
+					if (!Object.hasOwn(aWebcomponentPackages, sPackage)) continue;
+
+					const refPackage = WebComponentRegistry.getPackage(aWebcomponentPackages[sPackage]);
+					const complexType = this.#parseComplexType(typeInfoRef, refPackage);
+
+					if (complexType) {
+						return complexType;
+					}
+				}
+
 				typeDef.isUnclear = true;
 				// case 6: Unclear
 				return {
@@ -389,16 +485,16 @@ class RegistryEntry {
 		// An original type can look like this: "Array<Foo|Bar>|string|undefined"
 		// we determine if we have a toplevel union type
 		// result will look like this: types = ["Array<Foo|Bar>", "string", "undefined"]
-		const types = typeInfo.text.match(/(?:Array<[^>]*>|[^|])+/g) || [];
+		const types = typeInfo.text.match(/(?:(?:Set|Promise|Array)<[^>]*>|[^|])+/g) || [];
 
 		for (let name of types) {
 			name = name.trim();
-			const arrayTypeMatch = name.match(/Array<(.*)>/i);
+			const arrayTypeMatch = name.match(/(?:Set|Promise|Array)<(.*)>/i);
 			const multiple = !!arrayTypeMatch;
 			const origType = arrayTypeMatch?.[1] || name;
 
 			if (origType !== "undefined") {
-				// multiple === true ==> is array type (Array<Foo>), but not necessarily a union type in the array (Array<Foo|Bar>)
+				// multiple === true ==> is array type (Set|Promise|Array<Foo>), but not necessarily a union type in the set|promise|array (Set|Promise|Array<Foo|Bar>)
 				// multiple === false ==> can be a union type, e.g. "Foo | Bar | ..."!
 				typeDef.types.push({
 					origType,
@@ -450,7 +546,7 @@ class RegistryEntry {
 	}
 
 	#castDefaultValue(defaultValue, ui5TypeInfo) {
-		if (defaultValue === "undefined") {
+		if (defaultValue === "undefined" || !ui5TypeInfo) {
 			return undefined;
 		}
 
@@ -460,7 +556,12 @@ class RegistryEntry {
 			case "boolean":
 				return /true/.test(defaultValue);
 			case "object":
-				return JSON.parse(defaultValue);
+				try {
+					return JSON.parse(defaultValue);
+				} catch {
+					logger.error(`Could not parse default value of type 'object', falling back to {} - ${defaultValue}`);
+					return {};
+				}
 			default:
 				return defaultValue;
 		}
@@ -603,7 +704,7 @@ class RegistryEntry {
 					types: typeDef.types,
 				});
 			} else {
-				if (typeDef.ui5TypeInfo.isComplexType) {
+				if (typeDef.ui5TypeInfo?.isComplexType) {
 					logger.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 				}
 				let defaultValue = propDef.default;
@@ -616,7 +717,7 @@ class RegistryEntry {
 					defaultValue = this.#castDefaultValue(defaultValue, typeDef.ui5TypeInfo);
 				}
 				let mapping = "property";
-				if (typeDef.ui5TypeInfo.ui5Type === "sap.ui.core.ValueState") {
+				if (typeDef.ui5TypeInfo?.ui5Type === "sap.ui.core.ValueState") {
 					// the UI5 valueState needs the Core's enum typing and some special mapping to
 					// convert the "sap.ui.core.ValueState" to the web component's variant.
 					mapping = {
@@ -625,8 +726,15 @@ class RegistryEntry {
 					};
 				}
 
+				let typeString;
+				if (!typeDef.ui5TypeInfo?.ui5Type) {
+					typeString = "any";
+				} else {
+					typeString = `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`;
+				}
+
 				ui5metadata.properties[propDef.name] = {
-					type: `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`,
+					type: typeString,
 					mapping,
 					defaultValue: defaultValue,
 				};
@@ -680,13 +788,13 @@ class RegistryEntry {
 		}
 
 		const typeDef = this.#extractUi5Type(slotDef._ui5type);
-		if (typeDef.ui5TypeInfo.isComplexType) {
+		if (typeDef.ui5TypeInfo?.isComplexType) {
 			//logger.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
 			aggregationType = typeDef.ui5TypeInfo.ui5Type;
 		}
 
-		const leadingDtsType = typeDef.types[0].dedicatedTypes[0];
-		if (typeDef.ui5TypeInfo.ui5Type === "any" && leadingDtsType.dtsType !== "any") {
+		const leadingDtsType = typeDef.types[0]?.dedicatedTypes[0];
+		if (typeDef.ui5TypeInfo?.ui5Type === "any" && leadingDtsType?.dtsType !== "any") {
 			logger.log(
 				`🤔 unclear type - Detected DTS type '${leadingDtsType.dtsType}' for slot '${slotName}' in webcomponent '${classDef.name}' but did not detect a proper UI5 type. Missing interface? Fallback DTS type to 'any'.`,
 			);
@@ -698,7 +806,9 @@ class RegistryEntry {
 		}
 		// DEBUG
 		if (typeDef.isUnclear) {
-			logger.warn(`🤔 unclear type - ${classDef.name} - aggregation '${slotDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
+			logger.warn(
+				`🤔 unclear type - ${classDef._ui5QualifiedName} - aggregation '${slotDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
+			);
 		}
 
 		// The "default" slot will most likely be transformed into the "content" in UI5
@@ -789,7 +899,7 @@ class RegistryEntry {
 	#processEvents(classDef, ui5metadata, eventDef) {
 		// Same as with other entities we track the UI5 Metadata and the JSDoc separately
 		const { parsedParams, jsDocParams } = this.#parseEventParameters(classDef, eventDef);
-		const camelizedName = camelize(eventDef.name);
+		const camelizedName = camelize(eventDef.name || "");
 		const existsAsProperty = ui5metadata.properties[camelizedName];
 		const eventName = existsAsProperty ? camelize(`on-${eventDef.name}`) : camelizedName;
 
@@ -819,8 +929,9 @@ class RegistryEntry {
 		if (Array.isArray(classDef._ui5implements)) {
 			jsdocInterfaces ??= [];
 			classDef._ui5implements.forEach((interfaceDef) => {
-				if (this.interfaces[interfaceDef.name]) {
-					ui5metadata.interfaces.push(this.prefixns(interfaceDef.name));
+				if (this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)]) {
+					interfaceDef = this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)];
+					ui5metadata.interfaces.push(interfaceDef._ui5QualifiedName);
 					jsdocInterfaces.push(`module:${this.namespace}.${interfaceDef.name}`);
 				} else {
 					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
@@ -1147,23 +1258,27 @@ class RegistryEntry {
 	 * Used in the respective HBS template.
 	 */
 	#prepareEnums() {
-		Object.keys(this.enums).forEach((enumName) => {
+		Object.keys(this.enums).forEach((enumCacheKey) => {
+			const enumDef = this.enums[enumCacheKey];
 			const enumValues = [];
 
-			const enumMembers = this.enums[enumName].members;
+			const enumMembers = this.enums[enumCacheKey].members;
 			enumMembers?.forEach((member) => {
 				// Key<>Value must be identical!
 				enumValues.push({ name: member.name, description: member.description || "" });
 			});
 
+			// derive correct names
+			const names = this.#deriveUi5ClassNames(enumDef);
+
 			// prepare enum info object for HBS template later
-			this.enums[enumName] = {
-				name: enumName,
-				_ui5QualifiedName: this.prefixns(enumName),
+			this.enums[enumCacheKey] = {
+				name: enumDef.name,
+				_ui5QualifiedName: names._ui5QualifiedName,
 				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-				_ui5QualifiedNameSlashes: `${this.namespace}.${enumName}`,
-				description: this.enums[enumName].description || "",
+				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
+				description: this.enums[enumCacheKey].description || "",
 				values: enumValues,
 			};
 		});
@@ -1174,12 +1289,18 @@ class RegistryEntry {
 	 * Used in the respective HBS template.
 	 */
 	#prepareInterfaces() {
-		Object.keys(this.interfaces).forEach((interfaceName) => {
-			const interfaceDef = this.interfaces[interfaceName];
-			interfaceDef._ui5QualifiedName = this.prefixns(interfaceName);
-			// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
-			//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-			interfaceDef._ui5QualifiedNameSlashes = `${this.namespace}.${interfaceName}`;
+		Object.keys(this.interfaces).forEach((interfaceCacheKey) => {
+			// derive correct names
+			const interfaceDef = this.interfaces[interfaceCacheKey];
+			const names = this.#deriveUi5ClassNames(interfaceDef);
+			this.interfaces[interfaceCacheKey] = {
+				name: interfaceDef.name,
+				_ui5QualifiedName: names._ui5QualifiedName,
+				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
+				description: this.interfaces[interfaceCacheKey].description || "",
+			};
 		});
 	}
 }
@@ -1211,6 +1332,9 @@ const WebComponentRegistry = {
 	 * @param {object} options.customElementsMetadata the custom elements metadata object
 	 * @param {string} options.namespace the namespace of the web component package
 	 * @param {string} options.library the library of the web component package
+	 * @param {string} options.frameworkVersion the UI5 framework version used
+	 * @param {boolean} options.isUI5WebComponents whether it is a package based on UI5 Web Components or not
+	 * @param {boolean} options.isOpenUI5OrSAPUI5Lib whether it is a OpenUI5 or SAPUI5 UI library (if a library project)
 	 * @param {string} options.scopeSuffix the scope suffix for the web component package
 	 * @param {string} options.npmPackagePath the npm package path of the web component package
 	 * @param {string} options.version the version of the web component package
@@ -1224,6 +1348,7 @@ const WebComponentRegistry = {
 		namespace,
 		library,
 		frameworkVersion,
+		isUI5WebComponents,
 		isOpenUI5OrSAPUI5Lib,
 		scopeSuffix,
 		npmPackagePath,
@@ -1239,7 +1364,17 @@ const WebComponentRegistry = {
 
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags, frameworkVersion, isOpenUI5OrSAPUI5Lib });
+			entry = _registry[namespace] = new RegistryEntry({
+				customElementsMetadata,
+				namespace,
+				scopeSuffix,
+				npmPackagePath,
+				version,
+				customJSDocTags,
+				frameworkVersion,
+				isOpenUI5OrSAPUI5Lib,
+				isUI5WebComponents,
+			});
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on

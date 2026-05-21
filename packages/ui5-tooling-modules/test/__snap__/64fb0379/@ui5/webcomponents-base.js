@@ -20,13 +20,13 @@ sap.ui.define(
       version: "2.22.0",
       dependencies: ["sap.ui.core"],
       types: [
-        "@ui5.webcomponents-base.AnimationMode",
-        "@ui5.webcomponents-base.CalendarType",
-        "@ui5.webcomponents-base.ItemNavigationBehavior",
-        "@ui5.webcomponents-base.MovePlacement",
-        "@ui5.webcomponents-base.NavigationMode",
-        "@ui5.webcomponents-base.SortOrder",
-        "@ui5.webcomponents-base.ValueState"
+        "@ui5.webcomponents-base.dist.types.AnimationMode",
+        "@ui5.webcomponents-base.dist.types.CalendarType",
+        "@ui5.webcomponents-base.dist.types.ItemNavigationBehavior",
+        "@ui5.webcomponents-base.dist.types.MovePlacement",
+        "@ui5.webcomponents-base.dist.types.NavigationMode",
+        "@ui5.webcomponents-base.dist.types.SortOrder",
+        "@ui5.webcomponents-base.dist.types.ValueState"
       ],
       interfaces: [],
       controls: [],
@@ -39,8 +39,8 @@ sap.ui.define(
      * Different types of AnimationMode.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents-base.AnimationMode
-     * @ui5-module-override @ui5/webcomponents-base AnimationMode
+     * @alias module:@ui5/webcomponents-base/dist/types/AnimationMode
+     * @ui5-module-override @ui5/webcomponents-base dist/types/AnimationMode.js>>AnimationMode
      * @private
      */
     pkg["AnimationMode"] = {
@@ -69,13 +69,16 @@ sap.ui.define(
        */
       None: "None"
     };
-    registerEnum("@ui5.webcomponents-base.AnimationMode", pkg["AnimationMode"]);
+    registerEnum(
+      "@ui5.webcomponents-base.dist.types.AnimationMode",
+      pkg["AnimationMode"]
+    );
     /**
      * Different calendar types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents-base.CalendarType
-     * @ui5-module-override @ui5/webcomponents-base CalendarType
+     * @alias module:@ui5/webcomponents-base/dist/types/CalendarType
+     * @ui5-module-override @ui5/webcomponents-base dist/types/CalendarType.js>>CalendarType
      * @private
      */
     pkg["CalendarType"] = {
@@ -110,13 +113,16 @@ sap.ui.define(
        */
       Persian: "Persian"
     };
-    registerEnum("@ui5.webcomponents-base.CalendarType", pkg["CalendarType"]);
+    registerEnum(
+      "@ui5.webcomponents-base.dist.types.CalendarType",
+      pkg["CalendarType"]
+    );
     /**
      * Different behavior for ItemNavigation.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents-base.ItemNavigationBehavior
-     * @ui5-module-override @ui5/webcomponents-base ItemNavigationBehavior
+     * @alias module:@ui5/webcomponents-base/dist/types/ItemNavigationBehavior
+     * @ui5-module-override @ui5/webcomponents-base dist/types/ItemNavigationBehavior.js>>ItemNavigationBehavior
      * @private
      */
     pkg["ItemNavigationBehavior"] = {
@@ -134,15 +140,15 @@ sap.ui.define(
       Static: "Static"
     };
     registerEnum(
-      "@ui5.webcomponents-base.ItemNavigationBehavior",
+      "@ui5.webcomponents-base.dist.types.ItemNavigationBehavior",
       pkg["ItemNavigationBehavior"]
     );
     /**
      * Placements of a moved element relative to a target element.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents-base.MovePlacement
-     * @ui5-module-override @ui5/webcomponents-base MovePlacement
+     * @alias module:@ui5/webcomponents-base/dist/types/MovePlacement
+     * @ui5-module-override @ui5/webcomponents-base dist/types/MovePlacement.js>>MovePlacement
      * @private
      */
     pkg["MovePlacement"] = {
@@ -165,13 +171,16 @@ sap.ui.define(
        */
       On: "On"
     };
-    registerEnum("@ui5.webcomponents-base.MovePlacement", pkg["MovePlacement"]);
+    registerEnum(
+      "@ui5.webcomponents-base.dist.types.MovePlacement",
+      pkg["MovePlacement"]
+    );
     /**
      * Different navigation modes for ItemNavigation.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents-base.NavigationMode
-     * @ui5-module-override @ui5/webcomponents-base NavigationMode
+     * @alias module:@ui5/webcomponents-base/dist/types/NavigationMode
+     * @ui5-module-override @ui5/webcomponents-base dist/types/NavigationMode.js>>NavigationMode
      * @private
      */
     pkg["NavigationMode"] = {
@@ -201,15 +210,15 @@ sap.ui.define(
       Vertical: "Vertical"
     };
     registerEnum(
-      "@ui5.webcomponents-base.NavigationMode",
+      "@ui5.webcomponents-base.dist.types.NavigationMode",
       pkg["NavigationMode"]
     );
     /**
      * Defines the sort order.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents-base.SortOrder
-     * @ui5-module-override @ui5/webcomponents-base SortOrder
+     * @alias module:@ui5/webcomponents-base/dist/types/SortOrder
+     * @ui5-module-override @ui5/webcomponents-base dist/types/SortOrder.js>>SortOrder
      * @private
      */
     pkg["SortOrder"] = {
@@ -232,13 +241,16 @@ sap.ui.define(
        */
       None: "None"
     };
-    registerEnum("@ui5.webcomponents-base.SortOrder", pkg["SortOrder"]);
+    registerEnum(
+      "@ui5.webcomponents-base.dist.types.SortOrder",
+      pkg["SortOrder"]
+    );
     /**
      * Different types of ValueStates.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents-base.ValueState
-     * @ui5-module-override @ui5/webcomponents-base ValueState
+     * @alias module:@ui5/webcomponents-base/dist/types/ValueState
+     * @ui5-module-override @ui5/webcomponents-base dist/types/ValueState.js>>ValueState
      * @private
      */
     pkg["ValueState"] = {
@@ -273,7 +285,10 @@ sap.ui.define(
        */
       Positive: "Positive"
     };
-    registerEnum("@ui5.webcomponents-base.ValueState", pkg["ValueState"]);
+    registerEnum(
+      "@ui5.webcomponents-base.dist.types.ValueState",
+      pkg["ValueState"]
+    );
 
     // Interfaces
 

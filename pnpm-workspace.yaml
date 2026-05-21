@@ -5,6 +5,9 @@ packages:
   - "showcases/*"
   - "showcases/cds-bookshop/app/*"
 
+overrides:
+  chromedriver: ">=115"
+
 allowBuilds:
   "@firebase/util": false
   better-sqlite3: true

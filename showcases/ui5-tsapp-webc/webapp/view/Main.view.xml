@@ -30,7 +30,10 @@
     </headerContent> -->
     <!-- playground-fold-end -->
 
-    <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
+    <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick" showSearchField="true">
+      <fiori:searchField>
+        <fiori:ShellBarSearch />
+      </fiori:searchField>
       <fiori:customData>
         <core:CustomData key="help-id" value="shellbar" writeToDom="true" />
       </fiori:customData>
@@ -95,7 +98,7 @@
             <!-- scopes aggregation -->
             <fiori:scopes>
               <fiori:SearchScope text="All" />
-              <fiori:SearchScope text="Apps" selected="true" />
+              <fiori:SearchScope text="Apps" />
               <fiori:SearchScope text="Products" />
             </fiori:scopes>
 

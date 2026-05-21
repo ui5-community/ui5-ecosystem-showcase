@@ -2,11 +2,7 @@
  * ${copyright}
  */
 sap.ui.define(
-  [
-    "sap/ui/core/webc/WebComponent",
-    "../../@luigi-project/container",
-    "../../LuigiContainer"
-  ],
+  ["sap/ui/core/webc/WebComponent", "../../@luigi-project/container"],
   function (WebComponentBaseClass) {
     "use strict";
 

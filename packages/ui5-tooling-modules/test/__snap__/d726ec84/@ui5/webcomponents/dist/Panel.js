@@ -24,7 +24,7 @@ sap.ui.define(
               mapping: "property"
             },
             accessibleRole: {
-              type: "@ui5.webcomponents.PanelAccessibleRole",
+              type: "@ui5.webcomponents.dist.types.PanelAccessibleRole",
               mapping: "property",
               defaultValue: "Form"
             },
@@ -39,7 +39,7 @@ sap.ui.define(
               defaultValue: false
             },
             headerLevel: {
-              type: "@ui5.webcomponents.TitleLevel",
+              type: "@ui5.webcomponents.dist.types.TitleLevel",
               mapping: "property",
               defaultValue: "H2"
             },

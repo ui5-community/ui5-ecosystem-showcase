@@ -80,7 +80,7 @@ sap.ui.define(
               defaultValue: "None"
             },
             wrappingType: {
-              type: "@ui5.webcomponents.WrappingType",
+              type: "@ui5.webcomponents.dist.types.WrappingType",
               mapping: "property",
               defaultValue: "Normal"
             },

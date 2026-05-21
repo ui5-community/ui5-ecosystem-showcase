@@ -574,7 +574,9 @@ test.serial("Verify generation of @luigi-project/container", async (t) => {
 		},
 	);
 	const modPackage = await env.getModule("@luigi-project/container");
-	t.true(modPackage.retVal._ui5metadata.name === "@luigi-project/container");
+	t.true(!modPackage.retVal._ui5metadata);
+	t.true(typeof modPackage.retVal?.LuigiCompoundContainer?.constructor === "function");
+	t.true(typeof modPackage.retVal?.LuigiContainer?.constructor === "function");
 	const modContainer = await env.getModule("@luigi-project/container/LuigiContainer");
 	t.true(modContainer.retVal.name === "@luigi-project.container.LuigiContainer");
 	if (platform() !== "win32") {
