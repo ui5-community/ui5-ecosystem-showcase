@@ -2,14 +2,15 @@ const { join, dirname, extname, posix } = require("path");
 const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");
 
+const WebComponentRegistry = require("./utils/WebComponentRegistry");
 const JSDocSerializer = require("./utils/JSDocSerializer");
 const WebComponentRegistryHelper = require("./utils/WebComponentRegistryHelper");
+const { UI5_ELEMENT_NAMESPACE } = WebComponentRegistryHelper;
+
 const { lt, gte } = require("semver");
 const { compile } = require("handlebars");
 
 const prettier = require("@prettier/sync");
-
-const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
@@ -114,6 +115,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					log.error(`Failed to parse package.json of ${npmPackage}`, err);
 					return undefined;
 				}
+				// derive the path of the npm package from the package.json location
 				const npmPackagePath = dirname(packageJsonPath);
 				// check if the custom elements metadata file exists (fallback to custom-elements-internal.json for @ui5/webcomponents)
 				let metadataPath;
@@ -155,6 +157,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 							customElementsMetadata,
 							namespace: npmPackage,
 							library: projectInfo.type === "library" ? projectInfo.name : undefined,
+							isUI5WebComponents: packageJson.name === UI5_ELEMENT_NAMESPACE || Object.keys(packageJson?.dependencies || {}).includes(UI5_ELEMENT_NAMESPACE),
 							isOpenUI5OrSAPUI5Lib,
 							frameworkVersion,
 							moduleBasePath,
@@ -175,7 +178,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				}
 			}
 		}
-		if (!skip && registryEntry && !emittedNpmPackages.includes(npmPackage)) {
+		if (!skip && registryEntry?.isUI5WebComponents && !emittedNpmPackages.includes(npmPackage)) {
 			// tell rollup to create a chunk for the Web Components npm package
 			emitFile({
 				type: "chunk",
@@ -192,7 +195,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		const npmPackage = getNpmPackageName(source);
 
 		let clazz;
-		if (npmPackage !== WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE && (clazz = WebComponentRegistry.getClassDefinition(source))) {
+		if (npmPackage !== UI5_ELEMENT_NAMESPACE && (clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
 		}
 
@@ -206,7 +209,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				const moduleName = `${npmPackage}/${modulePath}`;
 				const clazz = WebComponentRegistry.getClassDefinition(moduleName);
 				// TODO: base classes must be ignored as UI5Element is flagged as custom element although it is a base class
-				if (clazz && clazz.customElement && npmPackage !== WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE) {
+				if (clazz && clazz.customElement && npmPackage !== UI5_ELEMENT_NAMESPACE) {
 					return clazz;
 				}
 			}
@@ -242,7 +245,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		const metadata = JSON.stringify(metadataObject, undefined, 2);
 
 		// is it the base library? (important for the monkey patches)
-		const isBaseLib = namespace === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE;
+		const isBaseLib = namespace === UI5_ELEMENT_NAMESPACE;
 
 		// generate the library code
 		const webcPackage = chunkName && posix.relative(dirname(source), chunkName);
@@ -358,7 +361,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				needsLabelEnablement,
 				needsEnabledPropagator,
 				needsMessageMixin,
-				importWebCModule: !!webcClass,
+				importWebCModule: isClazzUI5Element && !!webcClass,
 			});
 
 			emitFile({
@@ -474,7 +477,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			// check if the module is a Web Component package to ensure that
 			// the package code is generated and included in the build
 			let package;
-			if ((package = WebComponentRegistry.getPackage(source))) {
+			if ((package = WebComponentRegistry.getPackage(source)) && package?.isUI5WebComponents) {
 				const scope = getNpmPackageScope(source);
 				return {
 					// non-scoped packages need to be suffixed to avoid name clashes
@@ -578,7 +581,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 
 				// generate the web component package code
 				const code = webcTmplFnWebCPackage({
-					isBaseLib: namespace === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE,
+					isBaseLib: namespace === UI5_ELEMENT_NAMESPACE,
 					scopeSuffix: ui5WebCScopeSuffix,
 					enrichBusyIndicator,
 					nonUI5TagsToRegister,
@@ -587,7 +590,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					webcPackageModule: resolveModule(namespace)?.replace(/\\/g, "/"),
 				});
 				return code;
-			} else if (ui5Meta?.type === "module" && ui5Meta?.package?.dependencies?.includes(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE)) {
+			} else if (ui5Meta?.type === "module" && ui5Meta?.package?.dependencies?.includes(UI5_ELEMENT_NAMESPACE)) {
 				// prepend the import of the base package to ensure that scoping and other features are applied
 				// => before a Web Component is defined, the base package must be loaded!
 				const { absModulePath } = ui5Meta;

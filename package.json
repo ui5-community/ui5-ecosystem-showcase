@@ -88,10 +88,5 @@
     "prettier-plugin-properties": "^0.3.1",
     "pretty-quick": "^4.2.2",
     "wait-on": "^9.0.10"
-  },
-  "pnpm": {
-    "overrides": {
-      "chromedriver": ">=115"
-    }
   }
 }

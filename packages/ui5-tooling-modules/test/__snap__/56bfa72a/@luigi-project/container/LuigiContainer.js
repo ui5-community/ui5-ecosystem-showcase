@@ -2,11 +2,7 @@
  * ${copyright}
  */
 sap.ui.define(
-  [
-    "sap/ui/core/webc/WebComponent",
-    "../../@luigi-project/container",
-    "../../LuigiContainer"
-  ],
+  ["sap/ui/core/webc/WebComponent", "../../@luigi-project/container"],
   function (WebComponentBaseClass) {
     "use strict";
 
@@ -20,23 +16,23 @@ sap.ui.define(
           interfaces: [],
           properties: {
             activeFeatureToggleList: {
-              type: "any",
+              type: "string[]",
               mapping: "property"
             },
             allowRules: {
-              type: "any",
+              type: "string[]",
               mapping: "property"
             },
             anchor: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             authData: {
-              type: "any",
+              type: "object",
               mapping: "property"
             },
             clientPermissions: {
-              type: "any",
+              type: "object",
               mapping: "property"
             },
             context: {
@@ -44,67 +40,67 @@ sap.ui.define(
               mapping: "property"
             },
             deferInit: {
-              type: "any",
+              type: "boolean",
               mapping: "property"
             },
             dirtyStatus: {
-              type: "any",
+              type: "boolean",
               mapping: "property"
             },
             documentTitle: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             hasBack: {
-              type: "any",
+              type: "boolean",
               mapping: "property"
             },
             label: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             locale: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             noShadow: {
-              type: "any",
+              type: "boolean",
               mapping: "property"
             },
             nodeParams: {
-              type: "any",
+              type: "object",
               mapping: "property"
             },
             pathParams: {
-              type: "any",
+              type: "object",
               mapping: "property"
             },
             sandboxRules: {
-              type: "any",
+              type: "string[]",
               mapping: "property"
             },
             searchParams: {
-              type: "any",
+              type: "object",
               mapping: "property"
             },
             skipCookieCheck: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             skipInitCheck: {
-              type: "any",
+              type: "boolean",
               mapping: "property"
             },
             theme: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             userSettings: {
-              type: "any",
+              type: "object",
               mapping: "property"
             },
             viewurl: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             webcomponent: {

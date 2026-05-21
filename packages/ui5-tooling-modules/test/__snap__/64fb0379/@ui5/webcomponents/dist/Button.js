@@ -26,20 +26,20 @@ sap.ui.define(
               defaultValue: "{}"
             },
             accessibleDescription: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             accessibleName: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             accessibleRole: {
-              type: "any",
+              type: "@ui5.webcomponents.dist.types.ButtonAccessibleRole",
               mapping: "property",
               defaultValue: "Button"
             },
             design: {
-              type: "any",
+              type: "@ui5.webcomponents.dist.types.ButtonDesign",
               mapping: "property",
               defaultValue: "Default"
             },
@@ -53,34 +53,34 @@ sap.ui.define(
               }
             },
             endIcon: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             form: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             icon: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             loading: {
-              type: "any",
+              type: "boolean",
               mapping: "property",
               defaultValue: false
             },
             loadingDelay: {
-              type: "any",
+              type: "float",
               mapping: "property",
               defaultValue: 1000
             },
             submits: {
-              type: "any",
+              type: "boolean",
               mapping: "property",
               defaultValue: false
             },
             type: {
-              type: "any",
+              type: "@ui5.webcomponents.dist.types.ButtonType",
               mapping: "property",
               defaultValue: "Button"
             },

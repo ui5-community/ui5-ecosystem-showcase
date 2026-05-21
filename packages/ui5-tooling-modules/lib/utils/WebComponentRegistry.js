@@ -53,7 +53,7 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags, frameworkVersion, isOpenUI5OrSAPUI5Lib }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags, frameworkVersion, isOpenUI5OrSAPUI5Lib, isUI5WebComponents }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
@@ -70,6 +70,7 @@ class RegistryEntry {
 		// libray version is used for version dependent generations
 		this.frameworkVersion = frameworkVersion || "0.0.0";
 		this.isOpenUI5OrSAPUI5Lib = !!isOpenUI5OrSAPUI5Lib;
+		this.isUI5WebComponents = !!isUI5WebComponents;
 
 		this.customElements = {};
 		this.classes = {};
@@ -726,7 +727,7 @@ class RegistryEntry {
 				}
 
 				let typeString;
-				if (!typeDef.ui5Type) {
+				if (!typeDef.ui5TypeInfo?.ui5Type) {
 					typeString = "any";
 				} else {
 					typeString = `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`;
@@ -1331,6 +1332,9 @@ const WebComponentRegistry = {
 	 * @param {object} options.customElementsMetadata the custom elements metadata object
 	 * @param {string} options.namespace the namespace of the web component package
 	 * @param {string} options.library the library of the web component package
+	 * @param {string} options.frameworkVersion the UI5 framework version used
+	 * @param {boolean} options.isUI5WebComponents whether it is a package based on UI5 Web Components or not
+	 * @param {boolean} options.isOpenUI5OrSAPUI5Lib whether it is a OpenUI5 or SAPUI5 UI library (if a library project)
 	 * @param {string} options.scopeSuffix the scope suffix for the web component package
 	 * @param {string} options.npmPackagePath the npm package path of the web component package
 	 * @param {string} options.version the version of the web component package
@@ -1344,6 +1348,7 @@ const WebComponentRegistry = {
 		namespace,
 		library,
 		frameworkVersion,
+		isUI5WebComponents,
 		isOpenUI5OrSAPUI5Lib,
 		scopeSuffix,
 		npmPackagePath,
@@ -1359,7 +1364,17 @@ const WebComponentRegistry = {
 
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags, frameworkVersion, isOpenUI5OrSAPUI5Lib });
+			entry = _registry[namespace] = new RegistryEntry({
+				customElementsMetadata,
+				namespace,
+				scopeSuffix,
+				npmPackagePath,
+				version,
+				customJSDocTags,
+				frameworkVersion,
+				isOpenUI5OrSAPUI5Lib,
+				isUI5WebComponents,
+			});
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on

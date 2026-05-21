@@ -21,11 +21,11 @@ sap.ui.define(
           interfaces: ["sap.ui.core.IFormContent"],
           properties: {
             accessibleName: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             checked: {
-              type: "any",
+              type: "boolean",
               mapping: "property",
               defaultValue: false
             },
@@ -39,40 +39,40 @@ sap.ui.define(
               }
             },
             displayOnly: {
-              type: "any",
+              type: "boolean",
               mapping: "property",
               defaultValue: false
             },
             indeterminate: {
-              type: "any",
+              type: "boolean",
               mapping: "property",
               defaultValue: false
             },
             name: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             readonly: {
-              type: "any",
+              type: "boolean",
               mapping: "property",
               defaultValue: false
             },
             required: {
-              type: "any",
+              type: "boolean",
               mapping: "property",
               defaultValue: false
             },
             text: {
-              type: "any",
+              type: "string",
               mapping: "property"
             },
             value: {
-              type: "any",
+              type: "string",
               mapping: "property",
               defaultValue: "on"
             },
             valueState: {
-              type: "any",
+              type: "sap.ui.core.ValueState",
               mapping: {
                 formatter: "_mapValueState",
                 parser: "_parseValueState"
@@ -80,7 +80,7 @@ sap.ui.define(
               defaultValue: "None"
             },
             wrappingType: {
-              type: "any",
+              type: "@ui5.webcomponents.dist.types.WrappingType",
               mapping: "property",
               defaultValue: "Normal"
             },
