@@ -347,6 +347,41 @@ sap.ui.define(
       WebComponent.__CustomData__isPatched = true;
     }
 
+    // Fix: array-type properties lost on re-render with @ui5/webcomponents-base >= 2.20.0
+    // Arrays are now reflected as HTML attributes by the web component, but the UI5 wrapper
+    // treats them as "managed" and lets the DOM patcher remove them on re-render.
+    // Marking them as unmanaged ensures preserveUnmanagedAttributes keeps them alive.
+
+    if (!WebComponent.__ArrayProperties__isPatched) {
+      var WebComponentMetadataPrototype = Object.getPrototypeOf(
+        WebComponent.getMetadata()
+      );
+      var fnOrigIsManagedAttribute =
+        WebComponentMetadataPrototype.isManagedAttribute;
+      if (fnOrigIsManagedAttribute) {
+        WebComponentMetadataPrototype.isManagedAttribute = function (sAttr) {
+          var mProperties = this.getAllProperties();
+          for (var propName in mProperties) {
+            if (!mProperties.hasOwnProperty(propName)) continue;
+            var propData = mProperties[propName];
+            if (propData._sMapping !== "property") continue;
+            var sMappedAttr = propData._sMapTo || propName;
+            var sCamelized = sAttr.replace(/-([a-z])/g, function (_, c) {
+              return c.toUpperCase();
+            });
+            if (
+              (sMappedAttr === sAttr || sCamelized === propName) &&
+              propData.type.endsWith("[]")
+            ) {
+              return false;
+            }
+          }
+          return fnOrigIsManagedAttribute.apply(this, arguments);
+        };
+      }
+      WebComponent.__ArrayProperties__isPatched = true;
+    }
+
     // ====================
     // MONKEY PATCHES END
     // ====================
