@@ -29,7 +29,7 @@ function ensurePathExists(path) {
  * @returns {string} the resolved file name
  */
 function getFileName(def) {
-	return def._ui5QualifiedName.replace(/\./, "-").replace("@", "");
+	return def._ui5QualifiedName.replace(/\./g, "-").replace("@", "");
 }
 
 /**
