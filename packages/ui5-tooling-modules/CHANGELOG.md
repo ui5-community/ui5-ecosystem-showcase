@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.36.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.2...ui5-tooling-modules@3.36.0) (2026-05-21)
+
+
+### Features
+
+* **ui5-tooling-modules:** allow deeper nested web component classes of the same name ([#1318](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1318)) ([485131b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/485131bcf3f2cad3ef5c8aa39acd4605907ca4b4))
+
+
+
+
+
 ## [3.35.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.1...ui5-tooling-modules@3.35.2) (2026-05-05)
 
 

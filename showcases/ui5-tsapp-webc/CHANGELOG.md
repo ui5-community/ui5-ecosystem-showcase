@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.17.3...ui5-tsapp-webc@0.18.0) (2026-05-21)
+
+
+### Features
+
+* **ui5-tooling-modules:** allow deeper nested web component classes of the same name ([#1318](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1318)) ([485131b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/485131bcf3f2cad3ef5c8aa39acd4605907ca4b4))
+
+
+
+
+
 ## [0.17.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.17.2...ui5-tsapp-webc@0.17.3) (2026-05-05)
 
 **Note:** Version bump only for package ui5-tsapp-webc
