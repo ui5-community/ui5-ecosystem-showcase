@@ -61,11 +61,11 @@ The following configuration options are relevant for the `task` and the `middlew
   &nbsp;
 
 - *skipCache*: `boolean`
-  For development scenarios, the module cache can be disabled by setting this option to true. Normally, if a module changes (e.g. bundledefs), this change is detected and the bundle is recreated. This just forces the regeneration always (defaults to `false`)
+  For development scenarios, the module cache can be disabled by setting this option to true. Normally the cache is invalidated automatically whenever any of the following change: the `ui5-tooling-modules` version itself, any of its source files, the resolved configuration (e.g. `minify`, `inject`, `pluginOptions`), the project's `package.json`/lockfile, or any file in the bundle's transitive module graph. This option just forces the regeneration always (defaults to `false`)
   &nbsp;
 
 - *persistentCache*: `boolean` *experimental feature*
-  With this option, the bundle information will be persistent and will be available again after the restart of the development server or for the next execution of your build task. The bundle information is stored in the working directory in the folder `.ui5-tooling-modules` folder. It's recommended to put this folder into `.gitignore` (defaults to `false`)
+  With this option, the bundle information will be persistent and will be available again after the restart of the development server or for the next execution of your build task. The bundle information is stored in the working directory in the folder `.ui5-tooling-modules` folder. It's recommended to put this folder into `.gitignore`. On load, persisted entries are validated against the recorded transitive module graph (path + size + mtime) so a fresh checkout or CI run cannot silently reuse a stale bundle. (defaults to `false`)
   &nbsp;
 
 - *keepDynamicImports*: `boolean|String[]` *experimental feature*

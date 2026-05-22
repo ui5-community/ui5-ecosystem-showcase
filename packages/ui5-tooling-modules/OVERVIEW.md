@@ -1,7 +1,7 @@
 # ui5-tooling-modules
 
-**Package Version:** 3.34.5
-**Last Updated:** 2026-02-11
+**Package Version:** 3.36.0
+**Last Updated:** 2026-05-22
 
 ---
 
@@ -68,7 +68,7 @@ UI5 App Code → Scan Dependencies → Bundle with Rollup → Transform to AMD �
   - **Package.json Export Resolution**: Implements Node.js package entry points (exports, browser, main fields)
   - **Dependency Graph Analysis**: Transitive dependency resolution
   - **Wildcard Mapping**: Handles package.json wildcard exports
-  - **Module Caching**: MD5-based cache keys with lastModified tracking
+  - **Module Caching**: SHA-256 layered fingerprint cache keys covering tool sources, configuration, lockfile, and the transitive module graph (see [Caching Architecture](#4-caching-architecture))
 
 #### 4. **Rollup Plugin Ecosystem**
 
@@ -88,26 +88,36 @@ Core plugins in the transformation pipeline:
 
 ## Recent Changes & Current State
 
-### Modified Files (From Git Status)
-The following files have uncommitted changes:
+### Bundle Cache Invalidation Rework
 
-1. **[rollup-plugin-webcomponents.js](lib/rollup-plugin-webcomponents.js)** (Modified)
-   - Added `filterForExternalModules` parameter to plugin options
-   - Added external module filtering in two places:
-     - Before emitting chunks (line 172)
-     - In resolveId hook (line 428)
-   - **Purpose**: Prevent bundling of external dependencies that are provided by other UI5 libraries
+The cache key construction in [util.js](lib/util.js) was reworked end-to-end. The previous key only mixed `mtime(util.js)` + the max `mtime` of the entry modules, which silently reused stale bundles in several common scenarios. See [CACHE-INVALIDATION.md](CACHE-INVALIDATION.md) for the full design and gap analysis.
 
-2. **[task.js](lib/task.js)** (Modified)
-   - Changes not yet committed (likely related to namespace handling or path rewriting)
+**What changed:**
 
-3. **[util.js](lib/util.js)** (Modified)
-   - Changes not yet committed (likely dependency resolution improvements)
+1. **Layered SHA-256 cache key** (replaces the old `md5(myLastModified:lastModified:entry-paths)` key). The new key combines four independent fingerprints, joined with `:` and SHA-256-hashed:
+   - `getToolFingerprint()` — package version + every `.js`/`.mjs`/`.cjs`/`.hbs` file under `lib/`. Memoized once per process.
+   - `getConfigFingerprint(opts)` — stable JSON of all bundle-affecting options (`pluginOptions`, `generatedCode`, `minify`, `inject`, `sourcemap`, `keepDynamicImports`, `skipTransform`, `dynamicEntriesPath`).
+   - `getLockfileFingerprint(cwd)` — `package.json` + nearest lockfile (`pnpm-lock.yaml` / `package-lock.json` / `yarn.lock` / `npm-shrinkwrap.json`), discovered by walking up from `cwd`. Memoized per `(lockfile, package.json)` mtime.
+   - `getInputGraphFingerprint(paths)` — sorted `path\0size\0mtime` triples for the entry modules.
+2. **Two-phase validation for the persistent cache.** When `persistentCache: true`, the recorded transitive module graph (`relatedPaths` on the persisted `BundleInfo`) is re-stat'd on load. A mismatch returns `undefined` from `BundleInfoCache.get()`, forcing a rebuild. This is the case `git checkout` can fool (mtime is rewritten to checkout time, not commit time), so a stale persisted entry can no longer slip past the cheap entry-mtime check.
+3. **`BundleInfo` carries `_inputFingerprint`.** Captured at `BundleInfoCache.store()` time and serialized through `toJSON()` / `fromJSON()`.
+4. **`md5` → `sha256` everywhere.** Both the bundle cache key and `resolveModule`'s `modulesCache` key. No measurable perf impact at these input sizes; silences security scanners flagging `md5`.
+
+**Gaps this closes (vs. the previous key):**
+
+- Editing `rollup-plugin-webcomponents.js`, `rollup-plugin-modules.js`, `WebComponentRegistry.js`, `DTSSerializer.js`, `JSDocSerializer.js`, or any `templates/**/*.hbs` now busts the cache.
+- Bumping `ui5-tooling-modules` itself in `node_modules` (e.g. fresh `pnpm install`) busts the cache.
+- Toggling `minify` / `sourcemap` / `generatedCode` / `inject` / `keepDynamicImports` / `skipTransform` / `dynamicEntriesPath` / `pluginOptions` busts the cache.
+- A change deep in a transitive dependency busts the cache (verified on persistent-cache load).
+- A `pnpm-lock.yaml` / `package-lock.json` bump busts the cache.
+- Fresh `git checkout` / CI runs no longer reuse stale persisted entries.
 
 ### Recent Commit History
 
 | Commit | Description | Impact |
 |--------|-------------|--------|
+| `485131bc` | Allow deeper nested web component classes of the same name (#1318) | Improved Web Components class resolution |
+| `153841c2` | Update dependencies and bump OpenUI5 to 1.148.0 (#1349) | Dependency refresh |
 | `8a5cd402` | Robust parsing and handling of webc metadata (#1316) | Improved Web Components metadata handling |
 | `d7ab7a8e` | Properly lookup package.json for workspaces (#1314) | Fixed workspace/monorepo support |
 | `1ca62f1e` | Import base package for all entry modules (#1310) | Fixed Web Components base package imports |
@@ -177,22 +187,52 @@ NPM Package → CEM Parsing → WebComponentRegistry → UI5 Wrapper Generation 
 
 ### 4. Caching Architecture
 
-Two-tier caching system:
+Two-tier caching system with a layered SHA-256 fingerprint as the cache key. See [CACHE-INVALIDATION.md](CACHE-INVALIDATION.md) for the full design rationale.
 
-**In-Memory Cache** (BundleInfoCache):
-- Cache key: MD5(lastModified + moduleNames + paths)
-- Stores complete BundleInfo objects
+**In-Memory Cache** (`BundleInfoCache`, [util.js](lib/util.js)):
+
+- Stores complete `BundleInfo` objects keyed by the layered fingerprint
 - Cleared on process restart
 
-**Persistent Cache** (when enabled):
-- Location: `.ui5-tooling-modules/*.bundleinfo.json`
+**Persistent Cache** (when `persistentCache: true`):
+
+- Location: `<cwd>/.ui5-tooling-modules/<key>.bundleinfo.json`
 - Survives server restarts
 - Should be gitignored
+- On load, the recorded transitive module graph is re-stat'd against disk; mismatches force a rebuild
 
-**Cache Invalidation**:
-- Triggered by file changes (via Chokidar watcher)
-- MD5 hash includes file modification times
-- Util.js modification time included in cache key
+#### Cache Key Construction
+
+The bundle cache key is the SHA-256 of four colon-joined fingerprints:
+
+```
+sha256(toolFp : configFp : lockfileFp : entryGraphFp : "name@path,...")
+```
+
+| Layer | Inputs | Cost |
+| ----- | ------ | ---- |
+| `getToolFingerprint()` | `name@version` + every `.js`/`.mjs`/`.cjs`/`.hbs` under `lib/` (content-hashed) | Paid once per process (memoized) |
+| `getConfigFingerprint(opts)` | Stable JSON of `pluginOptions`, `generatedCode`, `minify`, `inject`, `sourcemap`, `keepDynamicImports`, `skipTransform`, `dynamicEntriesPath` | Negligible (single hash of a small JSON string) |
+| `getLockfileFingerprint(cwd)` | `package.json` + nearest lockfile (pnpm/npm/yarn) | Memoized per `(lockfile, package.json)` mtime |
+| `getInputGraphFingerprint(paths)` | Sorted `path\0size\0mtime` triples for entry modules | One `stat()` per entry module |
+
+#### Two-Phase Validation
+
+The cache check happens *before* `createBundle()`, but the full transitive module graph is only known *after* (Rollup discovers it during bundling). The fast/slow split:
+
+- **Fast pre-check** (every cache lookup): hash entry-module path/size/mtime + the layers above. Cheap.
+- **Confirmation step** (persistent-cache load only): re-stat the recorded `relatedPaths` on the persisted `BundleInfo` and compare against the stored `_inputFingerprint`. Catches the `git checkout` / CI case where mtime is rewritten to checkout time and the entry-mtime check would otherwise pass.
+
+After each successful build, `BundleInfoCache.store()` captures `getInputGraphFingerprint(bundleInfo.getRelatedPaths())` onto the `BundleInfo` so the next persistent load can verify it.
+
+#### What invalidates the cache (automatically)
+
+- `ui5-tooling-modules` version bump (covered by tool fingerprint)
+- Any edit under `lib/**/*.{js,mjs,cjs,hbs}` (covered by tool fingerprint)
+- Any change to `pluginOptions` / `minify` / `sourcemap` / `inject` / `generatedCode` / `keepDynamicImports` / `skipTransform` / `dynamicEntriesPath` (covered by config fingerprint)
+- `package.json` or lockfile change in any ancestor of `cwd` (covered by lockfile fingerprint)
+- Add/remove/edit of any entry module (covered by entry-graph fingerprint)
+- Edit of any transitive dependency, when loading the persistent cache (covered by the confirmation step on `relatedPaths`)
 
 ### 5. Dependency Rewriting
 

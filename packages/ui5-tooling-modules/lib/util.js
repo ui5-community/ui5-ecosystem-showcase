@@ -28,6 +28,156 @@ const parseJS = require("./utils/parseJS");
 const { createHash } = require("crypto");
 const sanitize = require("sanitize-filename");
 
+// ============================================================================
+// Cache invalidation helpers — sha256 layered fingerprint (Option A)
+// See packages/ui5-tooling-modules/CACHE-INVALIDATION.md for the design.
+// ============================================================================
+
+const TOOL_LIB_DIR = __dirname;
+const LOCKFILE_NAMES = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock", "npm-shrinkwrap.json"];
+const TOOL_SOURCE_EXTS = new Set([".js", ".mjs", ".cjs", ".hbs"]);
+const TOOL_SKIP_DIRS = new Set(["node_modules", ".git", "dist", "coverage"]);
+
+/**
+ * Recursively walks a directory, collecting files matching the given extensions.
+ * @param {string} dir directory to walk
+ * @param {string[]} [out] accumulator array (used by recursion)
+ * @returns {string[]} absolute file paths whose extension is in TOOL_SOURCE_EXTS
+ */
+function walkDirSync(dir, out = []) {
+	for (const dirent of readdirSync(dir, { withFileTypes: true })) {
+		if (dirent.isDirectory()) {
+			if (!TOOL_SKIP_DIRS.has(dirent.name)) {
+				walkDirSync(path.join(dir, dirent.name), out);
+			}
+		} else if (dirent.isFile() && TOOL_SOURCE_EXTS.has(path.extname(dirent.name))) {
+			out.push(path.join(dir, dirent.name));
+		}
+	}
+	return out;
+}
+
+/**
+ * Stable JSON stringification so config objects produce identical fingerprints
+ * regardless of key insertion order.
+ * @param {string|number|boolean|null|object|Array} obj value to serialize
+ * @returns {string} deterministic JSON string
+ */
+function stableStringify(obj) {
+	if (obj === null || typeof obj !== "object") return JSON.stringify(obj);
+	if (Array.isArray(obj)) return `[${obj.map(stableStringify).join(",")}]`;
+	const keys = Object.keys(obj).sort();
+	return `{${keys.map((k) => `${JSON.stringify(k)}:${stableStringify(obj[k])}`).join(",")}}`;
+}
+
+let _toolFingerprint;
+/**
+ * Fingerprint of the tooling itself: package version + content of all source
+ * files under lib/ (js/mjs/cjs/hbs). Memoized for the lifetime of the process,
+ * so the I/O is paid once.
+ * @returns {string} sha256 hex digest of the tool sources
+ */
+function getToolFingerprint() {
+	if (_toolFingerprint) return _toolFingerprint;
+	const pkg = require("../package.json");
+	const files = walkDirSync(TOOL_LIB_DIR).sort();
+	const h = createHash("sha256");
+	h.update(`${pkg.name}@${pkg.version}\n`);
+	for (const f of files) {
+		h.update(`${path.relative(TOOL_LIB_DIR, f)}\0`);
+		h.update(readFileSync(f));
+		h.update("\0");
+	}
+	return (_toolFingerprint = h.digest("hex"));
+}
+
+/**
+ * Fingerprint of every option that affects bundle output.
+ * @param {object} opts the configuration options used by getBundleInfo
+ * @returns {string} sha256 hex digest of the stable JSON of `opts`
+ */
+function getConfigFingerprint(opts) {
+	const relevant = {
+		pluginOptions: opts.pluginOptions ?? null,
+		generatedCode: opts.generatedCode ?? null,
+		minify: !!opts.minify,
+		inject: opts.inject ?? null,
+		sourcemap: !!opts.sourcemap,
+		keepDynamicImports: opts.keepDynamicImports ?? null,
+		skipTransform: opts.skipTransform ?? null,
+		dynamicEntriesPath: opts.dynamicEntriesPath ?? null,
+	};
+	return createHash("sha256").update(stableStringify(relevant)).digest("hex");
+}
+
+const _lockfileFingerprintCache = new Map();
+/**
+ * Fingerprint of the project's package.json + lockfile, so dependency-version
+ * bumps invalidate the cache. Walks up from `cwd` to find the nearest lockfile.
+ * Memoized per (lockfile, package.json) mtime.
+ * @param {string} cwd current working directory to start the lockfile search from
+ * @returns {string} sha256 hex digest of the lockfile + package.json contents
+ */
+function getLockfileFingerprint(cwd) {
+	let lockfile;
+	let dir = cwd;
+	for (;;) {
+		for (const name of LOCKFILE_NAMES) {
+			const candidate = path.join(dir, name);
+			if (existsSync(candidate)) {
+				lockfile = candidate;
+				break;
+			}
+		}
+		if (lockfile) break;
+		const parent = path.dirname(dir);
+		if (parent === dir) break;
+		dir = parent;
+	}
+	const pkgJson = lockfile ? path.join(path.dirname(lockfile), "package.json") : path.join(cwd, "package.json");
+	const pkgJsonExists = existsSync(pkgJson);
+	const lockMtime = lockfile ? statSync(lockfile).mtimeMs : 0;
+	const pkgMtime = pkgJsonExists ? statSync(pkgJson).mtimeMs : 0;
+	const cacheKey = `${lockfile || ""}@${lockMtime}:${pkgJson}@${pkgMtime}`;
+	if (_lockfileFingerprintCache.has(cacheKey)) {
+		return _lockfileFingerprintCache.get(cacheKey);
+	}
+	const h = createHash("sha256");
+	if (lockfile) {
+		h.update(`${path.basename(lockfile)}\0`);
+		h.update(readFileSync(lockfile));
+		h.update("\0");
+	}
+	if (pkgJsonExists) {
+		h.update("package.json\0");
+		h.update(readFileSync(pkgJson));
+		h.update("\0");
+	}
+	const fp = h.digest("hex");
+	_lockfileFingerprintCache.set(cacheKey, fp);
+	return fp;
+}
+
+/**
+ * Fingerprint of a set of input file paths, using path + size + mtime. Used
+ * for both the cheap pre-bundle check (entry modules) and the full transitive
+ * graph validation step (recorded `relatedPaths` of a persisted BundleInfo).
+ * @param {string[]} paths absolute file paths to fingerprint
+ * @returns {string} sha256 hex digest of the path/size/mtime triples
+ */
+function getInputGraphFingerprint(paths) {
+	const h = createHash("sha256");
+	for (const p of [...new Set(paths)].sort()) {
+		try {
+			const st = statSync(p);
+			h.update(`${p}\0${st.size}\0${st.mtimeMs}\0`);
+		} catch {
+			h.update(`${p}\0MISSING\0`);
+		}
+	}
+	return h.digest("hex");
+}
+
 const { runInContext, createContext } = require("vm");
 
 const { minVersion } = require("semver");
@@ -280,7 +430,18 @@ class BundleInfoCache {
 		} else if (persist) {
 			const bundleInfoPath = this.#cachePath(key);
 			if (existsSync(bundleInfoPath)) {
-				return (this.#bundleInfoCache[key] = new BundleInfo().fromJSON(readFileSync(bundleInfoPath, { encoding: "utf8" })));
+				const loaded = new BundleInfo().fromJSON(readFileSync(bundleInfoPath, { encoding: "utf8" }));
+				// Re-stat the recorded transitive module graph as a confirmation step.
+				// On fresh checkouts (e.g. CI / `git checkout`) entry-only mtime checks
+				// can produce a false positive; this validates the full graph.
+				const recordedFp = loaded.getInputFingerprint();
+				if (recordedFp) {
+					const currentFp = getInputGraphFingerprint(loaded.getRelatedPaths());
+					if (recordedFp !== currentFp) {
+						return undefined;
+					}
+				}
+				return (this.#bundleInfoCache[key] = loaded);
 			}
 		}
 		return undefined;
@@ -288,6 +449,9 @@ class BundleInfoCache {
 	static store(key, bundleInfo, { persist } = {}) {
 		this.#bundleInfoCache[key] = bundleInfo;
 		if (persist) {
+			// Capture the transitive input graph fingerprint so a future persistent
+			// cache load can verify the recorded graph still matches disk state.
+			bundleInfo.setInputFingerprint(getInputGraphFingerprint(bundleInfo.getRelatedPaths()));
 			const bundleInfoPath = this.#cachePath(key);
 			mkdir(path.dirname(bundleInfoPath), { recursive: true })
 				.then(() => {
@@ -305,9 +469,18 @@ class BundleInfoCache {
  */
 class BundleInfo {
 	_entries = [];
+	_inputFingerprint = null;
 	fromJSON(s) {
-		this._entries = JSON.parse(s)._entries;
+		const parsed = JSON.parse(s);
+		this._entries = parsed._entries;
+		this._inputFingerprint = parsed._inputFingerprint ?? null;
 		return this;
+	}
+	setInputFingerprint(fp) {
+		this._inputFingerprint = fp;
+	}
+	getInputFingerprint() {
+		return this._inputFingerprint;
 	}
 	getEntry(name) {
 		return this._entries.find((entry) => entry.name === name);
@@ -839,7 +1012,7 @@ module.exports = function (log, projectInfo) {
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
 		resolveModule: function resolveModule(moduleName, { cwd = process.cwd(), depPaths = [], additionalDeps = [] } = {}) {
 			// create a cache key for the module and check the cache
-			const cacheKey = createHash("md5")
+			const cacheKey = createHash("sha256")
 				.update(`${[moduleName, cwd, ...depPaths].sort().join(",")}`)
 				.digest("hex");
 			if (modulesCache[cacheKey]) {
@@ -1284,9 +1457,9 @@ module.exports = function (log, projectInfo) {
 						: skipTransform;
 				};
 
-				// determine the list of modules to transpile and get the latest lastModified
-				// flag to determine when we finally need to rebuild the bundle information
-				let lastModified = -1;
+				// determine the list of modules to transpile (per-module mtimes are
+				// captured into the input fingerprint via getInputGraphFingerprint
+				// when computing the cache key further down).
 				for (const moduleName of moduleNames) {
 					const modulePath = that.resolveModule(moduleName, { cwd, depPaths });
 					// the following must apply:
@@ -1306,7 +1479,6 @@ module.exports = function (log, projectInfo) {
 								lastModified: new Date((await stat(modulePath)).mtime).getTime(),
 							};
 							bundleInfo.addModule(module);
-							lastModified = Math.max(lastModified, module.lastModified);
 						} else if (isCMJSModule) {
 							bundleInfo.addScript(that.getResource(moduleName, { cwd, depPaths, isMiddleware }));
 						} else {
@@ -1315,15 +1487,37 @@ module.exports = function (log, projectInfo) {
 					}
 				}
 
-				// create a cache key which includes the last modified timestamp and the module names
+				// create a cache key from a layered sha256 fingerprint:
+				//   1) tool sources + version (memoized once per process)
+				//   2) all bundle-affecting configuration options
+				//   3) project package.json + lockfile (catches dependency bumps)
+				//   4) entry modules: path + size + mtime
+				// Transitive module graph is captured after the build and verified on
+				// persistent-cache load (see BundleInfoCache.get/store).
+				// See packages/ui5-tooling-modules/CACHE-INVALIDATION.md for the design.
 				const modules = bundleInfo.getModules();
-				const myLastModified = new Date((await stat(__filename)).mtime).getTime();
-				const cacheKey = createHash("md5")
+				const entryFp = getInputGraphFingerprint(modules.map((module) => module.path));
+				const cacheKey = createHash("sha256")
 					.update(
-						`${myLastModified}:${lastModified}:${modules
-							.map((module) => `${module.name}@${module.path}`)
-							.sort()
-							.join(",")}`,
+						[
+							getToolFingerprint(),
+							getConfigFingerprint({
+								pluginOptions,
+								generatedCode,
+								minify,
+								inject,
+								sourcemap,
+								keepDynamicImports,
+								skipTransform,
+								dynamicEntriesPath,
+							}),
+							getLockfileFingerprint(cwd),
+							entryFp,
+							modules
+								.map((module) => `${module.name}@${module.path}`)
+								.sort()
+								.join(","),
+						].join(":"),
 					)
 					.digest("hex");
 
