@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.36.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.36.0...ui5-tooling-modules@3.36.1) (2026-05-22)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** rework bundle cache invalidation ([#1365](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1365)) ([b8578cd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b8578cd9a8faeb0411eba77e08eca7c474a9a01e))
+
+
+
+
+
 # [3.36.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.2...ui5-tooling-modules@3.36.0) (2026-05-21)
 
 
