@@ -4,7 +4,7 @@ const path = require("path")
 const approuter = require("@sap/approuter")()
 
 const hook = require("ui5-utils-express/lib/hook")
-const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware")
+// http-proxy-middleware is ESM-only since v4 -> use dynamic import below
 const ct = require("content-type")
 const mime = require("mime-types")
 const portfinder = require("portfinder")
@@ -299,6 +299,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	}
 
 	// intereceptor of the response to update the content-type and rewrite the content
+	// http-proxy-middleware is ESM-only since v4
+	const { createProxyMiddleware, responseInterceptor } = await import("http-proxy-middleware")
 	const intercept = responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
 		const url = req.url
 		effectiveOptions.debug && log.info(`${req.method} ${url} -> ${baseUri}${url} [${proxyRes.statusCode}]`)

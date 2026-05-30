@@ -1,3 +1,3 @@
 {
-  "reject": ["pnpm", "@sap/cds", "chart.js", "nock", "minimatch", "http-proxy-middleware"]
+  "reject": ["pnpm", "@sap/cds", "chart.js", "nock", "minimatch"]
 }

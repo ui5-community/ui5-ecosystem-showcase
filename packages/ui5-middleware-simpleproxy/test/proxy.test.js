@@ -1,7 +1,7 @@
 const { default: test } = require("ava");
 
 const express = require("express");
-const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware");
+// http-proxy-middleware is ESM-only since v4 -> use dynamic import inside test.before
 const expressws = require("ui5-middleware-websocket/lib/expressws");
 const querystring = require("querystring");
 
@@ -14,6 +14,9 @@ let proxyServerHitCount = 0;
 
 // Start server before running tests
 test.before(async (t) => {
+	// http-proxy-middleware is ESM-only since v4
+	const { createProxyMiddleware, responseInterceptor } = await import("http-proxy-middleware");
+
 	// create the ports for the proxy server
 	const getPort = (await import("get-port")).default;
 	const proxyServerPort = await getPort();

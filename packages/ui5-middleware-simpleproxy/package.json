@@ -24,7 +24,7 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "http-proxy-agent": "^9.0.0",
-    "http-proxy-middleware": "^3.0.5",
+    "http-proxy-middleware": "^4.0.0",
     "https-proxy-agent": "^9.0.0",
     "minimatch": "^7.4.6",
     "proxy-from-env": "^2.1.0",
