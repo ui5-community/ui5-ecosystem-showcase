@@ -77,7 +77,7 @@ Core plugins in the transformation pipeline:
 | Plugin | Purpose | File |
 |--------|---------|------|
 | **webcomponents** | Web Components → UI5 Controls | [rollup-plugin-webcomponents.js](lib/rollup-plugin-webcomponents.js) |
-| **resolve-module** | Custom module resolution (workspace-aware, supports pnpm and other layouts) | rollup-plugin-resolve-module.js |
+| **resolve-module** | Workspace-aware module resolution. Package-manager-agnostic: works with npm, yarn, and pnpm (isolated or hoisted) without any pnpm-specific code path. | rollup-plugin-resolve-module.js |
 | **dynamic-imports** | Dynamic import handling | rollup-plugin-dynamic-imports.js |
 | **polyfill-node-override** | Node.js API polyfills | rollup-plugin-polyfill-node-override.js |
 | **skip-assets** | Skip CSS/asset imports | rollup-plugin-skip-assets.js |
@@ -141,8 +141,8 @@ The tool implements a custom Node.js-style module resolution with several specia
 ```
 
 **Key Edge Cases**:
-- Symlinked dependencies (always resolved to realpath)
-- pnpm workspaces (special package.json lookup)
+
+- Symlinked dependencies (always resolved to realpath, so `pnpm`'s isolated layout, `npm`/`yarn` workspace symlinks, and yarn berry's `node-modules` linker all flatten to the same on-disk targets)
 - Scoped packages (@org/package)
 - Case-sensitive file systems
 - Modules with .js in their name (e.g., easytimer.js)
