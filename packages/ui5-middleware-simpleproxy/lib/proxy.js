@@ -16,7 +16,7 @@
 const hook = require("ui5-utils-express/lib/hook");
 // http-proxy-middleware is ESM-only since v4 -> use dynamic import below
 
-const minimatch = require("minimatch");
+const { minimatch } = require("minimatch");
 
 // load environment variables
 const dotenv = require("dotenv");

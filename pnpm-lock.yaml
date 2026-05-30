@@ -327,8 +327,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       minimatch:
-        specifier: ^7.4.6
-        version: 7.4.9
+        specifier: ^10.2.5
+        version: 10.2.5
       proxy-from-env:
         specifier: ^2.1.0
         version: 2.1.0
@@ -531,8 +531,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       minimatch:
-        specifier: ^7.4.6
-        version: 7.4.9
+        specifier: ^10.2.5
+        version: 10.2.5
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
@@ -568,8 +568,8 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
       minimatch:
-        specifier: ^7.4.6
-        version: 7.4.9
+        specifier: ^10.2.5
+        version: 10.2.5
       replacestream:
         specifier: ^4.0.3
         version: 4.0.3
@@ -17216,7 +17216,7 @@ snapshots:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 7.4.9
+      minimatch: 10.2.5
       once: 1.4.0
       path-is-absolute: 1.0.1
 
@@ -18290,7 +18290,7 @@ snapshots:
       istanbul-lib-report: 3.0.1
       istanbul-lib-source-maps: 4.0.1
       istanbul-reports: 3.2.0
-      minimatch: 7.4.9
+      minimatch: 10.2.5
     transitivePeerDependencies:
       - supports-color
 
@@ -20424,7 +20424,7 @@ snapshots:
 
   recursive-readdir@2.2.3:
     dependencies:
-      minimatch: 7.4.9
+      minimatch: 10.2.5
 
   redent@3.0.0:
     dependencies:
@@ -20592,7 +20592,7 @@ snapshots:
   resp-modifier@6.0.2:
     dependencies:
       debug: 2.6.9
-      minimatch: 7.4.9
+      minimatch: 10.2.5
     transitivePeerDependencies:
       - supports-color
 

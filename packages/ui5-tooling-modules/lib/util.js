@@ -21,7 +21,7 @@ const webcomponents = require("./rollup-plugin-webcomponents");
 const importMeta = require("./rollup-plugin-import-meta");
 
 const walk = require("ignore-walk");
-const minimatch = require("minimatch");
+const { minimatch } = require("minimatch");
 
 const { XMLParser } = require("fast-xml-parser");
 const parseJS = require("./utils/parseJS");

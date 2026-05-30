@@ -2,7 +2,7 @@
 const { createReplacePlaceholdersDestination, addPlaceholderString, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
 
 const { Readable } = require("stream");
-const minimatch = require("minimatch");
+const { minimatch } = require("minimatch");
 const intercept = require("ui5-utils-express/lib/intercept");
 
 /**
@@ -115,6 +115,6 @@ module.exports = function createMiddleware({ log, resources, options, middleware
 			});
 			newResource.setStream(readable.pipe(createReplacePlaceholdersDestination(newResource, isDebug, log)));
 			return await newResource.getString();
-		}
+		},
 	);
 };

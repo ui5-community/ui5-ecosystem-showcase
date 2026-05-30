@@ -41,7 +41,7 @@
     "handlebars": "^4.7.9",
     "ignore-walk": "^9.0.0",
     "js-yaml": "^4.1.1",
-    "minimatch": "^7.4.6",
+    "minimatch": "^10.2.5",
     "prettier": "^3.8.3",
     "rollup": "^4.60.4",
     "rollup-plugin-polyfill-node": "^0.13.0",
