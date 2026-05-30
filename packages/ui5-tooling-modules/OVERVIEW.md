@@ -77,7 +77,7 @@ Core plugins in the transformation pipeline:
 | Plugin | Purpose | File |
 |--------|---------|------|
 | **webcomponents** | Web Components → UI5 Controls | [rollup-plugin-webcomponents.js](lib/rollup-plugin-webcomponents.js) |
-| **pnpm-resolve** | PNPM workspace resolution | rollup-plugin-pnpm-resolve.js |
+| **resolve-module** | Custom module resolution (workspace-aware, supports pnpm and other layouts) | rollup-plugin-resolve-module.js |
 | **dynamic-imports** | Dynamic import handling | rollup-plugin-dynamic-imports.js |
 | **polyfill-node-override** | Node.js API polyfills | rollup-plugin-polyfill-node-override.js |
 | **skip-assets** | Skip CSS/asset imports | rollup-plugin-skip-assets.js |
@@ -454,7 +454,7 @@ Bottlenecks to monitor:
 ### Rollup Plugins
 - [lib/rollup-plugin-webcomponents.js](lib/rollup-plugin-webcomponents.js) - Web Components transformation
 - [lib/rollup-plugin-dynamic-imports.js](lib/rollup-plugin-dynamic-imports.js) - Dynamic import handling
-- [lib/rollup-plugin-pnpm-resolve.js](lib/rollup-plugin-pnpm-resolve.js) - PNPM resolution
+- [lib/rollup-plugin-resolve-module.js](lib/rollup-plugin-resolve-module.js) - Custom module resolution
 
 ### Utilities
 - [lib/utils/WebComponentRegistry.js](lib/utils/WebComponentRegistry.js) - WC metadata management

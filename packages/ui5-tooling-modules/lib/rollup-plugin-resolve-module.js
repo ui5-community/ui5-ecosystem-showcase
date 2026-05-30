@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = function ({ resolveModule } = {}) {
 	return {
-		name: "pnpm-resolve",
+		name: "resolve-module",
 		resolveId: function (importee, importer) {
 			let module = importee;
 			if (path.isAbsolute(importee)) {
