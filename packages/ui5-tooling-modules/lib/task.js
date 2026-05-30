@@ -1,7 +1,7 @@
 const path = require("path");
 const { createReadStream, existsSync } = require("fs");
 const { XMLParser, XMLBuilder } = require("fast-xml-parser");
-const minimatch = require("minimatch");
+const { minimatch } = require("minimatch");
 const parseJS = require("./utils/parseJS");
 const sanitize = require("sanitize-filename");
 
