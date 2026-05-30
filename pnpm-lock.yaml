@@ -144,8 +144,8 @@ importers:
         specifier: ^17.4.2
         version: 17.4.2
       http-proxy-middleware:
-        specifier: ^3.0.5
-        version: 3.0.5
+        specifier: ^4.0.0
+        version: 4.0.0
       mime-types:
         specifier: ^3.0.2
         version: 3.0.2
@@ -321,8 +321,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       http-proxy-middleware:
-        specifier: ^3.0.5
-        version: 3.0.5
+        specifier: ^4.0.0
+        version: 4.0.0
       https-proxy-agent:
         specifier: ^9.0.0
         version: 9.0.0
@@ -3627,9 +3627,6 @@ packages:
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
 
-  '@types/http-proxy@1.17.17':
-    resolution: {integrity: sha512-ED6LB+Z1AVylNTu7hdzuBqOgMnvG/ld6wGCG8wFnAzKX5uyW2K3WD52v0gnLCTK/VLpXtKckgWuyScYK6cSPaw==}
-
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
 
@@ -6597,9 +6594,9 @@ packages:
     resolution: {integrity: sha512-FcF8VhXYLQcxWCnt/cCpT2apKsRDUGeVEeMqGu4HSTu29U8Yw0TLOjdYIlDsYk3IkUh+taX4IDWpPcCqKDhCjA==}
     engines: {node: '>= 20'}
 
-  http-proxy-middleware@3.0.5:
-    resolution: {integrity: sha512-GLZZm1X38BPY4lkXA01jhwxvDoOkkXqjgVyUzVxiEK4iuRu03PZoYHhHRwxnfhQMDuaxi3vVri0YgSro/1oWqg==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+  http-proxy-middleware@4.0.0:
+    resolution: {integrity: sha512-wuHwaUtmC0XzJNHqRp41zXtt5ojpHbusXGhq6781VvnjWUYPu7opmOF3eomGNujT07kEOnHWZyV9UZzKimVCKA==}
+    engines: {node: ^22.15.0 || ^24.0.0 || >=26.0.0}
 
   http-proxy@1.18.1:
     resolution: {integrity: sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==}
@@ -6624,6 +6621,9 @@ packages:
   https-proxy-agent@9.0.0:
     resolution: {integrity: sha512-/MVmHp58WkOypgFhCLk4fzpPcFQvTJ/e6LBI7irpIO2HfxUbpmYoHF+KzipzJpxxzJu7aJNWQ0xojJ/dzV2G5g==}
     engines: {node: '>= 20'}
+
+  httpxy@0.5.3:
+    resolution: {integrity: sha512-SMS9V6Sn7VWaS11lYhoAr0ceoaiolTWf4jYdJn0NJhCdKMu9R2H9Fh0LBDWBHQF6HRLI1PmaePYsjanSpE5PEw==}
 
   human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
@@ -13539,10 +13539,6 @@ snapshots:
 
   '@types/http-errors@2.0.5': {}
 
-  '@types/http-proxy@1.17.17':
-    dependencies:
-      '@types/node': 25.9.1
-
   '@types/istanbul-lib-coverage@2.0.6': {}
 
   '@types/istanbul-lib-report@3.0.3':
@@ -14900,7 +14896,7 @@ snapshots:
       etag: 1.8.1
       fresh: 0.5.2
       fs-extra: 3.0.1
-      http-proxy: 1.18.1(debug@4.4.3)
+      http-proxy: 1.18.1
       immutable: 3.8.3
       micromatch: 4.0.8
       opn: 5.3.0
@@ -17495,18 +17491,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  http-proxy-middleware@3.0.5:
+  http-proxy-middleware@4.0.0:
     dependencies:
-      '@types/http-proxy': 1.17.17
       debug: 4.4.3(supports-color@5.5.0)
-      http-proxy: 1.18.1(debug@4.4.3)
+      httpxy: 0.5.3
       is-glob: 4.0.3
-      is-plain-object: 5.0.0
+      is-plain-obj: 4.1.0
       micromatch: 4.0.8
     transitivePeerDependencies:
       - supports-color
 
-  http-proxy@1.18.1(debug@4.4.3):
+  http-proxy@1.18.1:
     dependencies:
       eventemitter3: 4.0.7
       follow-redirects: 1.16.0(debug@4.4.3)
@@ -17546,6 +17541,8 @@ snapshots:
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
+
+  httpxy@0.5.3: {}
 
   human-signals@2.1.0: {}
 
@@ -18303,7 +18300,7 @@ snapshots:
       '@ui5/project': 4.0.16(@ui5/builder@4.1.6)
       '@ui5/server': 4.0.15
       express: 4.22.2
-      http-proxy: 1.18.1(debug@4.4.3)
+      http-proxy: 1.18.1
       js-yaml: 4.1.1
       karma: 6.4.4
     transitivePeerDependencies:
@@ -18322,7 +18319,7 @@ snapshots:
       dom-serialize: 2.2.1
       glob: 7.2.3
       graceful-fs: 4.2.11
-      http-proxy: 1.18.1(debug@4.4.3)
+      http-proxy: 1.18.1
       isbinaryfile: 4.0.10
       lodash: 4.18.1
       log4js: 6.9.1

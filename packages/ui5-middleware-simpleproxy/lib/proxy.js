@@ -14,7 +14,7 @@
  */
 
 const hook = require("ui5-utils-express/lib/hook");
-const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware");
+// http-proxy-middleware is ESM-only since v4 -> use dynamic import below
 
 const minimatch = require("minimatch");
 
@@ -116,6 +116,9 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 		agent = proxyUrl ? new HttpProxyAgent(proxyUrl) : undefined;
 	}
 	debug && log.info(`[${baseUri}] Proxy: ${proxyUrl ? proxyUrl : "n/a"}`);
+
+	// http-proxy-middleware is ESM-only since v4
+	const { createProxyMiddleware, responseInterceptor } = await import("http-proxy-middleware");
 
 	// check whether the request should be included or not
 	const hasExcludePatterns = excludePatterns && Array.isArray(excludePatterns);
