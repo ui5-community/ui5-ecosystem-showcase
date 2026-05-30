@@ -307,12 +307,12 @@ test.serial("Verify generation of luxon", async (t) => {
 
 test.serial("Verify generation of XLSX", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
-	const env = await setupEnv(["xlsx"], {
+	const env = await setupEnv(["@e965/xlsx"], {
 		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
 	});
-	const module = await env.getModule("xlsx");
+	const module = await env.getModule("@e965/xlsx");
 	t.true(module.retVal.__esModule);
 	t.true(typeof module.retVal.version === "string");
 	if (platform() !== "win32") {

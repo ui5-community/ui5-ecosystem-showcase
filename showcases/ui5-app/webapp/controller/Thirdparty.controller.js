@@ -4,7 +4,7 @@ sap.ui.define(
 		"ui5/ecosystem/demo/app/controller/BaseController",
 		"sap/m/MessageToast",
 		"sap/ui/thirdparty/jquery",
-		"xlsx",
+		"@e965/xlsx",
 		"cmis",
 		"@supabase/supabase-js",
 		"@octokit/core", // requires node-fetch@2 and is-plain-object@5
@@ -58,7 +58,7 @@ sap.ui.define(
 
 		console.log("Rewrite test: the second parameter must not be rewritten!", "xlsx");
 
-		console.log("[3rdParty] xlsx", xlsx);
+		console.log("[3rdParty] @e965/xlsx", xlsx);
 		console.log("[3rdParty] cmis", cmis);
 		console.log("[3rdParty] supabase", supabase);
 		console.log("[3rdParty] octokit", octokit);
@@ -96,7 +96,8 @@ sap.ui.define(
 
 		return Controller.extend("ui5.ecosystem.demo.app.controller.Thirdparty", {
 			onInit() {
-				// https://www.npmjs.com/package/xlsx
+				// https://www.npmjs.com/package/@e965/xlsx
+				// => https://docs.sheetjs.com/docs/getting-started/
 				const worksheet = xlsx.utils.aoa_to_sheet([
 					["A1", "B1", "C1"],
 					["A2", "B2", "C2"],

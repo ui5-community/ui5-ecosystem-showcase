@@ -42,7 +42,7 @@ builder:
       - "ui5/ecosystem/demo/tsapp/thirdparty/_dynamics/**"
       - "ui5/ecosystem/demo/tsapp/thirdparty/@stomp/**"
       - "ui5/ecosystem/demo/tsapp/thirdparty/jspdf*.js"
-      - "ui5/ecosystem/demo/tsapp/thirdparty/xlsx.js"
+      - "ui5/ecosystem/demo/tsapp/thirdparty/@e965/**"
   customTasks:
     - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion

@@ -1,7 +1,5 @@
 sap.ui.define(['exports'], (function (exports) { 'use strict';
 
-  var exports = exports || {};
-
   var global$1 = (typeof global !== "undefined" ? global :
     typeof self !== "undefined" ? self :
     typeof window !== "undefined" ? window : {});
@@ -23,245 +21,165 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     platform: platform};
 
   function getUserAgent() {
-      if (typeof navigator === "object" && "userAgent" in navigator) {
-          return navigator.userAgent;
-      }
-      if (typeof browser$1 === "object" && browser$1.version !== undefined) {
-          return `Node.js/${browser$1.version.substr(1)} (${browser$1.platform}; ${browser$1.arch})`;
-      }
-      return "<environment undetectable>";
-  }
-
-  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-  function getDefaultExportFromCjs (x) {
-  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-  }
-
-  var beforeAfterHook = {exports: {}};
-
-  var register_1;
-  var hasRequiredRegister;
-
-  function requireRegister () {
-  	if (hasRequiredRegister) return register_1;
-  	hasRequiredRegister = 1;
-  	register_1 = register;
-
-  	function register(state, name, method, options) {
-  	  if (typeof method !== "function") {
-  	    throw new Error("method for before hook must be a function");
-  	  }
-
-  	  if (!options) {
-  	    options = {};
-  	  }
-
-  	  if (Array.isArray(name)) {
-  	    return name.reverse().reduce(function (callback, name) {
-  	      return register.bind(null, state, name, callback, options);
-  	    }, method)();
-  	  }
-
-  	  return Promise.resolve().then(function () {
-  	    if (!state.registry[name]) {
-  	      return method(options);
-  	    }
-
-  	    return state.registry[name].reduce(function (method, registered) {
-  	      return registered.hook.bind(null, method, options);
-  	    }, method)();
-  	  });
-  	}
-  	return register_1;
-  }
-
-  var add;
-  var hasRequiredAdd;
-
-  function requireAdd () {
-  	if (hasRequiredAdd) return add;
-  	hasRequiredAdd = 1;
-  	add = addHook;
-
-  	function addHook(state, kind, name, hook) {
-  	  var orig = hook;
-  	  if (!state.registry[name]) {
-  	    state.registry[name] = [];
-  	  }
-
-  	  if (kind === "before") {
-  	    hook = function (method, options) {
-  	      return Promise.resolve()
-  	        .then(orig.bind(null, options))
-  	        .then(method.bind(null, options));
-  	    };
-  	  }
-
-  	  if (kind === "after") {
-  	    hook = function (method, options) {
-  	      var result;
-  	      return Promise.resolve()
-  	        .then(method.bind(null, options))
-  	        .then(function (result_) {
-  	          result = result_;
-  	          return orig(result, options);
-  	        })
-  	        .then(function () {
-  	          return result;
-  	        });
-  	    };
-  	  }
-
-  	  if (kind === "error") {
-  	    hook = function (method, options) {
-  	      return Promise.resolve()
-  	        .then(method.bind(null, options))
-  	        .catch(function (error) {
-  	          return orig(error, options);
-  	        });
-  	    };
-  	  }
-
-  	  state.registry[name].push({
-  	    hook: hook,
-  	    orig: orig,
-  	  });
-  	}
-  	return add;
-  }
-
-  var remove;
-  var hasRequiredRemove;
-
-  function requireRemove () {
-  	if (hasRequiredRemove) return remove;
-  	hasRequiredRemove = 1;
-  	remove = removeHook;
-
-  	function removeHook(state, name, method) {
-  	  if (!state.registry[name]) {
-  	    return;
-  	  }
-
-  	  var index = state.registry[name]
-  	    .map(function (registered) {
-  	      return registered.orig;
-  	    })
-  	    .indexOf(method);
-
-  	  if (index === -1) {
-  	    return;
-  	  }
-
-  	  state.registry[name].splice(index, 1);
-  	}
-  	return remove;
-  }
-
-  var hasRequiredBeforeAfterHook;
-
-  function requireBeforeAfterHook () {
-  	if (hasRequiredBeforeAfterHook) return beforeAfterHook.exports;
-  	hasRequiredBeforeAfterHook = 1;
-  	var register = requireRegister();
-  	var addHook = requireAdd();
-  	var removeHook = requireRemove();
-
-  	// bind with array of arguments: https://stackoverflow.com/a/21792913
-  	var bind = Function.bind;
-  	var bindable = bind.bind(bind);
-
-  	function bindApi(hook, state, name) {
-  	  var removeHookRef = bindable(removeHook, null).apply(
-  	    null,
-  	    name ? [state, name] : [state]
-  	  );
-  	  hook.api = { remove: removeHookRef };
-  	  hook.remove = removeHookRef;
-  	  ["before", "error", "after", "wrap"].forEach(function (kind) {
-  	    var args = name ? [state, kind, name] : [state, kind];
-  	    hook[kind] = hook.api[kind] = bindable(addHook, null).apply(null, args);
-  	  });
-  	}
-
-  	function HookSingular() {
-  	  var singularHookName = "h";
-  	  var singularHookState = {
-  	    registry: {},
-  	  };
-  	  var singularHook = register.bind(null, singularHookState, singularHookName);
-  	  bindApi(singularHook, singularHookState, singularHookName);
-  	  return singularHook;
-  	}
-
-  	function HookCollection() {
-  	  var state = {
-  	    registry: {},
-  	  };
-
-  	  var hook = register.bind(null, state);
-  	  bindApi(hook, state);
-
-  	  return hook;
-  	}
-
-  	var collectionHookDeprecationMessageDisplayed = false;
-  	function Hook() {
-  	  if (!collectionHookDeprecationMessageDisplayed) {
-  	    console.warn(
-  	      '[before-after-hook]: "Hook()" repurposing warning, use "Hook.Collection()". Read more: https://git.io/upgrade-before-after-hook-to-1.4'
-  	    );
-  	    collectionHookDeprecationMessageDisplayed = true;
-  	  }
-  	  return HookCollection();
-  	}
-
-  	Hook.Singular = HookSingular.bind();
-  	Hook.Collection = HookCollection.bind();
-
-  	beforeAfterHook.exports = Hook;
-  	// expose constructors as a named property for TypeScript
-  	beforeAfterHook.exports.Hook = Hook;
-  	beforeAfterHook.exports.Singular = Hook.Singular;
-  	beforeAfterHook.exports.Collection = Hook.Collection;
-  	return beforeAfterHook.exports;
-  }
-
-  var beforeAfterHookExports = requireBeforeAfterHook();
-
-  /*!
-   * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
-   *
-   * Copyright (c) 2014-2017, Jon Schlinkert.
-   * Released under the MIT License.
-   */
-
-  function isObject(o) {
-    return Object.prototype.toString.call(o) === '[object Object]';
-  }
-
-  function isPlainObject(o) {
-    var ctor,prot;
-
-    if (isObject(o) === false) return false;
-
-    // If has modified constructor
-    ctor = o.constructor;
-    if (ctor === undefined) return true;
-
-    // If has modified prototype
-    prot = ctor.prototype;
-    if (isObject(prot) === false) return false;
-
-    // If constructor does not have an Object-specific method
-    if (prot.hasOwnProperty('isPrototypeOf') === false) {
-      return false;
+    if (typeof navigator === "object" && "userAgent" in navigator) {
+      return navigator.userAgent;
     }
 
-    // Most likely a plain Object
-    return true;
+    if (typeof browser$1 === "object" && browser$1.version !== undefined) {
+      return `Node.js/${browser$1.version.substr(1)} (${browser$1.platform}; ${
+      browser$1.arch
+    })`;
+    }
+
+    return "<environment undetectable>";
   }
+
+  // @ts-check
+
+  function register(state, name, method, options) {
+    if (typeof method !== "function") {
+      throw new Error("method for before hook must be a function");
+    }
+
+    if (!options) {
+      options = {};
+    }
+
+    if (Array.isArray(name)) {
+      return name.reverse().reduce((callback, name) => {
+        return register.bind(null, state, name, callback, options);
+      }, method)();
+    }
+
+    return Promise.resolve().then(() => {
+      if (!state.registry[name]) {
+        return method(options);
+      }
+
+      return state.registry[name].reduce((method, registered) => {
+        return registered.hook.bind(null, method, options);
+      }, method)();
+    });
+  }
+
+  // @ts-check
+
+  function addHook(state, kind, name, hook) {
+    const orig = hook;
+    if (!state.registry[name]) {
+      state.registry[name] = [];
+    }
+
+    if (kind === "before") {
+      hook = (method, options) => {
+        return Promise.resolve()
+          .then(orig.bind(null, options))
+          .then(method.bind(null, options));
+      };
+    }
+
+    if (kind === "after") {
+      hook = (method, options) => {
+        let result;
+        return Promise.resolve()
+          .then(method.bind(null, options))
+          .then((result_) => {
+            result = result_;
+            return orig(result, options);
+          })
+          .then(() => {
+            return result;
+          });
+      };
+    }
+
+    if (kind === "error") {
+      hook = (method, options) => {
+        return Promise.resolve()
+          .then(method.bind(null, options))
+          .catch((error) => {
+            return orig(error, options);
+          });
+      };
+    }
+
+    state.registry[name].push({
+      hook: hook,
+      orig: orig,
+    });
+  }
+
+  // @ts-check
+
+  function removeHook(state, name, method) {
+    if (!state.registry[name]) {
+      return;
+    }
+
+    const index = state.registry[name]
+      .map((registered) => {
+        return registered.orig;
+      })
+      .indexOf(method);
+
+    if (index === -1) {
+      return;
+    }
+
+    state.registry[name].splice(index, 1);
+  }
+
+  // @ts-check
+
+
+  // bind with array of arguments: https://stackoverflow.com/a/21792913
+  const bind = Function.bind;
+  const bindable = bind.bind(bind);
+
+  function bindApi(hook, state, name) {
+    const removeHookRef = bindable(removeHook, null).apply(
+      null,
+      [state]
+    );
+    hook.api = { remove: removeHookRef };
+    hook.remove = removeHookRef;
+    ["before", "error", "after", "wrap"].forEach((kind) => {
+      const args = [state, kind];
+      hook[kind] = hook.api[kind] = bindable(addHook, null).apply(null, args);
+    });
+  }
+
+  function Collection() {
+    const state = {
+      registry: {},
+    };
+
+    const hook = register.bind(null, state);
+    bindApi(hook, state);
+
+    return hook;
+  }
+
+  var Hook = { Collection };
+
+  // pkg/dist-src/defaults.js
+
+  // pkg/dist-src/version.js
+  var VERSION$3 = "0.0.0-development";
+
+  // pkg/dist-src/defaults.js
+  var userAgent = `octokit-endpoint.js/${VERSION$3} ${getUserAgent()}`;
+  var DEFAULTS = {
+    method: "GET",
+    baseUrl: "https://api.github.com",
+    headers: {
+      accept: "application/vnd.github.v3+json",
+      "user-agent": userAgent
+    },
+    mediaType: {
+      format: ""
+    }
+  };
 
   // pkg/dist-src/util/lowercase-keys.js
   function lowercaseKeys(object) {
@@ -273,14 +191,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return newObj;
     }, {});
   }
+
+  // pkg/dist-src/util/is-plain-object.js
+  function isPlainObject$1(value) {
+    if (typeof value !== "object" || value === null) return false;
+    if (Object.prototype.toString.call(value) !== "[object Object]") return false;
+    const proto = Object.getPrototypeOf(value);
+    if (proto === null) return true;
+    const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+    return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+  }
+
+  // pkg/dist-src/util/merge-deep.js
   function mergeDeep(defaults, options) {
     const result = Object.assign({}, defaults);
     Object.keys(options).forEach((key) => {
-      if (isPlainObject(options[key])) {
-        if (!(key in defaults))
-          Object.assign(result, { [key]: options[key] });
-        else
-          result[key] = mergeDeep(defaults[key], options[key]);
+      if (isPlainObject$1(options[key])) {
+        if (!(key in defaults)) Object.assign(result, { [key]: options[key] });
+        else result[key] = mergeDeep(defaults[key], options[key]);
       } else {
         Object.assign(result, { [key]: options[key] });
       }
@@ -310,12 +238,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     removeUndefinedProperties(options);
     removeUndefinedProperties(options.headers);
     const mergedOptions = mergeDeep(defaults || {}, options);
-    if (defaults && defaults.mediaType.previews.length) {
-      mergedOptions.mediaType.previews = defaults.mediaType.previews.filter((preview) => !mergedOptions.mediaType.previews.includes(preview)).concat(mergedOptions.mediaType.previews);
+    if (options.url === "/graphql") {
+      if (defaults && defaults.mediaType.previews?.length) {
+        mergedOptions.mediaType.previews = defaults.mediaType.previews.filter(
+          (preview) => !mergedOptions.mediaType.previews.includes(preview)
+        ).concat(mergedOptions.mediaType.previews);
+      }
+      mergedOptions.mediaType.previews = (mergedOptions.mediaType.previews || []).map((preview) => preview.replace(/-preview/, ""));
     }
-    mergedOptions.mediaType.previews = mergedOptions.mediaType.previews.map(
-      (preview) => preview.replace(/-preview/, "")
-    );
     return mergedOptions;
   }
 
@@ -335,9 +265,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   // pkg/dist-src/util/extract-url-variable-names.js
-  var urlVariableRegex = /\{[^}]+\}/g;
+  var urlVariableRegex = /\{[^{}}]+\}/g;
   function removeNonChars(variableName) {
-    return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+    return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
   }
   function extractUrlVariableNames(url) {
     const matches = url.match(urlVariableRegex);
@@ -349,10 +279,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   // pkg/dist-src/util/omit.js
   function omit(object, keysToOmit) {
-    return Object.keys(object).filter((option) => !keysToOmit.includes(option)).reduce((obj, key) => {
-      obj[key] = object[key];
-      return obj;
-    }, {});
+    const result = { __proto__: null };
+    for (const key of Object.keys(object)) {
+      if (keysToOmit.indexOf(key) === -1) {
+        result[key] = object[key];
+      }
+    }
+    return result;
   }
 
   // pkg/dist-src/util/url-template.js
@@ -386,7 +319,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function getValues(context, operator, key, modifier) {
     var value = context[key], result = [];
     if (isDefined(value) && value !== "") {
-      if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      if (typeof value === "string" || typeof value === "number" || typeof value === "bigint" || typeof value === "boolean") {
         value = value.toString();
         if (modifier && modifier !== "*") {
           value = value.substring(0, parseInt(modifier, 10));
@@ -450,7 +383,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   function expand(template, context) {
     var operators = ["+", "#", ".", "/", ";", "?", "&"];
-    return template.replace(
+    template = template.replace(
       /\{([^\{\}]+)\}|([^\{\}]+)/g,
       function(_, expression, literal) {
         if (expression) {
@@ -480,6 +413,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
       }
     );
+    if (template === "/") {
+      return template;
+    } else {
+      return template.replace(/\/$/, "");
+    }
   }
 
   // pkg/dist-src/parse.js
@@ -507,18 +445,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     if (!isBinaryRequest) {
       if (options.mediaType.format) {
         headers.accept = headers.accept.split(/,/).map(
-          (preview) => preview.replace(
+          (format) => format.replace(
             /application\/vnd(\.\w+)(\.v3)?(\.\w+)?(\+json)?$/,
             `application/vnd$1$2.${options.mediaType.format}`
           )
         ).join(",");
       }
-      if (options.mediaType.previews.length) {
-        const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
-        headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
-          const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
-          return `application/vnd.github.${preview}-preview${format}`;
-        }).join(",");
+      if (url.endsWith("/graphql")) {
+        if (options.mediaType.previews?.length) {
+          const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
+          headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
+            const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
+            return `application/vnd.github.${preview}-preview${format}`;
+          }).join(",");
+        }
       }
     }
     if (["GET", "HEAD"].includes(method)) {
@@ -562,359 +502,591 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     });
   }
 
-  // pkg/dist-src/version.js
-  var VERSION$3 = "7.0.6";
-
-  // pkg/dist-src/defaults.js
-  var userAgent = `octokit-endpoint.js/${VERSION$3} ${getUserAgent()}`;
-  var DEFAULTS = {
-    method: "GET",
-    baseUrl: "https://api.github.com",
-    headers: {
-      accept: "application/vnd.github.v3+json",
-      "user-agent": userAgent
-    },
-    mediaType: {
-      format: "",
-      previews: []
-    }
-  };
-
   // pkg/dist-src/index.js
   var endpoint = withDefaults$2(null, DEFAULTS);
 
-  var browser = {exports: {}};
+  var dist = {};
 
-  var hasRequiredBrowser;
+  var hasRequiredDist;
 
-  function requireBrowser () {
-  	if (hasRequiredBrowser) return browser.exports;
-  	hasRequiredBrowser = 1;
-  	(function (module, exports) {
+  function requireDist () {
+  	if (hasRequiredDist) return dist;
+  	hasRequiredDist = 1;
+  	/*!
+  	 * content-type
+  	 * Copyright(c) 2015 Douglas Christopher Wilson
+  	 * MIT Licensed
+  	 */
+  	Object.defineProperty(dist, "__esModule", { value: true });
+  	dist.format = format;
+  	dist.parse = parse;
+  	const TEXT_REGEXP = /^[\u0009\u0020-\u007e\u0080-\u00ff]*$/;
+  	const TOKEN_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+  	/**
+  	 * RegExp to match chars that must be quoted-pair in RFC 9110 sec 5.6.4
+  	 */
+  	const QUOTE_REGEXP = /[\\"]/g;
+  	/**
+  	 * RegExp to match type in RFC 9110 sec 8.3.1
+  	 *
+  	 * media-type = type "/" subtype
+  	 * type       = token
+  	 * subtype    = token
+  	 */
+  	const TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+  	/**
+  	 * Null object perf optimization. Faster than `Object.create(null)` and `{ __proto__: null }`.
+  	 */
+  	const NullObject = /* @__PURE__ */ (() => {
+  	    const C = function () { };
+  	    C.prototype = Object.create(null);
+  	    return C;
+  	})();
+  	/**
+  	 * Format an object into a `Content-Type` header.
+  	 */
+  	function format(obj) {
+  	    const { type, parameters } = obj;
+  	    if (!type || !TYPE_REGEXP.test(type)) {
+  	        throw new TypeError(`Invalid type: ${type}`);
+  	    }
+  	    let result = type;
+  	    if (parameters) {
+  	        for (const param of Object.keys(parameters)) {
+  	            if (!TOKEN_REGEXP.test(param)) {
+  	                throw new TypeError(`Invalid parameter name: ${param}`);
+  	            }
+  	            result += `; ${param}=${qstring(parameters[param])}`;
+  	        }
+  	    }
+  	    return result;
+  	}
+  	/**
+  	 * Parse a `Content-Type` header.
+  	 */
+  	function parse(header, options) {
+  	    const len = header.length;
+  	    let index = skipOWS(header, 0, len);
+  	    const valueStart = index;
+  	    index = skipValue(header, index, len);
+  	    const valueEnd = trailingOWS(header, valueStart, index);
+  	    const type = header.slice(valueStart, valueEnd).toLowerCase();
+  	    const parameters = options?.parameters === false
+  	        ? new NullObject()
+  	        : parseParameters(header, index, len);
+  	    return { type, parameters };
+  	}
+  	const SP = 32; // " "
+  	const HTAB = 9; // "\t"
+  	const SEMI = 59; // ";"
+  	const EQ = 61; // "="
+  	const DQUOTE = 34; // '"'
+  	const BSLASH = 92; // "\\"
+  	/**
+  	 * Parses the parameters of a `Content-Type` header starting at the given index.
+  	 */
+  	function parseParameters(header, index, len) {
+  	    const parameters = new NullObject();
+  	    parameter: while (index < len) {
+  	        index = skipOWS(header, index + 1 /* Skip over ; */, len);
+  	        const keyStart = index;
+  	        while (index < len) {
+  	            const code = header.charCodeAt(index);
+  	            if (code === SEMI)
+  	                continue parameter;
+  	            if (code === EQ) {
+  	                const keyEnd = trailingOWS(header, keyStart, index);
+  	                const key = header.slice(keyStart, keyEnd).toLowerCase();
+  	                index = skipOWS(header, index + 1, len);
+  	                if (index < len && header.charCodeAt(index) === DQUOTE) {
+  	                    index++;
+  	                    let value = "";
+  	                    while (index < len) {
+  	                        const code = header.charCodeAt(index++);
+  	                        if (code === DQUOTE) {
+  	                            index = skipValue(header, index, len);
+  	                            if (parameters[key] === undefined)
+  	                                parameters[key] = value;
+  	                            break;
+  	                        }
+  	                        if (code === BSLASH && index < len) {
+  	                            value += header[index++];
+  	                            continue;
+  	                        }
+  	                        value += String.fromCharCode(code);
+  	                    }
+  	                    continue parameter;
+  	                }
+  	                const valueStart = index;
+  	                index = skipValue(header, index, len);
+  	                if (parameters[key] === undefined) {
+  	                    const valueEnd = trailingOWS(header, valueStart, index);
+  	                    parameters[key] = header.slice(valueStart, valueEnd);
+  	                }
+  	                continue parameter;
+  	            }
+  	            index++;
+  	        }
+  	    }
+  	    return parameters;
+  	}
+  	/**
+  	 * Skip over characters until a semicolon.
+  	 */
+  	function skipValue(str, index, len) {
+  	    while (index < len) {
+  	        const char = str.charCodeAt(index);
+  	        if (char === SEMI)
+  	            break;
+  	        index++;
+  	    }
+  	    return index;
+  	}
+  	/**
+  	 * Skip optional whitespace (OWS) in an HTTP header value.
+  	 *
+  	 * OWS is defined in RFC 9110 sec 5.6.3 as SP (" ") or HTAB ("\t").
+  	 */
+  	function skipOWS(header, index, len) {
+  	    while (index < len) {
+  	        const char = header.charCodeAt(index);
+  	        if (char !== SP && char !== HTAB)
+  	            break;
+  	        index++;
+  	    }
+  	    return index;
+  	}
+  	/**
+  	 * Trim optional whitespace (OWS) from the end of a substring.
+  	 *
+  	 * OWS is defined in RFC 9110 sec 5.6.3 as SP (" ") or HTAB ("\t").
+  	 */
+  	function trailingOWS(header, start, end) {
+  	    while (end > start) {
+  	        const char = header.charCodeAt(end - 1);
+  	        if (char !== SP && char !== HTAB)
+  	            break;
+  	        end--;
+  	    }
+  	    return end;
+  	}
+  	/**
+  	 * Serialize a parameter value.
+  	 */
+  	function qstring(str) {
+  	    if (TOKEN_REGEXP.test(str))
+  	        return str;
+  	    if (TEXT_REGEXP.test(str))
+  	        return `"${str.replace(QUOTE_REGEXP, "\\$&")}"`;
+  	    throw new TypeError(`Invalid parameter value: ${str}`);
+  	}
 
-  		// ref: https://github.com/tc39/proposal-global
-  		var getGlobal = function () {
-  			// the only reliable means to get the global object is
-  			// `Function('return this')()`
-  			// However, this causes CSP violations in Chrome apps.
-  			if (typeof self !== 'undefined') { return self; }
-  			if (typeof window !== 'undefined') { return window; }
-  			if (typeof commonjsGlobal !== 'undefined') { return commonjsGlobal; }
-  			throw new Error('unable to locate global object');
-  		};
-
-  		var globalObject = getGlobal();
-
-  		module.exports = exports = globalObject.fetch;
-
-  		// Needed for TypeScript and Webpack.
-  		if (globalObject.fetch) {
-  			exports.default = globalObject.fetch.bind(globalObject);
-  		}
-
-  		exports.Headers = globalObject.Headers;
-  		exports.Request = globalObject.Request;
-  		exports.Response = globalObject.Response;
-  	} (browser, browser.exports));
-  	return browser.exports;
+  	return dist;
   }
 
-  var browserExports = requireBrowser();
-  var nodeFetch = /*@__PURE__*/getDefaultExportFromCjs(browserExports);
+  var distExports = requireDist();
 
-  class Deprecation extends Error {
-    constructor(message) {
-      super(message); // Maintains proper stack trace (only available on V8)
+  const intRegex = /^-?\d+$/;
+  const noiseValue = /^-?\d+n+$/; // Noise - strings that match the custom format before being converted to it
+  const originalStringify = JSON.stringify;
+  const originalParse = JSON.parse;
+  const customFormat = /^-?\d+n$/;
 
-      /* istanbul ignore next */
+  const bigIntsStringify = /([\[:])?"(-?\d+)n"($|([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
+  const noiseStringify =
+    /([\[:])?("-?\d+n+)n("$|"([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
 
-      if (Error.captureStackTrace) {
-        Error.captureStackTrace(this, this.constructor);
-      }
+  /**
+   * @typedef {(this: any, key: string | number | undefined, value: any) => any} Replacer
+   * @typedef {(key: string | number | undefined, value: any, context?: { source: string }) => any} Reviver
+   */
 
-      this.name = 'Deprecation';
+  /**
+   * Converts a JavaScript value to a JSON string.
+   *
+   * Supports serialization of BigInt values using two strategies:
+   * 1. Custom format "123n" → "123" (universal fallback)
+   * 2. Native JSON.rawJSON() (Node.js 22+, fastest) when available
+   *
+   * All other values are serialized exactly like native JSON.stringify().
+   *
+   * @param {*} value The value to convert to a JSON string.
+   * @param {Replacer | Array<string | number> | null} [replacer]
+   *   A function that alters the behavior of the stringification process,
+   *   or an array of strings/numbers to indicate properties to exclude.
+   * @param {string | number} [space]
+   *   A string or number to specify indentation or pretty-printing.
+   * @returns {string} The JSON string representation.
+   */
+  const JSONStringify = (value, replacer, space) => {
+    if ("rawJSON" in JSON) {
+      return originalStringify(
+        value,
+        (key, value) => {
+          if (typeof value === "bigint") return JSON.rawJSON(value.toString());
+
+          if (Array.isArray(replacer) && replacer.includes(key)) return value;
+
+          return value;
+        },
+        space,
+      );
     }
 
-  }
+    if (!value) return originalStringify(value, replacer, space);
 
-  var once$1 = {exports: {}};
+    const convertedToCustomJSON = originalStringify(
+      value,
+      (key, value) => {
+        const isNoise = typeof value === "string" && noiseValue.test(value);
 
-  var wrappy_1;
-  var hasRequiredWrappy;
+        if (isNoise) return value.toString() + "n"; // Mark noise values with additional "n" to offset the deletion of one "n" during the processing
 
-  function requireWrappy () {
-  	if (hasRequiredWrappy) return wrappy_1;
-  	hasRequiredWrappy = 1;
-  	// Returns a wrapper function that returns a wrapped callback
-  	// The wrapper function should do some stuff, and return a
-  	// presumably different callback function.
-  	// This makes sure that own properties are retained, so that
-  	// decorations and such are not lost along the way.
-  	wrappy_1 = wrappy;
-  	function wrappy (fn, cb) {
-  	  if (fn && cb) return wrappy(fn)(cb)
+        if (typeof value === "bigint") return value.toString() + "n";
 
-  	  if (typeof fn !== 'function')
-  	    throw new TypeError('need wrapper function')
+        if (Array.isArray(replacer) && replacer.includes(key)) return value;
 
-  	  Object.keys(fn).forEach(function (k) {
-  	    wrapper[k] = fn[k];
-  	  });
+        return value;
+      },
+      space,
+    );
+    const processedJSON = convertedToCustomJSON.replace(
+      bigIntsStringify,
+      "$1$2$3",
+    ); // Delete one "n" off the end of every BigInt value
+    const denoisedJSON = processedJSON.replace(noiseStringify, "$1$2$3"); // Remove one "n" off the end of every noisy string
 
-  	  return wrapper
+    return denoisedJSON;
+  };
 
-  	  function wrapper() {
-  	    var args = new Array(arguments.length);
-  	    for (var i = 0; i < args.length; i++) {
-  	      args[i] = arguments[i];
-  	    }
-  	    var ret = fn.apply(this, args);
-  	    var cb = args[args.length-1];
-  	    if (typeof ret === 'function' && ret !== cb) {
-  	      Object.keys(cb).forEach(function (k) {
-  	        ret[k] = cb[k];
-  	      });
-  	    }
-  	    return ret
-  	  }
-  	}
-  	return wrappy_1;
-  }
+  const featureCache = new Map();
 
-  var hasRequiredOnce;
-
-  function requireOnce () {
-  	if (hasRequiredOnce) return once$1.exports;
-  	hasRequiredOnce = 1;
-  	var wrappy = requireWrappy();
-  	once$1.exports = wrappy(once);
-  	once$1.exports.strict = wrappy(onceStrict);
-
-  	once.proto = once(function () {
-  	  Object.defineProperty(Function.prototype, 'once', {
-  	    value: function () {
-  	      return once(this)
-  	    },
-  	    configurable: true
-  	  });
-
-  	  Object.defineProperty(Function.prototype, 'onceStrict', {
-  	    value: function () {
-  	      return onceStrict(this)
-  	    },
-  	    configurable: true
-  	  });
-  	});
-
-  	function once (fn) {
-  	  var f = function () {
-  	    if (f.called) return f.value
-  	    f.called = true;
-  	    return f.value = fn.apply(this, arguments)
-  	  };
-  	  f.called = false;
-  	  return f
-  	}
-
-  	function onceStrict (fn) {
-  	  var f = function () {
-  	    if (f.called)
-  	      throw new Error(f.onceError)
-  	    f.called = true;
-  	    return f.value = fn.apply(this, arguments)
-  	  };
-  	  var name = fn.name || 'Function wrapped with `once`';
-  	  f.onceError = name + " shouldn't be called more than once";
-  	  f.called = false;
-  	  return f
-  	}
-  	return once$1.exports;
-  }
-
-  var onceExports = requireOnce();
-  var once = /*@__PURE__*/getDefaultExportFromCjs(onceExports);
-
-  const logOnceCode = once((deprecation) => console.warn(deprecation));
-  const logOnceHeaders = once((deprecation) => console.warn(deprecation));
   /**
-   * Error with extra properties to help with debugging
+   * Detects if the current JSON.parse implementation supports the context.source feature.
+   *
+   * Uses toString() fingerprinting to cache results and automatically detect runtime
+   * replacements of JSON.parse (polyfills, mocks, etc.).
+   *
+   * @returns {boolean} true if context.source is supported, false otherwise.
    */
+  const isContextSourceSupported = () => {
+    const parseFingerprint = JSON.parse.toString();
+
+    if (featureCache.has(parseFingerprint)) {
+      return featureCache.get(parseFingerprint);
+    }
+
+    try {
+      const result = JSON.parse(
+        "1",
+        (_, __, context) => !!context?.source && context.source === "1",
+      );
+      featureCache.set(parseFingerprint, result);
+
+      return result;
+    } catch {
+      featureCache.set(parseFingerprint, false);
+
+      return false;
+    }
+  };
+
+  /**
+   * Reviver function that converts custom-format BigInt strings back to BigInt values.
+   * Also handles "noise" strings that accidentally match the BigInt format.
+   *
+   * @param {string | number | undefined} key The object key.
+   * @param {*} value The value being parsed.
+   * @param {object} [context] Parse context (if supported by JSON.parse).
+   * @param {Reviver} [userReviver] User's custom reviver function.
+   * @returns {any} The transformed value.
+   */
+  const convertMarkedBigIntsReviver = (key, value, context, userReviver) => {
+    const isCustomFormatBigInt =
+      typeof value === "string" && customFormat.test(value);
+    if (isCustomFormatBigInt) return BigInt(value.slice(0, -1));
+
+    const isNoiseValue = typeof value === "string" && noiseValue.test(value);
+    if (isNoiseValue) return value.slice(0, -1);
+
+    return value;
+  };
+
+  /**
+   * Fast JSON.parse implementation (~2x faster than classic fallback).
+   * Uses JSON.parse's context.source feature to detect integers and convert
+   * large numbers directly to BigInt without string manipulation.
+   *
+   * Does not support legacy custom format from v1 of this library.
+   *
+   * @param {string} text JSON string to parse.
+   * @param {Reviver} [reviver] Transform function to apply to each value.
+   * @returns {any} Parsed JavaScript value.
+   */
+  const JSONParseV2 = (text, reviver) => {
+    return JSON.parse(text, (key, value, context) => {
+      const isBigNumber =
+        typeof value === "number" &&
+        (value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER);
+      const isInt = context && intRegex.test(context.source);
+      const isBigInt = isBigNumber && isInt;
+
+      if (isBigInt) return BigInt(context.source);
+
+      return value;
+    });
+  };
+
+  const MAX_INT = Number.MAX_SAFE_INTEGER.toString();
+  const MAX_DIGITS = MAX_INT.length;
+  const stringsOrLargeNumbers =
+    /"(?:\\.|[^"])*"|-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?/g;
+  const noiseValueWithQuotes = /^"-?\d+n+"$/; // Noise - strings that match the custom format before being converted to it
+
+  /**
+   * Converts a JSON string into a JavaScript value.
+   *
+   * Supports parsing of large integers using two strategies:
+   * 1. Classic fallback: Marks large numbers with "123n" format, then converts to BigInt
+   * 2. Fast path (JSONParseV2): Uses context.source feature (~2x faster) when available
+   *
+   * All other JSON values are parsed exactly like native JSON.parse().
+   *
+   * @param {string} text A valid JSON string.
+   * @param {Reviver} [reviver]
+   *   A function that transforms the results. This function is called for each member
+   *   of the object. If a member contains nested objects, the nested objects are
+   *   transformed before the parent object is.
+   * @returns {any} The parsed JavaScript value.
+   * @throws {SyntaxError} If text is not valid JSON.
+   */
+  const JSONParse = (text, reviver) => {
+    if (!text) return originalParse(text, reviver);
+
+    if (isContextSourceSupported()) return JSONParseV2(text); // Shortcut to a faster (2x) and simpler version
+
+    // Find and mark big numbers with "n"
+    const serializedData = text.replace(
+      stringsOrLargeNumbers,
+      (text, digits, fractional, exponential) => {
+        const isString = text[0] === '"';
+        const isNoise = isString && noiseValueWithQuotes.test(text);
+
+        if (isNoise) return text.substring(0, text.length - 1) + 'n"'; // Mark noise values with additional "n" to offset the deletion of one "n" during the processing
+
+        const isFractionalOrExponential = fractional || exponential;
+        const isLessThanMaxSafeInt =
+          digits &&
+          (digits.length < MAX_DIGITS ||
+            (digits.length === MAX_DIGITS && digits <= MAX_INT)); // With a fixed number of digits, we can correctly use lexicographical comparison to do a numeric comparison
+
+        if (isString || isFractionalOrExponential || isLessThanMaxSafeInt)
+          return text;
+
+        return '"' + text + 'n"';
+      },
+    );
+
+    return originalParse(serializedData, (key, value, context) =>
+      convertMarkedBigIntsReviver(key, value),
+    );
+  };
+
   class RequestError extends Error {
-      constructor(message, statusCode, options) {
-          super(message);
-          // Maintains proper stack trace (only available on V8)
-          /* istanbul ignore next */
-          if (Error.captureStackTrace) {
-              Error.captureStackTrace(this, this.constructor);
-          }
-          this.name = "HttpError";
-          this.status = statusCode;
-          let headers;
-          if ("headers" in options && typeof options.headers !== "undefined") {
-              headers = options.headers;
-          }
-          if ("response" in options) {
-              this.response = options.response;
-              headers = options.response.headers;
-          }
-          // redact request credentials without mutating original request options
-          const requestCopy = Object.assign({}, options.request);
-          if (options.request.headers.authorization) {
-              requestCopy.headers = Object.assign({}, options.request.headers, {
-                  authorization: options.request.headers.authorization.replace(/ .*$/, " [REDACTED]"),
-              });
-          }
-          requestCopy.url = requestCopy.url
-              // client_id & client_secret can be passed as URL query parameters to increase rate limit
-              // see https://developer.github.com/v3/#increasing-the-unauthenticated-rate-limit-for-oauth-applications
-              .replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]")
-              // OAuth tokens can be passed as URL query parameters, although it is not recommended
-              // see https://developer.github.com/v3/#oauth2-token-sent-in-a-header
-              .replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
-          this.request = requestCopy;
-          // deprecations
-          Object.defineProperty(this, "code", {
-              get() {
-                  logOnceCode(new Deprecation("[@octokit/request-error] `error.code` is deprecated, use `error.status`."));
-                  return statusCode;
-              },
-          });
-          Object.defineProperty(this, "headers", {
-              get() {
-                  logOnceHeaders(new Deprecation("[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`."));
-                  return headers || {};
-              },
-          });
+    name;
+    /**
+     * http status code
+     */
+    status;
+    /**
+     * Request options that lead to the error.
+     */
+    request;
+    /**
+     * Response object if a response was received
+     */
+    response;
+    constructor(message, statusCode, options) {
+      super(message, { cause: options.cause });
+      this.name = "HttpError";
+      this.status = Number.parseInt(statusCode);
+      if (Number.isNaN(this.status)) {
+        this.status = 0;
       }
+      /* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist */
+      if ("response" in options) {
+        this.response = options.response;
+      }
+      const requestCopy = Object.assign({}, options.request);
+      if (options.request.headers.authorization) {
+        requestCopy.headers = Object.assign({}, options.request.headers, {
+          authorization: options.request.headers.authorization.replace(
+            /(?<! ) .*$/,
+            " [REDACTED]"
+          )
+        });
+      }
+      requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+      this.request = requestCopy;
+    }
   }
 
   // pkg/dist-src/index.js
 
   // pkg/dist-src/version.js
-  var VERSION$2 = "6.2.8";
+  var VERSION$2 = "10.0.10";
 
-  // pkg/dist-src/get-buffer-response.js
-  function getBufferResponse(response) {
-    return response.arrayBuffer();
-  }
-
-  // pkg/dist-src/fetch-wrapper.js
-  function fetchWrapper(requestOptions) {
-    const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
-    if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
-      requestOptions.body = JSON.stringify(requestOptions.body);
+  // pkg/dist-src/defaults.js
+  var defaults_default = {
+    headers: {
+      "user-agent": `octokit-request.js/${VERSION$2} ${getUserAgent()}`
     }
-    let headers = {};
-    let status;
-    let url;
-    const fetch = requestOptions.request && requestOptions.request.fetch || globalThis.fetch || /* istanbul ignore next */
-    nodeFetch;
-    return fetch(
-      requestOptions.url,
-      Object.assign(
-        {
-          method: requestOptions.method,
-          body: requestOptions.body,
-          headers: requestOptions.headers,
-          redirect: requestOptions.redirect,
-          // duplex must be set if request.body is ReadableStream or Async Iterables.
-          // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
-          ...requestOptions.body && { duplex: "half" }
-        },
-        // `requestOptions.request.agent` type is incompatible
-        // see https://github.com/octokit/types.ts/pull/264
-        requestOptions.request
-      )
-    ).then(async (response) => {
-      url = response.url;
-      status = response.status;
-      for (const keyAndValue of response.headers) {
-        headers[keyAndValue[0]] = keyAndValue[1];
-      }
-      if ("deprecation" in headers) {
-        const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
-        const deprecationLink = matches && matches.pop();
-        log.warn(
-          `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
-        );
-      }
-      if (status === 204 || status === 205) {
-        return;
-      }
-      if (requestOptions.method === "HEAD") {
-        if (status < 400) {
-          return;
+  };
+
+  // pkg/dist-src/is-plain-object.js
+  function isPlainObject(value) {
+    if (typeof value !== "object" || value === null) return false;
+    if (Object.prototype.toString.call(value) !== "[object Object]") return false;
+    const proto = Object.getPrototypeOf(value);
+    if (proto === null) return true;
+    const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+    return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+  }
+  var noop$1 = () => "";
+  async function fetchWrapper(requestOptions) {
+    const fetch = requestOptions.request?.fetch || globalThis.fetch;
+    if (!fetch) {
+      throw new Error(
+        "fetch is not set. Please pass a fetch implementation as new Octokit({ request: { fetch }}). Learn more at https://github.com/octokit/octokit.js/#fetch-missing"
+      );
+    }
+    const log = requestOptions.request?.log || console;
+    const parseSuccessResponseBody = requestOptions.request?.parseSuccessResponseBody !== false;
+    const body = isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body) ? JSONStringify(requestOptions.body) : requestOptions.body;
+    const requestHeaders = Object.fromEntries(
+      Object.entries(requestOptions.headers).map(([name, value]) => [
+        name,
+        String(value)
+      ])
+    );
+    let fetchResponse;
+    try {
+      fetchResponse = await fetch(requestOptions.url, {
+        method: requestOptions.method,
+        body,
+        redirect: requestOptions.request?.redirect,
+        headers: requestHeaders,
+        signal: requestOptions.request?.signal,
+        // duplex must be set if request.body is ReadableStream or Async Iterables.
+        // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
+        ...requestOptions.body && { duplex: "half" }
+      });
+    } catch (error) {
+      let message = "Unknown Error";
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          error.status = 500;
+          throw error;
         }
-        throw new RequestError(response.statusText, status, {
-          response: {
-            url,
-            status,
-            headers,
-            data: void 0
-          },
-          request: requestOptions
-        });
+        message = error.message;
+        if (error.name === "TypeError" && "cause" in error) {
+          if (error.cause instanceof Error) {
+            message = error.cause.message;
+          } else if (typeof error.cause === "string") {
+            message = error.cause;
+          }
+        }
       }
-      if (status === 304) {
-        throw new RequestError("Not modified", status, {
-          response: {
-            url,
-            status,
-            headers,
-            data: await getResponseData(response)
-          },
-          request: requestOptions
-        });
-      }
-      if (status >= 400) {
-        const data = await getResponseData(response);
-        const error = new RequestError(toErrorMessage(data), status, {
-          response: {
-            url,
-            status,
-            headers,
-            data
-          },
-          request: requestOptions
-        });
-        throw error;
-      }
-      return getResponseData(response);
-    }).then((data) => {
-      return {
-        status,
-        url,
-        headers,
-        data
-      };
-    }).catch((error) => {
-      if (error instanceof RequestError)
-        throw error;
-      else if (error.name === "AbortError")
-        throw error;
-      throw new RequestError(error.message, 500, {
+      const requestError = new RequestError(message, 500, {
         request: requestOptions
       });
-    });
+      requestError.cause = error;
+      throw requestError;
+    }
+    const status = fetchResponse.status;
+    const url = fetchResponse.url;
+    const responseHeaders = {};
+    for (const [key, value] of fetchResponse.headers) {
+      responseHeaders[key] = value;
+    }
+    const octokitResponse = {
+      url,
+      status,
+      headers: responseHeaders,
+      data: ""
+    };
+    if ("deprecation" in responseHeaders) {
+      const matches = responseHeaders.link && responseHeaders.link.match(/<([^<>]+)>; rel="deprecation"/);
+      const deprecationLink = matches && matches.pop();
+      log.warn(
+        `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${responseHeaders.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
+      );
+    }
+    if (status === 204 || status === 205) {
+      return octokitResponse;
+    }
+    if (requestOptions.method === "HEAD") {
+      if (status < 400) {
+        return octokitResponse;
+      }
+      throw new RequestError(fetchResponse.statusText, status, {
+        response: octokitResponse,
+        request: requestOptions
+      });
+    }
+    if (status === 304) {
+      octokitResponse.data = await getResponseData(fetchResponse);
+      throw new RequestError("Not modified", status, {
+        response: octokitResponse,
+        request: requestOptions
+      });
+    }
+    if (status >= 400) {
+      octokitResponse.data = await getResponseData(fetchResponse);
+      throw new RequestError(toErrorMessage(octokitResponse.data), status, {
+        response: octokitResponse,
+        request: requestOptions
+      });
+    }
+    octokitResponse.data = parseSuccessResponseBody ? await getResponseData(fetchResponse) : fetchResponse.body;
+    return octokitResponse;
   }
   async function getResponseData(response) {
     const contentType = response.headers.get("content-type");
-    if (/application\/json/.test(contentType)) {
-      return response.json();
+    if (!contentType) {
+      return response.text().catch(noop$1);
     }
-    if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
-      return response.text();
+    const mimetype = distExports.parse(contentType);
+    if (isJSONResponse(mimetype)) {
+      let text = "";
+      try {
+        text = await response.text();
+        return JSONParse(text);
+      } catch (err) {
+        return text;
+      }
+    } else if (mimetype.type.startsWith("text/") || mimetype.parameters.charset?.toLowerCase() === "utf-8") {
+      return response.text().catch(noop$1);
+    } else {
+      return response.arrayBuffer().catch(
+        /* v8 ignore next -- @preserve */
+        () => new ArrayBuffer(0)
+      );
     }
-    return getBufferResponse(response);
+  }
+  function isJSONResponse(mimetype) {
+    return mimetype.type === "application/json" || mimetype.type === "application/scim+json";
   }
   function toErrorMessage(data) {
-    if (typeof data === "string")
+    if (typeof data === "string") {
       return data;
+    }
+    if (data instanceof ArrayBuffer) {
+      return "Unknown error";
+    }
     if ("message" in data) {
-      if (Array.isArray(data.errors)) {
-        return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}`;
-      }
-      return data.message;
+      const suffix = "documentation_url" in data ? ` - ${data.documentation_url}` : "";
+      return Array.isArray(data.errors) ? `${data.message}: ${data.errors.map((v) => JSON.stringify(v)).join(", ")}${suffix}` : `${data.message}${suffix}`;
     }
     return `Unknown error: ${JSON.stringify(data)}`;
   }
@@ -945,16 +1117,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   // pkg/dist-src/index.js
-  var request = withDefaults$1(endpoint, {
-    headers: {
-      "user-agent": `octokit-request.js/${VERSION$2} ${getUserAgent()}`
-    }
-  });
+  var request = withDefaults$1(endpoint, defaults_default);
+  /* v8 ignore next -- @preserve */
+  /* v8 ignore else -- @preserve */
 
   // pkg/dist-src/index.js
 
   // pkg/dist-src/version.js
-  var VERSION$1 = "5.0.6";
+  var VERSION$1 = "0.0.0-development";
 
   // pkg/dist-src/error.js
   function _buildMessageForResponseErrors(data) {
@@ -967,13 +1137,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       this.request = request2;
       this.headers = headers;
       this.response = response;
-      this.name = "GraphqlResponseError";
       this.errors = response.errors;
       this.data = response.data;
       if (Error.captureStackTrace) {
         Error.captureStackTrace(this, this.constructor);
       }
     }
+    name = "GraphqlResponseError";
+    errors;
+    data;
   };
 
   // pkg/dist-src/graphql.js
@@ -984,7 +1156,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     "headers",
     "request",
     "query",
-    "mediaType"
+    "mediaType",
+    "operationName"
   ];
   var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
   var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
@@ -996,10 +1169,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         );
       }
       for (const key in options) {
-        if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-          continue;
+        if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key)) continue;
         return Promise.reject(
-          new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`)
+          new Error(
+            `[@octokit/graphql] "${key}" cannot be used as variable name`
+          )
         );
       }
     }
@@ -1064,14 +1238,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     });
   }
 
+  // pkg/dist-src/is-jwt.js
+  var b64url = "(?:[a-zA-Z0-9_-]+)";
+  var sep = "\\.";
+  var jwtRE = new RegExp(`^${b64url}${sep}${b64url}${sep}${b64url}$`);
+  var isJWT = jwtRE.test.bind(jwtRE);
+
   // pkg/dist-src/auth.js
-  var REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
-  var REGEX_IS_INSTALLATION = /^ghs_/;
-  var REGEX_IS_USER_TO_SERVER = /^ghu_/;
   async function auth(token) {
-    const isApp = token.split(/\./).length === 3;
-    const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
-    const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
+    const isApp = isJWT(token);
+    const isInstallation = token.startsWith("v1.") || token.startsWith("ghs_");
+    const isUserToServer = token.startsWith("ghu_");
     const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
     return {
       type: "token",
@@ -1114,13 +1291,30 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     });
   };
 
-  // pkg/dist-src/index.js
+  const VERSION = "7.0.6";
 
-  // pkg/dist-src/version.js
-  var VERSION = "4.2.4";
-
-  // pkg/dist-src/index.js
-  var Octokit = class {
+  const noop = () => {
+  };
+  const consoleWarn = console.warn.bind(console);
+  const consoleError = console.error.bind(console);
+  function createLogger(logger = {}) {
+    if (typeof logger.debug !== "function") {
+      logger.debug = noop;
+    }
+    if (typeof logger.info !== "function") {
+      logger.info = noop;
+    }
+    if (typeof logger.warn !== "function") {
+      logger.warn = consoleWarn;
+    }
+    if (typeof logger.error !== "function") {
+      logger.error = consoleError;
+    }
+    return logger;
+  }
+  const userAgentTrail = `octokit-core.js/${VERSION} ${getUserAgent()}`;
+  class Octokit {
+    static VERSION = VERSION;
     static defaults(defaults) {
       const OctokitWithDefaults = class extends this {
         constructor(...args) {
@@ -1143,6 +1337,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       };
       return OctokitWithDefaults;
     }
+    static plugins = [];
     /**
      * Attach a plugin (or many) to your Octokit instance.
      *
@@ -1150,16 +1345,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
      * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
      */
     static plugin(...newPlugins) {
-      var _a;
       const currentPlugins = this.plugins;
-      const NewOctokit = (_a = class extends this {
-      }, _a.plugins = currentPlugins.concat(
-        newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
-      ), _a);
+      const NewOctokit = class extends this {
+        static plugins = currentPlugins.concat(
+          newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
+        );
+      };
       return NewOctokit;
     }
     constructor(options = {}) {
-      const hook = new beforeAfterHookExports.Collection();
+      const hook = new Hook.Collection();
       const requestDefaults = {
         baseUrl: request.endpoint.DEFAULTS.baseUrl,
         headers: {},
@@ -1172,10 +1367,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           format: ""
         }
       };
-      requestDefaults.headers["user-agent"] = [
-        options.userAgent,
-        `octokit-core.js/${VERSION} ${getUserAgent()}`
-      ].filter(Boolean).join(" ");
+      requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail}` : userAgentTrail;
       if (options.baseUrl) {
         requestDefaults.baseUrl = options.baseUrl;
       }
@@ -1187,17 +1379,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       this.request = request.defaults(requestDefaults);
       this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
-      this.log = Object.assign(
-        {
-          debug: () => {
-          },
-          info: () => {
-          },
-          warn: console.warn.bind(console),
-          error: console.error.bind(console)
-        },
-        options.log
-      );
+      this.log = createLogger(options.log);
       this.hook = hook;
       if (!options.authStrategy) {
         if (!options.auth) {
@@ -1231,13 +1413,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         this.auth = auth;
       }
       const classConstructor = this.constructor;
-      classConstructor.plugins.forEach((plugin) => {
-        Object.assign(this, plugin(this, options));
-      });
+      for (let i = 0; i < classConstructor.plugins.length; ++i) {
+        Object.assign(this, classConstructor.plugins[i](this, options));
+      }
     }
-  };
-  Octokit.VERSION = VERSION;
-  Octokit.plugins = [];
+    // assigned during constructor
+    request;
+    graphql;
+    log;
+    hook;
+    // TODO: type `octokit.auth` based on passed options.authStrategy
+    auth;
+  }
 
   const __esModule = true ;
 

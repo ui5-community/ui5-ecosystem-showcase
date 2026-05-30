@@ -31,7 +31,7 @@
     "ava": "^8.0.1"
   },
   "dependencies": {
-    "@typescript-eslint/typescript-estree": "^8.59.3",
+    "@typescript-eslint/typescript-estree": "^8.60.0",
     "fast-xml-parser": "^5.8.0",
     "js-yaml": "^4.1.1"
   }

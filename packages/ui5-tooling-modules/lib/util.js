@@ -9,6 +9,7 @@ const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
 const nodePolyfillsOverride = require("./rollup-plugin-polyfill-node-override");
+const fetchShim = require("./rollup-plugin-fetch-shim");
 const skipAssets = require("./rollup-plugin-skip-assets");
 const injectESModule = require("./rollup-plugin-inject-esmodule");
 const logger = require("./rollup-plugin-logger");
@@ -1303,6 +1304,13 @@ module.exports = function (log, projectInfo) {
 					}),
 					json(),
 					instructions(),
+					// Replace `node-fetch` / `cross-fetch` / `isomorphic-fetch`
+					// with a tiny shim that re-exports the browser's native
+					// Web Fetch API. This must happen BEFORE commonjs/polyfill
+					// resolution so the Node-only sub-graph (fetch-blob,
+					// fs.promises, node:net, ...) never gets pulled into the
+					// bundle in the first place.
+					fetchShim({ log }),
 					commonjs({
 						defaultIsModuleExports: "preferred",
 					}),

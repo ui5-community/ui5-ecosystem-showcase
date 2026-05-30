@@ -1752,7 +1752,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.14.12";
+  const version$1 = "0.14.13";
 
   /**
    * @license
@@ -1823,7 +1823,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name$r = "firebase";
-  const version$2 = "12.13.0";
+  const version$2 = "12.14.0";
 
   /**
    * @license
@@ -2619,7 +2619,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   registerCoreComponents('');
 
   var name = "firebase";
-  var version = "12.13.0";
+  var version = "12.14.0";
 
   /**
    * @license
@@ -2735,7 +2735,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  let f = "12.13.0";
+  let f = "12.14.0";
 
   function __PRIVATE_setSDKVersion(e) {
       f = e;
@@ -2774,28 +2774,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const d = new Logger("@firebase/firestore");
+  const m = new Logger("@firebase/firestore");
 
   function __PRIVATE_logDebug(e, ...t) {
-      if (d.logLevel <= LogLevel.DEBUG) {
+      if (m.logLevel <= LogLevel.DEBUG) {
           const r = t.map(__PRIVATE_argToString);
-          d.debug(`Firestore (${f}): ${e}`, ...r);
+          m.debug(`Firestore (${f}): ${e}`, ...r);
       }
   }
 
   function __PRIVATE_logError(e, ...t) {
-      if (d.logLevel <= LogLevel.ERROR) {
+      if (m.logLevel <= LogLevel.ERROR) {
           const r = t.map(__PRIVATE_argToString);
-          d.error(`Firestore (${f}): ${e}`, ...r);
+          m.error(`Firestore (${f}): ${e}`, ...r);
       }
   }
 
   /**
    * @internal
    */ function __PRIVATE_logWarn(e, ...t) {
-      if (d.logLevel <= LogLevel.WARN) {
+      if (m.logLevel <= LogLevel.WARN) {
           const r = t.map(__PRIVATE_argToString);
-          d.warn(`Firestore (${f}): ${e}`, ...r);
+          m.warn(`Firestore (${f}): ${e}`, ...r);
       }
   }
 
@@ -2877,7 +2877,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const E = {
+   */ const d = {
       // Causes are copied from:
       // https://github.com/grpc/grpc/blob/bceec94ea4fc5f0085d81235d8e1c06798dc341a/include/grpc%2B%2B/impl/codegen/status_code_enum.h
       /** Not an error; returned on success. */
@@ -3133,13 +3133,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   /** AppCheck token provider for the Lite SDK. */ class __PRIVATE_LiteAppCheckTokenProvider {
       constructor(e, t) {
-          this.m = t, this.appCheck = null, this.P = null, _isFirebaseServerApp(e) && e.settings.appCheckToken && (this.P = e.settings.appCheckToken),
+          this.m = t, this.appCheck = null, this.T = null, _isFirebaseServerApp(e) && e.settings.appCheckToken && (this.T = e.settings.appCheckToken),
           t.onInit((e => {
               this.appCheck = e;
           }));
       }
       getToken() {
-          return this.P ? Promise.resolve(new AppCheckToken(this.P)) : this.appCheck ? this.appCheck.getToken().then((e => e ? (__PRIVATE_hardAssert("string" == typeof e.token, 3470, {
+          return this.T ? Promise.resolve(new AppCheckToken(this.T)) : this.appCheck ? this.appCheck.getToken().then((e => e ? (__PRIVATE_hardAssert("string" == typeof e.token, 3470, {
               tokenResult: e
           }), new AppCheckToken(e.token)) : null)) : Promise.resolve(null);
       }
@@ -3194,20 +3194,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
-  /** The default database name for a project. */ const m = "(default)";
+  /** The default database name for a project. */ const E = "(default)";
 
   /**
    * Represents the database ID a Firestore client is associated with.
    * @internal
    */ class DatabaseId {
       constructor(e, t) {
-          this.projectId = e, this.database = t || m;
+          this.projectId = e, this.database = t || E;
       }
       static empty() {
           return new DatabaseId("", "");
       }
       get isDefaultDatabase() {
-          return this.database === m;
+          return this.database === E;
       }
       isEqual(e) {
           return e instanceof DatabaseId && e.projectId === this.projectId && e.database === this.database;
@@ -3215,7 +3215,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   function __PRIVATE_databaseIdFromApp(e, t) {
-      if (!Object.prototype.hasOwnProperty.apply(e.options, [ "projectId" ])) throw new FirestoreError(E.INVALID_ARGUMENT, '"projectId" not provided in firebase.initializeApp.');
+      if (!Object.prototype.hasOwnProperty.apply(e.options, [ "projectId" ])) throw new FirestoreError(d.INVALID_ARGUMENT, '"projectId" not provided in firebase.initializeApp.');
       return new DatabaseId(e.options.projectId, t);
   }
 
@@ -3332,11 +3332,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return __PRIVATE_primitiveComparator(e.length, t.length);
   }
 
-  const P = 55296, T = 57343;
+  const T = 55296, P = 57343;
 
   function __PRIVATE_isSurrogate(e) {
       const t = e.charCodeAt(0);
-      return t >= P && t <= T;
+      return t >= T && t <= P;
   }
 
   /** Helper to compare arrays using isEqual(). */ function __PRIVATE_arrayEquals(e, t, r) {
@@ -3358,7 +3358,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const R = "__name__";
+   */ const V = "__name__";
 
   /**
    * Path represents an ordered sequence of string segments.
@@ -3481,7 +3481,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // for legacy reasons and should not be used frequently).
           const t = [];
           for (const r of e) {
-              if (r.indexOf("//") >= 0) throw new FirestoreError(E.INVALID_ARGUMENT, `Invalid segment (${r}). Paths must not contain // in them.`);
+              if (r.indexOf("//") >= 0) throw new FirestoreError(d.INVALID_ARGUMENT, `Invalid segment (${r}). Paths must not contain // in them.`);
               // Strip leading and trailing slashed.
                           t.push(...r.split("/").filter((e => e.length > 0)));
           }
@@ -3492,7 +3492,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
-  const V = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
+  const R = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
 
   /**
    * A dot-separated path for navigating sub-objects within a document.
@@ -3505,7 +3505,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Returns true if the string could be used as a segment in a field path
        * without escaping.
        */    static isValidIdentifier(e) {
-          return V.test(e);
+          return R.test(e);
       }
       canonicalString() {
           return this.toArray().map((e => (e = e.replace(/\\/g, "\\\\").replace(/`/g, "\\`"),
@@ -3517,12 +3517,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Returns true if this field references the key of a document.
        */    isKeyField() {
-          return 1 === this.length && this.get(0) === R;
+          return 1 === this.length && this.get(0) === V;
       }
       /**
        * The field designating the key of a document.
        */    static keyField() {
-          return new FieldPath$1([ R ]);
+          return new FieldPath$1([ V ]);
       }
       /**
        * Parses a field string from the given server-formatted string.
@@ -3537,21 +3537,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           const t = [];
           let r = "", n = 0;
           const __PRIVATE_addCurrentSegment = () => {
-              if (0 === r.length) throw new FirestoreError(E.INVALID_ARGUMENT, `Invalid field path (${e}). Paths must not be empty, begin with '.', end with '.', or contain '..'`);
+              if (0 === r.length) throw new FirestoreError(d.INVALID_ARGUMENT, `Invalid field path (${e}). Paths must not be empty, begin with '.', end with '.', or contain '..'`);
               t.push(r), r = "";
           };
           let i = false;
           for (;n < e.length; ) {
               const t = e[n];
               if ("\\" === t) {
-                  if (n + 1 === e.length) throw new FirestoreError(E.INVALID_ARGUMENT, "Path has trailing escape character: " + e);
+                  if (n + 1 === e.length) throw new FirestoreError(d.INVALID_ARGUMENT, "Path has trailing escape character: " + e);
                   const t = e[n + 1];
-                  if ("\\" !== t && "." !== t && "`" !== t) throw new FirestoreError(E.INVALID_ARGUMENT, "Path has invalid escape sequence: " + e);
+                  if ("\\" !== t && "." !== t && "`" !== t) throw new FirestoreError(d.INVALID_ARGUMENT, "Path has invalid escape sequence: " + e);
                   r += t, n += 2;
               } else "`" === t ? (i = !i, n++) : "." !== t || i ? (r += t, n++) : (__PRIVATE_addCurrentSegment(),
               n++);
           }
-          if (__PRIVATE_addCurrentSegment(), i) throw new FirestoreError(E.INVALID_ARGUMENT, "Unterminated ` in path: " + e);
+          if (__PRIVATE_addCurrentSegment(), i) throw new FirestoreError(d.INVALID_ARGUMENT, "Unterminated ` in path: " + e);
           return new FieldPath$1(t);
       }
       static emptyPath() {
@@ -3640,7 +3640,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */ function __PRIVATE_validateNonEmptyArgument(e, t, r) {
-      if (!r) throw new FirestoreError(E.INVALID_ARGUMENT, `Function ${e}() cannot be called with an empty ${t}.`);
+      if (!r) throw new FirestoreError(d.INVALID_ARGUMENT, `Function ${e}() cannot be called with an empty ${t}.`);
   }
 
   /**
@@ -3652,7 +3652,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * an even numbers of segments).
    */
   function __PRIVATE_validateDocumentPath(e) {
-      if (!DocumentKey.isDocumentKey(e)) throw new FirestoreError(E.INVALID_ARGUMENT, `Invalid document reference. Document references must have an even number of segments, but ${e} has ${e.length}.`);
+      if (!DocumentKey.isDocumentKey(e)) throw new FirestoreError(d.INVALID_ARGUMENT, `Invalid document reference. Document references must have an even number of segments, but ${e} has ${e.length}.`);
   }
 
   /**
@@ -3700,10 +3700,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       // Unwrap Compat types
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       e = e._delegate), !(e instanceof t)) {
-          if (t.name === e.constructor.name) throw new FirestoreError(E.INVALID_ARGUMENT, "Type does not match the expected instance. Did you pass a reference from a different Firestore SDK?");
+          if (t.name === e.constructor.name) throw new FirestoreError(d.INVALID_ARGUMENT, "Type does not match the expected instance. Did you pass a reference from a different Firestore SDK?");
           {
               const r = __PRIVATE_valueDescription(e);
-              throw new FirestoreError(E.INVALID_ARGUMENT, `Expected type '${t.name}', but it was: ${r}`);
+              throw new FirestoreError(d.INVALID_ARGUMENT, `Expected type '${t.name}', but it was: ${r}`);
           }
       }
       return e;
@@ -3825,7 +3825,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * HTTP).
    */
   class __PRIVATE_RestConnection {
-      get T() {
+      get P() {
           // Both `invokeRPC()` and `invokeStreamingRPC()` use their `path` arguments to determine
           // where to run the query, and expect the `request` to NOT specify the "path".
           return false;
@@ -3833,13 +3833,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       constructor(e) {
           this.databaseInfo = e, this.databaseId = e.databaseId;
           const t = e.ssl ? "https" : "http", r = encodeURIComponent(this.databaseId.projectId), n = encodeURIComponent(this.databaseId.database);
-          this.R = t + "://" + e.host, this.V = `projects/${r}/databases/${n}`, this.A = this.databaseId.database === m ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
+          this.V = t + "://" + e.host, this.R = `projects/${r}/databases/${n}`, this.A = this.databaseId.database === E ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
       }
       I(e, r, n, i, s) {
           const o = __PRIVATE_generateUniqueDebugId(), a = this.p(e, r.toUriEncodedString());
           __PRIVATE_logDebug(I, `Sending RPC '${e}' ${o}:`, a, n);
           const u = {
-              "google-cloud-resource-prefix": this.V,
+              "google-cloud-resource-prefix": this.R,
               "x-goog-request-params": this.A
           };
           this.F(u, i, s);
@@ -3874,7 +3874,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       p(e, t) {
           const r = p[e];
-          let n = `${this.R}/v1/${t}:${r}`;
+          let n = `${this.V}/v1/${t}:${r}`;
           return this.databaseInfo.apiKey && (n = `${n}?key=${encodeURIComponent(this.databaseInfo.apiKey)}`),
           n;
       }
@@ -3922,7 +3922,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *     Code.UNKNOWN.
    */ function __PRIVATE_mapCodeFromHttpStatus(e) {
       if (void 0 === e) return __PRIVATE_logError("RPC_ERROR", "HTTP error has no status"),
-      E.UNKNOWN;
+      d.UNKNOWN;
       // The canonical error codes for Google APIs [1] specify mapping onto HTTP
       // status codes but the mapping is not bijective. In each case of ambiguity
       // this function chooses a primary error.
@@ -3932,66 +3932,66 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           switch (e) {
         case 200:
           // OK
-          return E.OK;
+          return d.OK;
 
         case 400:
           // Bad Request
-          return E.FAILED_PRECONDITION;
+          return d.FAILED_PRECONDITION;
 
           // Other possibilities based on the forward mapping
           // return Code.INVALID_ARGUMENT;
           // return Code.OUT_OF_RANGE;
                 case 401:
           // Unauthorized
-          return E.UNAUTHENTICATED;
+          return d.UNAUTHENTICATED;
 
         case 403:
           // Forbidden
-          return E.PERMISSION_DENIED;
+          return d.PERMISSION_DENIED;
 
         case 404:
           // Not Found
-          return E.NOT_FOUND;
+          return d.NOT_FOUND;
 
         case 409:
           // Conflict
-          return E.ABORTED;
+          return d.ABORTED;
 
           // Other possibilities:
           // return Code.ALREADY_EXISTS;
                 case 416:
           // Range Not Satisfiable
-          return E.OUT_OF_RANGE;
+          return d.OUT_OF_RANGE;
 
         case 429:
           // Too Many Requests
-          return E.RESOURCE_EXHAUSTED;
+          return d.RESOURCE_EXHAUSTED;
 
         case 499:
           // Client Closed Request
-          return E.CANCELLED;
+          return d.CANCELLED;
 
         case 500:
           // Internal Server Error
-          return E.UNKNOWN;
+          return d.UNKNOWN;
 
           // Other possibilities:
           // return Code.INTERNAL;
           // return Code.DATA_LOSS;
                 case 501:
           // Unimplemented
-          return E.UNIMPLEMENTED;
+          return d.UNIMPLEMENTED;
 
         case 503:
           // Service Unavailable
-          return E.UNAVAILABLE;
+          return d.UNAVAILABLE;
 
         case 504:
           // Gateway Timeout
-          return E.DEADLINE_EXCEEDED;
+          return d.DEADLINE_EXCEEDED;
 
         default:
-          return e >= 200 && e < 300 ? E.OK : e >= 400 && e < 500 ? E.FAILED_PRECONDITION : e >= 500 && e < 600 ? E.INTERNAL : E.UNKNOWN;
+          return e >= 200 && e < 300 ? d.OK : e >= 400 && e < 500 ? d.FAILED_PRECONDITION : e >= 500 && e < 600 ? d.INTERNAL : d.UNKNOWN;
       }
   }
 
@@ -4023,7 +4023,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   w[w.INTERNAL = 13] = "INTERNAL", w[w.UNAVAILABLE = 14] = "UNAVAILABLE", w[w.DATA_LOSS = 15] = "DATA_LOSS";
 
   class __PRIVATE_FetchConnection extends __PRIVATE_RestConnection {
-      S(e, t) {
+      N(e, t) {
           throw new Error("Not supported by FetchConnection");
       }
       async v(e, t, r, n, i) {
@@ -4334,7 +4334,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @param scheme - a {@link JsonSchema} that defines the properties to validate.
    * @returns true if the JSON schema exists within the object. Throws a FirestoreError otherwise.
    */ function __PRIVATE_validateJSON(e, t) {
-      if (!__PRIVATE_isPlainObject(e)) throw new FirestoreError(E.INVALID_ARGUMENT, "JSON must be an object");
+      if (!__PRIVATE_isPlainObject(e)) throw new FirestoreError(d.INVALID_ARGUMENT, "JSON must be an object");
       let r;
       for (const n in t) if (t[n]) {
           const i = t[n].typeString, s = "value" in t[n] ? {
@@ -4355,7 +4355,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               break;
           }
       }
-      if (r) throw new FirestoreError(E.INVALID_ARGUMENT, r);
+      if (r) throw new FirestoreError(d.INVALID_ARGUMENT, r);
       return true;
   }
 
@@ -4441,11 +4441,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * The fractions of a second at nanosecond resolution.*
        */
       t) {
-          if (this.seconds = e, this.nanoseconds = t, t < 0) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp nanoseconds out of range: " + t);
-          if (t >= 1e9) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp nanoseconds out of range: " + t);
-          if (e < F) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp seconds out of range: " + e);
+          if (this.seconds = e, this.nanoseconds = t, t < 0) throw new FirestoreError(d.INVALID_ARGUMENT, "Timestamp nanoseconds out of range: " + t);
+          if (t >= 1e9) throw new FirestoreError(d.INVALID_ARGUMENT, "Timestamp nanoseconds out of range: " + t);
+          if (e < F) throw new FirestoreError(d.INVALID_ARGUMENT, "Timestamp seconds out of range: " + e);
           // This will break in the year 10,000.
-                  if (e >= 253402300800) throw new FirestoreError(E.INVALID_ARGUMENT, "Timestamp seconds out of range: " + e);
+                  if (e >= 253402300800) throw new FirestoreError(d.INVALID_ARGUMENT, "Timestamp seconds out of range: " + e);
       }
       /**
        * Converts a `Timestamp` to a JavaScript `Date` object. This conversion
@@ -4555,7 +4555,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const b = "__type__", D = "__max__", C = "__vector__", N = "value";
+   */ const b = "__type__", D = "__max__", S = "__vector__", C = "value";
 
   /** Extracts the backend's type order for the provided value. */
   function __PRIVATE_typeOrder(e) {
@@ -4597,7 +4597,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /** Returns true if `value` is a VetorValue. */
       function __PRIVATE_isVectorValue(e) {
           const t = (e?.mapValue?.fields || {})[b]?.stringValue;
-          return t === C;
+          return t === S;
       }
       /** Creates a deep copy of `source`. */ (e) ? 10 /* TypeOrder.VectorValue */ : 11 /* TypeOrder.ObjectValue */ : fail(28295, {
           value: e
@@ -5098,8 +5098,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               key: t.toString()
           }), t;
       }(t);
-      if (r.get(1) !== e.databaseId.projectId) throw new FirestoreError(E.INVALID_ARGUMENT, "Tried to deserialize key from different project: " + r.get(1) + " vs " + e.databaseId.projectId);
-      if (r.get(3) !== e.databaseId.database) throw new FirestoreError(E.INVALID_ARGUMENT, "Tried to deserialize key from different database: " + r.get(3) + " vs " + e.databaseId.database);
+      if (r.get(1) !== e.databaseId.projectId) throw new FirestoreError(d.INVALID_ARGUMENT, "Tried to deserialize key from different project: " + r.get(1) + " vs " + e.databaseId.projectId);
+      if (r.get(3) !== e.databaseId.database) throw new FirestoreError(d.INVALID_ARGUMENT, "Tried to deserialize key from different database: " + r.get(3) + " vs " + e.databaseId.database);
       return new DocumentKey(function __PRIVATE_extractLocalPathFromResourceName(e) {
           return __PRIVATE_hardAssert(e.length > 4 && "documents" === e.get(4), 29091, {
               key: e.toString()
@@ -5181,18 +5181,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.serializer = n, this.k = false;
       }
       j() {
-          if (this.k) throw new FirestoreError(E.FAILED_PRECONDITION, "The client has already been terminated.");
+          if (this.k) throw new FirestoreError(d.FAILED_PRECONDITION, "The client has already been terminated.");
       }
       /** Invokes the provided RPC with auth and AppCheck tokens. */    I(e, t, r, n) {
           return this.j(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([i, s]) => this.connection.I(e, __PRIVATE_toResourcePath(t, r), n, i, s))).catch((e => {
-              throw "FirebaseError" === e.name ? (e.code === E.UNAUTHENTICATED && (this.authCredentials.invalidateToken(),
-              this.appCheckCredentials.invalidateToken()), e) : new FirestoreError(E.UNKNOWN, e.toString());
+              throw "FirebaseError" === e.name ? (e.code === d.UNAUTHENTICATED && (this.authCredentials.invalidateToken(),
+              this.appCheckCredentials.invalidateToken()), e) : new FirestoreError(d.UNKNOWN, e.toString());
           }));
       }
       /** Invokes the provided RPC with streamed results with auth and AppCheck tokens. */    D(e, t, r, n, i) {
           return this.j(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([s, o]) => this.connection.D(e, __PRIVATE_toResourcePath(t, r), n, s, o, i))).catch((e => {
-              throw "FirebaseError" === e.name ? (e.code === E.UNAUTHENTICATED && (this.authCredentials.invalidateToken(),
-              this.appCheckCredentials.invalidateToken()), e) : new FirestoreError(E.UNKNOWN, e.toString());
+              throw "FirebaseError" === e.name ? (e.code === d.UNAUTHENTICATED && (this.authCredentials.invalidateToken(),
+              this.appCheckCredentials.invalidateToken()), e) : new FirestoreError(d.UNKNOWN, e.toString());
           }));
       }
       terminate() {
@@ -5244,7 +5244,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * instance is terminated.
    */
   function __PRIVATE_getDatastore(e) {
-      if (e._terminated) throw new FirestoreError(E.FAILED_PRECONDITION, "The client has already been terminated.");
+      if (e._terminated) throw new FirestoreError(d.FAILED_PRECONDITION, "The client has already been terminated.");
       if (!$.has(e)) {
           __PRIVATE_logDebug(B, "Initializing Datastore");
           const t = function __PRIVATE_newConnection(e) {
@@ -5278,7 +5278,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * Removes all components associated with the provided instance. Must be called
    * when the `Firestore` instance is terminated.
-   */ const Q = 1048576, U = "firestore.googleapis.com", M = true;
+   */ const x = 1048576, M = "firestore.googleapis.com", Q = true;
 
   /**
    * A concrete type describing all the values that can be applied via a
@@ -5288,17 +5288,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   class FirestoreSettingsImpl {
       constructor(e) {
           if (void 0 === e.host) {
-              if (void 0 !== e.ssl) throw new FirestoreError(E.INVALID_ARGUMENT, "Can't provide ssl option if host option is not set");
-              this.host = U, this.ssl = M;
-          } else this.host = e.host, this.ssl = e.ssl ?? M;
+              if (void 0 !== e.ssl) throw new FirestoreError(d.INVALID_ARGUMENT, "Can't provide ssl option if host option is not set");
+              this.host = M, this.ssl = Q;
+          } else this.host = e.host, this.ssl = e.ssl ?? Q;
           if (this.isUsingEmulator = void 0 !== e.emulatorOptions, this.credentials = e.credentials,
           this.ignoreUndefinedProperties = !!e.ignoreUndefinedProperties, this.localCache = e.localCache,
           void 0 === e.cacheSizeBytes) this.cacheSizeBytes = 41943040; else {
-              if (-1 !== e.cacheSizeBytes && e.cacheSizeBytes < Q) throw new FirestoreError(E.INVALID_ARGUMENT, "cacheSizeBytes must be at least 1048576");
+              if (-1 !== e.cacheSizeBytes && e.cacheSizeBytes < x) throw new FirestoreError(d.INVALID_ARGUMENT, "cacheSizeBytes must be at least 1048576");
               this.cacheSizeBytes = e.cacheSizeBytes;
           }
           !function __PRIVATE_validateIsNotUsedTogether(e, t, r, n) {
-              if (true === t && true === n) throw new FirestoreError(E.INVALID_ARGUMENT, `${e} and ${r} cannot be used together.`);
+              if (true === t && true === n) throw new FirestoreError(d.INVALID_ARGUMENT, `${e} and ${r} cannot be used together.`);
           }("experimentalForceLongPolling", e.experimentalForceLongPolling, "experimentalAutoDetectLongPolling", e.experimentalAutoDetectLongPolling),
           this.experimentalForceLongPolling = !!e.experimentalForceLongPolling, this.experimentalForceLongPolling ? this.experimentalAutoDetectLongPolling = false : void 0 === e.experimentalAutoDetectLongPolling ? this.experimentalAutoDetectLongPolling = true :
           // For backwards compatibility, coerce the value to boolean even though
@@ -5308,9 +5308,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.experimentalLongPollingOptions = __PRIVATE_cloneLongPollingOptions(e.experimentalLongPollingOptions ?? {}),
           function __PRIVATE_validateLongPollingOptions(e) {
               if (void 0 !== e.timeoutSeconds) {
-                  if (isNaN(e.timeoutSeconds)) throw new FirestoreError(E.INVALID_ARGUMENT, `invalid long polling timeout: ${e.timeoutSeconds} (must not be NaN)`);
-                  if (e.timeoutSeconds < 5) throw new FirestoreError(E.INVALID_ARGUMENT, `invalid long polling timeout: ${e.timeoutSeconds} (minimum allowed value is 5)`);
-                  if (e.timeoutSeconds > 30) throw new FirestoreError(E.INVALID_ARGUMENT, `invalid long polling timeout: ${e.timeoutSeconds} (maximum allowed value is 30)`);
+                  if (isNaN(e.timeoutSeconds)) throw new FirestoreError(d.INVALID_ARGUMENT, `invalid long polling timeout: ${e.timeoutSeconds} (must not be NaN)`);
+                  if (e.timeoutSeconds < 5) throw new FirestoreError(d.INVALID_ARGUMENT, `invalid long polling timeout: ${e.timeoutSeconds} (minimum allowed value is 5)`);
+                  if (e.timeoutSeconds > 30) throw new FirestoreError(d.INVALID_ARGUMENT, `invalid long polling timeout: ${e.timeoutSeconds} (maximum allowed value is 30)`);
               }
           }
           /**
@@ -5362,7 +5362,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * The {@link @firebase/app#FirebaseApp} associated with this `Firestore` service
        * instance.
        */    get app() {
-          if (!this._app) throw new FirestoreError(E.FAILED_PRECONDITION, "Firestore was not initialized using the Firebase SDK. 'app' is not available");
+          if (!this._app) throw new FirestoreError(d.FAILED_PRECONDITION, "Firestore was not initialized using the Firebase SDK. 'app' is not available");
           return this._app;
       }
       get _initialized() {
@@ -5372,7 +5372,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return "notTerminated" !== this._terminateTask;
       }
       _setSettings(e) {
-          if (this._settingsFrozen) throw new FirestoreError(E.FAILED_PRECONDITION, "Firestore has already been started and its settings can no longer be changed. You can only modify settings before calling any other methods on a Firestore object.");
+          if (this._settingsFrozen) throw new FirestoreError(d.FAILED_PRECONDITION, "Firestore has already been started and its settings can no longer be changed. You can only modify settings before calling any other methods on a Firestore object.");
           this._settings = new FirestoreSettingsImpl(e), this._emulatorOptions = e.emulatorOptions || {},
           void 0 !== e.credentials && (this._authCredentials = function __PRIVATE_makeAuthCredentialsProvider(e) {
               if (!e) return new __PRIVATE_EmptyAuthCredentialsProvider;
@@ -5384,7 +5384,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   return e.client;
 
                 default:
-                  throw new FirestoreError(E.INVALID_ARGUMENT, "makeAuthCredentialsProvider failed due to invalid credential type");
+                  throw new FirestoreError(d.INVALID_ARGUMENT, "makeAuthCredentialsProvider failed due to invalid credential type");
               }
           }(e.credentials));
       }
@@ -5459,7 +5459,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           ..._,
           emulatorOptions: e._getEmulatorOptions()
       }, l = `${r}:${o}`;
-      u && pingServer(`https://${l}`), _.host !== U && _.host !== l && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used.");
+      u && pingServer(`https://${l}`), _.host !== M && _.host !== l && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used.");
       const h = {
           ..._,
           host: l,
@@ -5475,7 +5475,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               // invalid field "uid" and missing field "sub" / "user_id".)
               t = createMockUserToken(a.mockUserToken, e._app?.options.projectId);
               const n = a.mockUserToken.sub || a.mockUserToken.user_id;
-              if (!n) throw new FirestoreError(E.INVALID_ARGUMENT, "mockUserToken must contain 'sub' or 'user_id' field!");
+              if (!n) throw new FirestoreError(d.INVALID_ARGUMENT, "mockUserToken must contain 'sub' or 'user_id' field!");
               r = new User(n);
           }
           e._authCredentials = new __PRIVATE_EmulatorAuthCredentialsProvider(new __PRIVATE_OAuthToken(t, r));
@@ -5621,7 +5621,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           /* converter= */ null, new DocumentKey(n));
       }
       {
-          if (!(e instanceof DocumentReference || e instanceof CollectionReference)) throw new FirestoreError(E.INVALID_ARGUMENT, "Expected first argument to doc() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
+          if (!(e instanceof DocumentReference || e instanceof CollectionReference)) throw new FirestoreError(d.INVALID_ARGUMENT, "Expected first argument to doc() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
           const n = e._path.child(ResourcePath.fromString(t, ...r));
           return __PRIVATE_validateDocumentPath(n), new DocumentReference(e.firestore, e instanceof CollectionReference ? e.converter : null, new DocumentKey(n));
       }
@@ -5659,7 +5659,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           try {
               return new Bytes(ByteString.fromBase64String(e));
           } catch (e) {
-              throw new FirestoreError(E.INVALID_ARGUMENT, "Failed to construct data from Base64 string: " + e);
+              throw new FirestoreError(d.INVALID_ARGUMENT, "Failed to construct data from Base64 string: " + e);
           }
       }
       /**
@@ -5756,7 +5756,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param fieldNames - A list of field names.
        */
       constructor(...e) {
-          for (let t = 0; t < e.length; ++t) if (0 === e[t].length) throw new FirestoreError(E.INVALID_ARGUMENT, "Invalid field name at argument $(i + 1). Field names must not be empty.");
+          for (let t = 0; t < e.length; ++t) if (0 === e[t].length) throw new FirestoreError(d.INVALID_ARGUMENT, "Invalid field name at argument $(i + 1). Field names must not be empty.");
           this._internalPath = new FieldPath$1(e);
       }
       /**
@@ -5799,8 +5799,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param longitude - The longitude as number between -180 and 180.
        */
       constructor(e, t) {
-          if (!isFinite(e) || e < -90 || e > 90) throw new FirestoreError(E.INVALID_ARGUMENT, "Latitude must be a number between -90 and 90, but was: " + e);
-          if (!isFinite(t) || t < -180 || t > 180) throw new FirestoreError(E.INVALID_ARGUMENT, "Longitude must be a number between -180 and 180, but was: " + t);
+          if (!isFinite(e) || e < -90 || e > 90) throw new FirestoreError(d.INVALID_ARGUMENT, "Latitude must be a number between -90 and 90, but was: " + e);
+          if (!isFinite(t) || t < -180 || t > 180) throw new FirestoreError(d.INVALID_ARGUMENT, "Longitude must be a number between -180 and 180, but was: " + t);
           this._lat = e, this._long = t;
       }
       /**
@@ -5942,7 +5942,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */    static fromJSON(e) {
           if (__PRIVATE_validateJSON(e, VectorValue._jsonSchema)) {
               if (Array.isArray(e.vectorValues) && e.vectorValues.every((e => "number" == typeof e))) return new VectorValue(e.vectorValues);
-              throw new FirestoreError(E.INVALID_ARGUMENT, "Expected 'vectorValues' field to be a number array");
+              throw new FirestoreError(d.INVALID_ARGUMENT, "Expected 'vectorValues' field to be a number array");
           }
       }
   }
@@ -5988,7 +5988,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       let a = `Function ${t}() called with invalid data`;
       a += ". ";
       let u = "";
-      return new FirestoreError(E.INVALID_ARGUMENT, a + e + u);
+      return new FirestoreError(d.INVALID_ARGUMENT, a + e + u);
   }
 
   /**
@@ -6171,7 +6171,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * @internal
        */    convertVectorValue(e) {
-          const t = e.fields?.[N].arrayValue?.values?.map((e => __PRIVATE_normalizeNumber(e.doubleValue)));
+          const t = e.fields?.[C].arrayValue?.values?.map((e => __PRIVATE_normalizeNumber(e.doubleValue)));
           return new VectorValue(t);
       }
       convertGeoPoint(e) {
@@ -6244,7 +6244,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }));
   }
 
-  const _t = "4.14.1";
+  const _t = "4.15.0";
 
   /**
    * Firestore Lite
@@ -6255,8 +6255,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @packageDocumentation
    */ !function __PRIVATE_registerFirestore() {
       __PRIVATE_setSDKVersion(`${SDK_VERSION}_lite`), _registerComponent(new Component("firestore/lite", ((t, {instanceIdentifier: e, options: i}) => {
-          const r = t.getProvider("app").getImmediate(), a = new Firestore(new __PRIVATE_LiteAuthCredentialsProvider(t.getProvider("auth-internal")), new __PRIVATE_LiteAppCheckTokenProvider(r, t.getProvider("app-check-internal")), __PRIVATE_databaseIdFromApp(r, e), r);
-          return i && a._setSettings(i), a;
+          const a = t.getProvider("app").getImmediate(), r = new Firestore(new __PRIVATE_LiteAuthCredentialsProvider(t.getProvider("auth-internal")), new __PRIVATE_LiteAppCheckTokenProvider(a, t.getProvider("app-check-internal")), __PRIVATE_databaseIdFromApp(a, e), a);
+          return i && r._setSettings(i), r;
       }), "PUBLIC").setMultipleInstances(true)),
       // RUNTIME_ENV and BUILD_TARGET are replaced by real values during the compilation
       registerVersion("firestore-lite", _t, ""), registerVersion("firestore-lite", _t, "esm2020");
