@@ -160,8 +160,8 @@ importers:
         specifier: ^3
         version: 3.11.13
       '@ui5/project':
-        specifier: ^3
-        version: 3.9.5
+        specifier: ^4
+        version: 4.0.16(@ui5/builder@4.1.6)
       '@ui5/server':
         specifier: ^3
         version: 3.6.1
@@ -337,8 +337,8 @@ importers:
         version: link:../ui5-utils-express
     devDependencies:
       '@ui5/project':
-        specifier: ^3
-        version: 3.9.5
+        specifier: ^4
+        version: 4.0.16(@ui5/builder@4.1.6)
       '@ui5/server':
         specifier: ^3
         version: 3.6.1
