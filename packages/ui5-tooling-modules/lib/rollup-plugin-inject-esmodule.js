@@ -1,4 +1,34 @@
-// Inspired by https://rollupjs.org/plugin-development/#resolveid (the Polyfill Injection)
+/**
+ * Rollup plugin: produce a clean ES-module surface for every entry.
+ *
+ * For each entry id rollup is asked to resolve, this plugin returns a
+ * proxy id (the original id with a `?inject-esmodule` suffix). The proxy's
+ * generated source loads the real entry once and then re-exports it in a
+ * shape that consumers can rely on:
+ *
+ *  - if the entry has a default export (or is CommonJS converted to one
+ *    by `@rollup/plugin-commonjs`), the proxy emits `export default ...`
+ *    plus a non-enumerable `__esModule = true` marker so downstream
+ *    `_interopRequireDefault` callers behave correctly.
+ *  - if the entry only has named exports, the proxy emits
+ *    `export * from <entry>` plus `export const __esModule = true`.
+ *
+ * Special-case behaviour:
+ *  - frozen default exports (e.g. `module.exports = Object.freeze(...)`) are
+ *    re-frozen after copying so consumers do not see different identities.
+ *  - some libraries (`fetch-mock`, `chart.js`, ...) ship a default that is
+ *    itself a function whose properties carry the named API; the proxy
+ *    detects those and copies missing named properties onto the default.
+ *  - UI5 web component entries (`moduleInfo.meta.ui5`) are skipped because
+ *    `rollup-plugin-webcomponents` already handles them.
+ *  - entries with import attributes are passed through unchanged so attr
+ *    semantics are preserved.
+ *
+ * Inspired by https://rollupjs.org/plugin-development/#resolveid (the
+ * Polyfill Injection example).
+ *
+ * @returns {import('rollup').Plugin}
+ */
 const PROXY_SUFFIX = "?inject-esmodule";
 module.exports = function (/* { log } = {} */) {
 	return {
