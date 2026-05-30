@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Controller from "sap/ui/core/mvc/Controller";
 import MessageBox from "sap/m/MessageBox";
-import { version, utils, write } from "xlsx";
+import { version, utils, write } from "@e965/xlsx";
 import { Info } from "luxon";
 import { Client } from "@stomp/stompjs";
 import { Chart } from "chart.js";
@@ -24,7 +24,7 @@ console.log(`[STATIC IMPORT] STOMP loaded: ${limitString(Client.toString())}`);
 console.log(`[STATIC IMPORT] Chart.js loaded: ${Chart.version}`);
 
 // dynamic import of xlsx (just named exports)
-import("xlsx")
+import("@e965/xlsx")
 	.then(({ version }) => {
 		console.log(`[DYNAMIC IMPORT] XLSX loaded: ${version}`);
 	})

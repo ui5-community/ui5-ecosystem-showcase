@@ -19,7 +19,7 @@
     "fresh": "^0.5.2",
     "https-proxy-agent": "^9.0.0",
     "js-yaml": "^4.1.1",
-    "node-fetch": "^2.7.0",
+    "node-fetch": "^3.3.2",
     "proxy-from-env": "^2.1.0"
   },
   "devDependencies": {

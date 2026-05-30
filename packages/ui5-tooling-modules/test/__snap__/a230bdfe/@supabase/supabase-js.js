@@ -5585,7 +5585,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$3 = '2.106.0';
+  const version$3 = '2.106.2';
 
   const DEFAULT_VERSION = `realtime-js/${version$3}`;
   const VSN_1_0_0 = '1.0.0';
@@ -13540,7 +13540,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
 
   //#endregion
   //#region src/lib/version.ts
-  const version$2 = "2.106.0";
+  const version$2 = "2.106.2";
 
   //#endregion
   //#region src/lib/constants.ts
@@ -15005,7 +15005,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$1 = '2.106.0';
+  const version$1 = '2.106.2';
 
   /** Current session will be checked for refresh at this interval. */
   const AUTO_REFRESH_TICK_DURATION_MS = 30 * 1000;
@@ -16036,7 +16036,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
       }
       // Some /verify responses (e.g. secure email_change first-confirmation) return
       // only `{ msg, code }` with no user and no session. Treat those as null user.
-      const user = (_a = data.user) !== null && _a !== void 0 ? _a : null;
+      const user = (_a = data.user) !== null && _a !== void 0 ? _a : (typeof (data === null || data === void 0 ? void 0 : data.id) === 'string' ? data : null);
       return { data: { session, user }, error: null };
   }
   function _sessionResponsePassword(data) {
@@ -16094,6 +16094,12 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   const SIGN_OUT_SCOPES = ['global', 'local', 'others'];
 
   class GoTrueAdminApi {
+      _encodePathSegment(segment) {
+          if (segment === '.' || segment === '..') {
+              throw new AuthError('Invalid path segment');
+          }
+          return encodeURIComponent(segment);
+      }
       /**
        * Creates an admin API client that can be used to manage users and OAuth clients.
        *
@@ -16946,7 +16952,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
        */
       async _getOAuthClient(clientId) {
           try {
-              return await _request(this.fetch, 'GET', `${this.url}/admin/oauth/clients/${clientId}`, {
+              const encodedClientId = this._encodePathSegment(clientId);
+              return await _request(this.fetch, 'GET', `${this.url}/admin/oauth/clients/${encodedClientId}`, {
                   headers: this.headers,
                   xform: (client) => {
                       return { data: client, error: null };
@@ -16968,7 +16975,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
        */
       async _updateOAuthClient(clientId, params) {
           try {
-              return await _request(this.fetch, 'PUT', `${this.url}/admin/oauth/clients/${clientId}`, {
+              const encodedClientId = this._encodePathSegment(clientId);
+              return await _request(this.fetch, 'PUT', `${this.url}/admin/oauth/clients/${encodedClientId}`, {
                   body: params,
                   headers: this.headers,
                   xform: (client) => {
@@ -16991,7 +16999,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
        */
       async _deleteOAuthClient(clientId) {
           try {
-              await _request(this.fetch, 'DELETE', `${this.url}/admin/oauth/clients/${clientId}`, {
+              const encodedClientId = this._encodePathSegment(clientId);
+              await _request(this.fetch, 'DELETE', `${this.url}/admin/oauth/clients/${encodedClientId}`, {
                   headers: this.headers,
                   noResolveJson: true,
               });
@@ -17012,7 +17021,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
        */
       async _regenerateOAuthClientSecret(clientId) {
           try {
-              return await _request(this.fetch, 'POST', `${this.url}/admin/oauth/clients/${clientId}/regenerate_secret`, {
+              const encodedClientId = this._encodePathSegment(clientId);
+              return await _request(this.fetch, 'POST', `${this.url}/admin/oauth/clients/${encodedClientId}/regenerate_secret`, {
                   headers: this.headers,
                   xform: (client) => {
                       return { data: client, error: null };
@@ -17088,7 +17098,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
        */
       async _getCustomProvider(identifier) {
           try {
-              return await _request(this.fetch, 'GET', `${this.url}/admin/custom-providers/${identifier}`, {
+              const encodedIdentifier = this._encodePathSegment(identifier);
+              return await _request(this.fetch, 'GET', `${this.url}/admin/custom-providers/${encodedIdentifier}`, {
                   headers: this.headers,
                   xform: (provider) => {
                       return { data: provider, error: null };
@@ -17114,7 +17125,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
        */
       async _updateCustomProvider(identifier, params) {
           try {
-              return await _request(this.fetch, 'PUT', `${this.url}/admin/custom-providers/${identifier}`, {
+              const encodedIdentifier = this._encodePathSegment(identifier);
+              return await _request(this.fetch, 'PUT', `${this.url}/admin/custom-providers/${encodedIdentifier}`, {
                   body: params,
                   headers: this.headers,
                   xform: (provider) => {
@@ -17136,7 +17148,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
        */
       async _deleteCustomProvider(identifier) {
           try {
-              await _request(this.fetch, 'DELETE', `${this.url}/admin/custom-providers/${identifier}`, {
+              const encodedIdentifier = this._encodePathSegment(identifier);
+              await _request(this.fetch, 'DELETE', `${this.url}/admin/custom-providers/${encodedIdentifier}`, {
                   headers: this.headers,
                   noResolveJson: true,
               });
@@ -23773,7 +23786,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   const AuthClient = GoTrueClient;
 
   //#region src/lib/version.ts
-  const version = "2.106.0";
+  const version = "2.106.2";
 
   //#endregion
   //#region src/lib/constants.ts
@@ -23798,7 +23811,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   };
 
   //#endregion
-  //#region ../../../node_modules/tslib/tslib.es6.mjs
+  //#region ../../../node_modules/.pnpm/tslib@2.8.1/node_modules/tslib/tslib.es6.mjs
   function __awaiter(thisArg, _arguments, P, generator) {
   	function adopt(value) {
   		return value instanceof P ? value : new P(function(resolve) {
@@ -23832,11 +23845,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   let otelModulePromise = null;
   const OTEL_PKG = "@opentelemetry/api";
   function loadOtel() {
-  	if (otelModulePromise === null) otelModulePromise = import(
-  		/* webpackIgnore: true */
-  		/* @vite-ignore */
-  		OTEL_PKG
-  ).catch(() => null);
+  	if (otelModulePromise === null) otelModulePromise = import(/* webpackIgnore: true */ /* turbopackIgnore: true */ /* @vite-ignore */ OTEL_PKG).catch(() => null);
   	return otelModulePromise;
   }
   /**
@@ -24370,6 +24379,30 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   	* const supabase = createClient('https://xyzcompany.supabase.co', 'your-publishable-key')
   	*
   	* const { data } = await supabase.from('profiles').select('*')
+  	* ```
+  	*
+  	* @exampleDescription With OpenTelemetry tracing
+  	* Opt in to W3C trace context propagation so the `trace_id` from your
+  	* client-side spans is attached to Supabase requests and appears in API
+  	* Gateway and Edge Function logs. Requires `@opentelemetry/api` to be
+  	* installed in your application. See [Tracing with the JS SDK](https://supabase.com/docs/guides/telemetry/client-side-tracing).
+  	*
+  	* @example With OpenTelemetry tracing
+  	* ```ts
+  	* import { createClient } from '@supabase/supabase-js'
+  	* import { trace } from '@opentelemetry/api'
+  	*
+  	* const supabase = createClient('https://xyzcompany.supabase.co', 'your-publishable-key', {
+  	*   tracePropagation: true,
+  	* })
+  	*
+  	* const tracer = trace.getTracer('my-app')
+  	*
+  	* await tracer.startActiveSpan('fetch-users', async (span) => {
+  	*   // Outgoing request carries the active trace context.
+  	*   const { data, error } = await supabase.from('users').select('*')
+  	*   span.end()
+  	* })
   	* ```
   	*/
   	constructor(supabaseUrl, supabaseKey, options) {

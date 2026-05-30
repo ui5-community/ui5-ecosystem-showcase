@@ -1,7 +1,5 @@
 sap.ui.define((function () { 'use strict';
 
-	var exports = exports || {};
-
 	function _mergeNamespaces(n, m) {
 		m.forEach(function (e) {
 			e && typeof e !== 'string' && !Array.isArray(e) && Object.keys(e).forEach(function (k) {
@@ -31,7 +29,7 @@ sap.ui.define((function () { 'use strict';
 				var isInstance = false;
 	      try {
 	        isInstance = this instanceof a;
-	      } catch {}
+	      } catch (e) {}
 				if (isInstance) {
 	        return Reflect.construct(f, arguments, this.constructor);
 				}
@@ -55,90 +53,6 @@ sap.ui.define((function () { 'use strict';
 	var cmis$1 = {};
 
 	var cmis = {};
-
-	var nodePolyfill = {};
-
-	var browser$3 = {exports: {}};
-
-	var hasRequiredBrowser$1;
-
-	function requireBrowser$1 () {
-		if (hasRequiredBrowser$1) return browser$3.exports;
-		hasRequiredBrowser$1 = 1;
-		(function (module, exports) {
-
-			// ref: https://github.com/tc39/proposal-global
-			var getGlobal = function () {
-				// the only reliable means to get the global object is
-				// `Function('return this')()`
-				// However, this causes CSP violations in Chrome apps.
-				if (typeof self !== 'undefined') { return self; }
-				if (typeof window !== 'undefined') { return window; }
-				if (typeof commonjsGlobal !== 'undefined') { return commonjsGlobal; }
-				throw new Error('unable to locate global object');
-			};
-
-			var globalObject = getGlobal();
-
-			module.exports = exports = globalObject.fetch;
-
-			// Needed for TypeScript and Webpack.
-			if (globalObject.fetch) {
-				exports.default = globalObject.fetch.bind(globalObject);
-			}
-
-			exports.Headers = globalObject.Headers;
-			exports.Request = globalObject.Request;
-			exports.Response = globalObject.Response;
-		} (browser$3, browser$3.exports));
-		return browser$3.exports;
-	}
-
-	var node;
-	var hasRequiredNode;
-
-	function requireNode () {
-		if (hasRequiredNode) return node;
-		hasRequiredNode = 1;
-		var realFetch = requireBrowser$1();
-
-		var fetch = function (url, options) {
-		  // Support schemaless URIs on the server for parity with the browser.
-		  // Ex: //github.com/ -> https://github.com/
-		  if (/^\/\//.test(url)) {
-		    url = 'https:' + url;
-		  }
-		  return realFetch.call(this, url, options);
-		};
-
-		fetch.fetch = fetch;
-		fetch.Response = realFetch.Response,
-		fetch.Headers = realFetch.Headers,
-		fetch.Request = realFetch.Request,
-		fetch.polyfill = false;
-
-		node = fetch;
-		return node;
-	}
-
-	var hasRequiredNodePolyfill;
-
-	function requireNodePolyfill () {
-		if (hasRequiredNodePolyfill) return nodePolyfill;
-		hasRequiredNodePolyfill = 1;
-		var fetchNode = requireNode();
-		var fetch = fetchNode.fetch.bind({});
-
-		fetch.polyfill = true;
-
-		if (!commonjsGlobal.fetch) {
-		  commonjsGlobal.fetch = fetch;
-		  commonjsGlobal.Response = fetchNode.Response;
-		  commonjsGlobal.Headers = fetchNode.Headers;
-		  commonjsGlobal.Request = fetchNode.Request;
-		}
-		return nodePolyfill;
-	}
 
 	var browser$2 = {};
 
@@ -22519,7 +22433,7 @@ sap.ui.define((function () { 'use strict';
 			    };
 			})();
 			Object.defineProperty(exports, "__esModule", { value: true });
-			requireNodePolyfill();
+
 			var isomorphic_base64_1 = requireBrowser();
 			requireLib();
 			requireUrlSearchParamsPolyfill();

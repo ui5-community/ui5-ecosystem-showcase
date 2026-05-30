@@ -1827,7 +1827,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.14.12";
+  const version$1 = "0.14.13";
 
   /**
    * @license
@@ -1898,7 +1898,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name = "firebase";
-  const version = "12.13.0";
+  const version = "12.14.0";
 
   /**
    * @license

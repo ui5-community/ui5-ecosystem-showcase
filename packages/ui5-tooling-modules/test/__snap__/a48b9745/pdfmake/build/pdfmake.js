@@ -17,7 +17,7 @@ sap.ui.define(['../../_commonjsHelpers'], (function (_commonjsHelpers) { 'use st
 
   var pdfmake$2 = {exports: {}};
 
-  /*! pdfmake v0.3.8, @license MIT, @link http://pdfmake.org */
+  /*! pdfmake v0.3.9, @license MIT, @link http://pdfmake.org */
   var pdfmake$1 = pdfmake$2.exports;
 
   var hasRequiredPdfmake;
@@ -43,7 +43,7 @@ sap.ui.define(['../../_commonjsHelpers'], (function (_commonjsHelpers) { 'use st
   		// EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.includes.js
   		__webpack_require__(187);
   		// EXTERNAL MODULE: ./node_modules/pdfkit/js/pdfkit.es.js
-  		var pdfkit_es = __webpack_require__(6649);
+  		var pdfkit_es = __webpack_require__(8259);
   		/**
   		 * @param {any} variable
   		 * @returns {boolean}
@@ -4402,6 +4402,7 @@ sap.ui.define(['../../_commonjsHelpers'], (function (_commonjsHelpers) { 'use st
   		    let maxBottomY = this.y;
   		    let maxBottomPage = this.page;
   		    let maxBottomAvailableHeight = this.availableHeight;
+  		    let overflowed = saved.overflowed;
 
   		    // Pop overflowed snapshots created by moveToNextColumn (snaking columns).
   		    // Merge their bottomMost values to find the true maximum.
@@ -4419,16 +4420,17 @@ sap.ui.define(['../../_commonjsHelpers'], (function (_commonjsHelpers) { 'use st
   		    if (!saved) {
   		      return {};
   		    }
-
-  		    // Apply the max bottom from all overflowed columns to this base snapshot
-  		    if (maxBottomPage > saved.bottomMost.page || maxBottomPage === saved.bottomMost.page && maxBottomY > saved.bottomMost.y) {
-  		      saved.bottomMost = {
-  		        x: saved.x,
-  		        y: maxBottomY,
-  		        page: maxBottomPage,
-  		        availableHeight: maxBottomAvailableHeight,
-  		        availableWidth: saved.availableWidth
-  		      };
+  		    if (overflowed) {
+  		      // Apply the max bottom from all overflowed columns to this base snapshot
+  		      if (maxBottomPage > saved.bottomMost.page || maxBottomPage === saved.bottomMost.page && maxBottomY > saved.bottomMost.y) {
+  		        saved.bottomMost = {
+  		          x: saved.x,
+  		          y: maxBottomY,
+  		          page: maxBottomPage,
+  		          availableHeight: maxBottomAvailableHeight,
+  		          availableWidth: saved.availableWidth
+  		        };
+  		      }
   		    }
   		    this.calculateBottomMost(saved, endingCell);
   		    this.x = saved.x;
@@ -8708,7 +8710,7 @@ sap.ui.define(['../../_commonjsHelpers'], (function (_commonjsHelpers) { 'use st
   		}
   		/* harmony default export */ const src_OutputDocument = (OutputDocument);
   		// EXTERNAL MODULE: ./node_modules/file-saver/dist/FileSaver.min.js
-  		var FileSaver_min = __webpack_require__(6946);
+  		var FileSaver_min = __webpack_require__(7286);
 
 
 
@@ -15196,7 +15198,7 @@ sap.ui.define(['../../_commonjsHelpers'], (function (_commonjsHelpers) { 'use st
 
   		/***/ },
 
-  		/***/ 6649
+  		/***/ 8259
   		(__unused_webpack_module, exports, __webpack_require__) {
   		var __webpack_dirname__ = "/";
   		/* provided dependency */ var Buffer = __webpack_require__(783)["Buffer"];
@@ -21550,10 +21552,7 @@ end\
 
   		/***/ 656
   		(__unused_webpack_module, exports, __webpack_require__) {
-
-  		Object.defineProperty(exports, "__esModule", ({ value: true }));
   		exports.polyval = exports.ghash = void 0;
-  		exports._toGHASHKey = _toGHASHKey;
   		/**
   		 * GHash from AES-GCM and its little-endian "mirror image" Polyval from AES-SIV.
   		 *
@@ -22699,37 +22698,18 @@ end\
 
   		/***/ 5181
   		(__unused_webpack_module, exports) {
-
-  		/**
-  		 * Utilities for hex, bytes, CSPRNG.
-  		 * @module
-  		 */
-  		/*! noble-ciphers - MIT License (c) 2023 Paul Miller (paulmillr.com) */
-  		Object.defineProperty(exports, "__esModule", ({ value: true }));
-  		exports.wrapCipher = exports.Hash = exports.nextTick = exports.isLE = void 0;
-  		exports.isBytes = isBytes;
-  		exports.abool = abool;
-  		exports.anumber = anumber;
+  		exports.wrapCipher = exports.qv = void 0;
   		exports.abytes = abytes;
-  		exports.ahash = ahash;
   		exports.aexists = aexists;
   		exports.aoutput = aoutput;
   		exports.u8 = u8;
   		exports.u32 = u32;
   		exports.clean = clean;
   		exports.createView = createView;
-  		exports.bytesToHex = bytesToHex;
-  		exports.hexToBytes = hexToBytes;
-  		exports.hexToNumber = hexToNumber;
-  		exports.bytesToNumberBE = bytesToNumberBE;
-  		exports.numberToBytesBE = numberToBytesBE;
-  		exports.utf8ToBytes = utf8ToBytes;
-  		exports.bytesToUtf8 = bytesToUtf8;
   		exports.toBytes = toBytes;
   		exports.overlapBytes = overlapBytes;
   		exports.complexOverlapBytes = complexOverlapBytes;
   		exports.concatBytes = concatBytes;
-  		exports.checkOpts = checkOpts;
   		exports.equalBytes = equalBytes;
   		exports.getOutput = getOutput;
   		exports.setBigUint64 = setBigUint64;
@@ -22745,28 +22725,12 @@ end\
   		    if (typeof b !== 'boolean')
   		        throw new Error(`boolean expected, not ${b}`);
   		}
-  		/** Asserts something is positive integer. */
-  		function anumber(n) {
-  		    if (!Number.isSafeInteger(n) || n < 0)
-  		        throw new Error('positive integer expected, got ' + n);
-  		}
   		/** Asserts something is Uint8Array. */
   		function abytes(b, ...lengths) {
   		    if (!isBytes(b))
   		        throw new Error('Uint8Array expected');
   		    if (lengths.length > 0 && !lengths.includes(b.length))
   		        throw new Error('Uint8Array expected of length ' + lengths + ', got length=' + b.length);
-  		}
-  		/**
-  		 * Asserts something is hash
-  		 * TODO: remove
-  		 * @deprecated
-  		 */
-  		function ahash(h) {
-  		    if (typeof h !== 'function' || typeof h.create !== 'function')
-  		        throw new Error('Hash should be wrapped by utils.createHasher');
-  		    anumber(h.outputLen);
-  		    anumber(h.blockLen);
   		}
   		/** Asserts a hash instance has not been destroyed / finished */
   		function aexists(instance, checkFinished = true) {
@@ -22802,87 +22766,7 @@ end\
   		    return new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
   		}
   		/** Is current platform little-endian? Most are. Big-Endian platform: IBM */
-  		exports.isLE = (() => new Uint8Array(new Uint32Array([0x11223344]).buffer)[0] === 0x44)();
-  		// Built-in hex conversion https://caniuse.com/mdn-javascript_builtins_uint8array_fromhex
-  		const hasHexBuiltin = /* @__PURE__ */ (() =>
-  		// @ts-ignore
-  		typeof Uint8Array.from([]).toHex === 'function' && typeof Uint8Array.fromHex === 'function')();
-  		// Array where index 0xf0 (240) is mapped to string 'f0'
-  		const hexes = /* @__PURE__ */ Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'));
-  		/**
-  		 * Convert byte array to hex string. Uses built-in function, when available.
-  		 * @example bytesToHex(Uint8Array.from([0xca, 0xfe, 0x01, 0x23])) // 'cafe0123'
-  		 */
-  		function bytesToHex(bytes) {
-  		    abytes(bytes);
-  		    // @ts-ignore
-  		    if (hasHexBuiltin)
-  		        return bytes.toHex();
-  		    // pre-caching improves the speed 6x
-  		    let hex = '';
-  		    for (let i = 0; i < bytes.length; i++) {
-  		        hex += hexes[bytes[i]];
-  		    }
-  		    return hex;
-  		}
-  		// We use optimized technique to convert hex string to byte array
-  		const asciis = { _0: 48, _9: 57, A: 65, F: 70, a: 97, f: 102 };
-  		function asciiToBase16(ch) {
-  		    if (ch >= asciis._0 && ch <= asciis._9)
-  		        return ch - asciis._0; // '2' => 50-48
-  		    if (ch >= asciis.A && ch <= asciis.F)
-  		        return ch - (asciis.A - 10); // 'B' => 66-(65-10)
-  		    if (ch >= asciis.a && ch <= asciis.f)
-  		        return ch - (asciis.a - 10); // 'b' => 98-(97-10)
-  		    return;
-  		}
-  		/**
-  		 * Convert hex string to byte array. Uses built-in function, when available.
-  		 * @example hexToBytes('cafe0123') // Uint8Array.from([0xca, 0xfe, 0x01, 0x23])
-  		 */
-  		function hexToBytes(hex) {
-  		    if (typeof hex !== 'string')
-  		        throw new Error('hex string expected, got ' + typeof hex);
-  		    // @ts-ignore
-  		    if (hasHexBuiltin)
-  		        return Uint8Array.fromHex(hex);
-  		    const hl = hex.length;
-  		    const al = hl / 2;
-  		    if (hl % 2)
-  		        throw new Error('hex string expected, got unpadded hex of length ' + hl);
-  		    const array = new Uint8Array(al);
-  		    for (let ai = 0, hi = 0; ai < al; ai++, hi += 2) {
-  		        const n1 = asciiToBase16(hex.charCodeAt(hi));
-  		        const n2 = asciiToBase16(hex.charCodeAt(hi + 1));
-  		        if (n1 === undefined || n2 === undefined) {
-  		            const char = hex[hi] + hex[hi + 1];
-  		            throw new Error('hex string expected, got non-hex character "' + char + '" at index ' + hi);
-  		        }
-  		        array[ai] = n1 * 16 + n2; // multiply first octet, e.g. 'a3' => 10*16+3 => 160 + 3 => 163
-  		    }
-  		    return array;
-  		}
-  		// Used in micro
-  		function hexToNumber(hex) {
-  		    if (typeof hex !== 'string')
-  		        throw new Error('hex string expected, got ' + typeof hex);
-  		    return BigInt(hex === '' ? '0' : '0x' + hex); // Big Endian
-  		}
-  		// Used in ff1
-  		// BE: Big Endian, LE: Little Endian
-  		function bytesToNumberBE(bytes) {
-  		    return hexToNumber(bytesToHex(bytes));
-  		}
-  		// Used in micro, ff1
-  		function numberToBytesBE(n, len) {
-  		    return hexToBytes(n.toString(16).padStart(len * 2, '0'));
-  		}
-  		// TODO: remove
-  		// There is no setImmediate in browser and setTimeout is slow.
-  		// call of async fn will return Promise, which will be fullfiled only on
-  		// next scheduler queue processing step and this is exactly what we need.
-  		const nextTick = async () => { };
-  		exports.nextTick = nextTick;
+  		exports.qv = (() => new Uint8Array(new Uint32Array([0x11223344]).buffer)[0] === 0x44)();
   		/**
   		 * Converts string to bytes using UTF8 encoding.
   		 * @example utf8ToBytes('abc') // new Uint8Array([97, 98, 99])
@@ -22891,13 +22775,6 @@ end\
   		    if (typeof str !== 'string')
   		        throw new Error('string expected');
   		    return new Uint8Array(new TextEncoder().encode(str)); // https://bugzil.la/1681809
-  		}
-  		/**
-  		 * Converts bytes to string using UTF8 encoding.
-  		 * @example bytesToUtf8(new Uint8Array([97, 98, 99])) // 'abc'
-  		 */
-  		function bytesToUtf8(bytes) {
-  		    return new TextDecoder().decode(bytes);
   		}
   		/**
   		 * Normalizes (non-hex) string or Uint8Array to Uint8Array.
@@ -22951,12 +22828,6 @@ end\
   		    }
   		    return res;
   		}
-  		function checkOpts(defaults, opts) {
-  		    if (opts == null || typeof opts !== 'object')
-  		        throw new Error('options must be defined');
-  		    const merged = Object.assign(defaults, opts);
-  		    return merged;
-  		}
   		/** Compares 2 uint8array-s in kinda constant time. */
   		function equalBytes(a, b) {
   		    if (a.length !== b.length)
@@ -22966,11 +22837,6 @@ end\
   		        diff |= a[i] ^ b[i];
   		    return diff === 0;
   		}
-  		// TODO: remove
-  		/** For runtime check if class implements interface. */
-  		class Hash {
-  		}
-  		exports.Hash = Hash;
   		/**
   		 * Wraps a cipher: validates args, ensures encrypt() can only be called once.
   		 * @__NO_SIDE_EFFECTS__
@@ -22980,7 +22846,7 @@ end\
   		        // Validate key
   		        abytes(key);
   		        // Big-Endian hardware is rare. Just in case someone still decides to run ciphers:
-  		        if (!exports.isLE)
+  		        if (!exports.qv)
   		            throw new Error('Non little-endian hardware is not yet supported');
   		        // Validate nonce if nonceLength is present
   		        if (params.nonceLength !== undefined) {
@@ -23078,10 +22944,7 @@ end\
 
   		/***/ 6784
   		(__unused_webpack_module, exports, __webpack_require__) {
-
-  		Object.defineProperty(exports, "__esModule", ({ value: true }));
   		exports.SHA512_IV = exports.SHA384_IV = exports.SHA224_IV = exports.SHA256_IV = exports.HashMD = void 0;
-  		exports.setBigUint64 = setBigUint64;
   		exports.Chi = Chi;
   		exports.Maj = Maj;
   		/**
@@ -23245,11 +23108,8 @@ end\
 
   		/***/ 4996
   		(__unused_webpack_module, exports) {
-
-  		Object.defineProperty(exports, "__esModule", ({ value: true }));
-  		exports.toBig = exports.shrSL = exports.shrSH = exports.rotrSL = exports.rotrSH = exports.rotrBL = exports.rotrBH = exports.rotr32L = exports.rotr32H = exports.rotlSL = exports.rotlSH = exports.rotlBL = exports.rotlBH = exports.add5L = exports.add5H = exports.add4L = exports.add4H = exports.add3L = exports.add3H = void 0;
+  		exports.shrSL = exports.shrSH = exports.rotrSL = exports.rotrSH = exports.rotrBL = exports.rotrBH = exports.add5L = exports.add5H = exports.add4L = exports.add4H = exports.add3L = exports.add3H = void 0;
   		exports.add = add;
-  		exports.fromBig = fromBig;
   		exports.split = split;
   		/**
   		 * Internal helpers for u64. BigUint64Array is too slow as per 2025, so we implement it using Uint32Array.
@@ -23273,8 +23133,6 @@ end\
   		    }
   		    return [Ah, Al];
   		}
-  		const toBig = (h, l) => (BigInt(h >>> 0) << _32n) | BigInt(l >>> 0);
-  		exports.toBig = toBig;
   		// for Shift in [0, 32)
   		const shrSH = (h, _l, s) => h >>> s;
   		exports.shrSH = shrSH;
@@ -23290,21 +23148,6 @@ end\
   		exports.rotrBH = rotrBH;
   		const rotrBL = (h, l, s) => (h >>> (s - 32)) | (l << (64 - s));
   		exports.rotrBL = rotrBL;
-  		// Right rotate for shift===32 (just swaps l&h)
-  		const rotr32H = (_h, l) => l;
-  		exports.rotr32H = rotr32H;
-  		const rotr32L = (h, _l) => h;
-  		exports.rotr32L = rotr32L;
-  		// Left rotate for Shift in [1, 32)
-  		const rotlSH = (h, l, s) => (h << s) | (l >>> (32 - s));
-  		exports.rotlSH = rotlSH;
-  		const rotlSL = (h, l, s) => (l << s) | (h >>> (32 - s));
-  		exports.rotlSL = rotlSL;
-  		// Left rotate for Shift in (32, 64), NOTE: 32 is special case.
-  		const rotlBH = (h, l, s) => (l << (s - 32)) | (h >>> (64 - s));
-  		exports.rotlBH = rotlBH;
-  		const rotlBL = (h, l, s) => (h << (s - 32)) | (l >>> (64 - s));
-  		exports.rotlBL = rotlBL;
   		// JS uses 32-bit signed integers for bitwise operations which means we cannot
   		// simple take carry out of low bit sum by shift, we need to use division.
   		function add(Ah, Al, Bh, Bl) {
@@ -23324,24 +23167,12 @@ end\
   		exports.add5L = add5L;
   		const add5H = (low, Ah, Bh, Ch, Dh, Eh) => (Ah + Bh + Ch + Dh + Eh + ((low / 2 ** 32) | 0)) | 0;
   		exports.add5H = add5H;
-  		// prettier-ignore
-  		const u64 = {
-  		    fromBig, split, toBig,
-  		    shrSH, shrSL,
-  		    rotrSH, rotrSL, rotrBH, rotrBL,
-  		    rotr32H, rotr32L,
-  		    rotlSH, rotlSL, rotlBH, rotlBL,
-  		    add, add3L, add3H, add4L, add4H, add5H, add5L,
-  		};
-  		exports["default"] = u64;
 
 
   		/***/ },
 
   		/***/ 2491
   		(__unused_webpack_module, exports) {
-
-  		Object.defineProperty(exports, "__esModule", ({ value: true }));
   		exports.crypto = void 0;
   		exports.crypto = typeof globalThis === 'object' && 'crypto' in globalThis ? globalThis.crypto : undefined;
 
@@ -23350,9 +23181,7 @@ end\
 
   		/***/ 2650
   		(__unused_webpack_module, exports, __webpack_require__) {
-
-  		Object.defineProperty(exports, "__esModule", ({ value: true }));
-  		exports.sha512_224 = exports.sha512_256 = exports.sha384 = exports.sha512 = exports.sha224 = exports.sha256 = exports.SHA512_256 = exports.SHA512_224 = exports.SHA384 = exports.SHA512 = exports.SHA224 = exports.SHA256 = void 0;
+  		exports.sha224 = exports.sha256 = exports.SHA224 = exports.SHA256 = void 0;
   		/**
   		 * SHA2 hash function. A.k.a. sha256, sha384, sha512, sha512_224, sha512_256.
   		 * SHA256 is the fastest hash implementable in JS, even faster than Blake3.
@@ -23626,7 +23455,6 @@ end\
   		        this.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   		    }
   		}
-  		exports.SHA512 = SHA512;
   		class SHA384 extends SHA512 {
   		    constructor() {
   		        super(48);
@@ -23648,7 +23476,6 @@ end\
   		        this.Hl = _md_ts_1.SHA384_IV[15] | 0;
   		    }
   		}
-  		exports.SHA384 = SHA384;
   		/**
   		 * Truncated SHA512/256 and SHA512/224.
   		 * SHA512_IV is XORed with 0xa5a5a5a5a5a5a5a5, then used as "intermediary" IV of SHA512/t.
@@ -23686,7 +23513,6 @@ end\
   		        this.Hl = T224_IV[15] | 0;
   		    }
   		}
-  		exports.SHA512_224 = SHA512_224;
   		class SHA512_256 extends SHA512 {
   		    constructor() {
   		        super(32);
@@ -23708,7 +23534,6 @@ end\
   		        this.Hl = T256_IV[15] | 0;
   		    }
   		}
-  		exports.SHA512_256 = SHA512_256;
   		/**
   		 * SHA2-256 hash function from RFC 4634.
   		 *
@@ -23720,19 +23545,19 @@ end\
   		/** SHA2-224 hash function from RFC 4634 */
   		exports.sha224 = (0, utils_ts_1.createHasher)(() => new SHA224());
   		/** SHA2-512 hash function from RFC 4634. */
-  		exports.sha512 = (0, utils_ts_1.createHasher)(() => new SHA512());
+  		(0, utils_ts_1.createHasher)(() => new SHA512());
   		/** SHA2-384 hash function from RFC 4634. */
-  		exports.sha384 = (0, utils_ts_1.createHasher)(() => new SHA384());
+  		(0, utils_ts_1.createHasher)(() => new SHA384());
   		/**
   		 * SHA2-512/256 "truncated" hash function, with improved resistance to length extension attacks.
   		 * See the paper on [truncated SHA512](https://eprint.iacr.org/2010/548.pdf).
   		 */
-  		exports.sha512_256 = (0, utils_ts_1.createHasher)(() => new SHA512_256());
+  		(0, utils_ts_1.createHasher)(() => new SHA512_256());
   		/**
   		 * SHA2-512/224 "truncated" hash function, with improved resistance to length extension attacks.
   		 * See the paper on [truncated SHA512](https://eprint.iacr.org/2010/548.pdf).
   		 */
-  		exports.sha512_224 = (0, utils_ts_1.createHasher)(() => new SHA512_224());
+  		(0, utils_ts_1.createHasher)(() => new SHA512_224());
 
 
   		/***/ },
@@ -28946,7 +28771,7 @@ end\
 
   		var setFunctionLength = __webpack_require__(6255);
 
-  		var $defineProperty = __webpack_require__(9030);
+  		var $defineProperty = __webpack_require__(6649);
 
   		var callBindBasic = __webpack_require__(6688);
   		var applyBind = __webpack_require__(8619);
@@ -29263,7 +29088,7 @@ end\
   		(module, __unused_webpack_exports, __webpack_require__) {
 
 
-  		var $defineProperty = __webpack_require__(9030);
+  		var $defineProperty = __webpack_require__(6649);
 
   		var $SyntaxError = __webpack_require__(7770);
   		var $TypeError = __webpack_require__(6785);
@@ -29410,7 +29235,7 @@ end\
 
   		/***/ },
 
-  		/***/ 9030
+  		/***/ 6649
   		(module) {
 
 
@@ -30323,7 +30148,7 @@ end\
   		};
 
   		var $gOPD = __webpack_require__(8109);
-  		var $defineProperty = __webpack_require__(9030);
+  		var $defineProperty = __webpack_require__(6649);
 
   		var throwTypeError = function () {
   			throw new $TypeError();
@@ -30763,7 +30588,7 @@ end\
   		(module, __unused_webpack_exports, __webpack_require__) {
 
 
-  		var $defineProperty = __webpack_require__(9030);
+  		var $defineProperty = __webpack_require__(6649);
 
   		var hasPropertyDescriptors = function hasPropertyDescriptors() {
   			return !!$defineProperty;
@@ -31182,7 +31007,7 @@ end\
   		var toStr = callBound('Object.prototype.toString');
   		var fnToStr = callBound('Function.prototype.toString');
 
-  		var getGeneratorFunction = __webpack_require__(3011);
+  		var getGeneratorFunction = __webpack_require__(9294).c;
 
   		/** @type {import('.')} */
   		module.exports = function isGeneratorFunction(fn) {
@@ -45378,7 +45203,7 @@ end\
 
   		/***/ },
 
-  		/***/ 6946
+  		/***/ 7286
   		(module, exports, __webpack_require__) {
 
   		var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function(a,b){!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (b),
@@ -64503,6 +64328,18 @@ end\
 
   		/***/ },
 
+  		/***/ 9294
+  		(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+  		/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+  		/* harmony export */   c: () => (/* reexport default export from named module */ _index_js__WEBPACK_IMPORTED_MODULE_0__)
+  		/* harmony export */ });
+  		/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3011);
+
+
+
+
+  		/***/ },
+
   		/***/ 1635
   		(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
   		/* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -64515,11 +64352,6 @@ end\
   		  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
   		  return c > 3 && r && Object.defineProperty(target, key, r), r;
   		}
-
-  		typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-  		  var e = new Error(message);
-  		  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-  		};
 
 
   		/***/ }
