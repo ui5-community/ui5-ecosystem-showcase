@@ -1,3 +1,21 @@
+/**
+ * Rollup plugin: handle `import.meta.url` and `new URL(..., import.meta.url)`.
+ *
+ * Two transformations:
+ *
+ * 1. `new URL("./asset.bin", import.meta.url)` — common pattern for shipping
+ *    binary or text assets next to a module (e.g. maplibre-gl loading its
+ *    worker bundle). The asset is resolved through the regular rollup
+ *    resolver, emitted as a `prebuilt-chunk`, and the call is rewritten to
+ *    reference the chunk's filename.
+ *
+ * 2. `import.meta.url` (bare) — replaced with a UI5-friendly equivalent
+ *    `new URL(sap.ui.require.toUrl("<chunkModuleId>"), document.baseURI).href`
+ *    so the bundled code resolves to the correct runtime URL through the
+ *    UI5 module loader rather than relying on the host-page `<script>` URL.
+ *
+ * @returns {import('rollup').Plugin}
+ */
 const path = require("path");
 const { readFileSync } = require("fs");
 

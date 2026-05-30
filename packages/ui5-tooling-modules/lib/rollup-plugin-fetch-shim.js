@@ -1,21 +1,32 @@
-// Rollup plugin that replaces server-only fetch packages (`node-fetch`,
-// `cross-fetch`, `isomorphic-fetch`, etc.) with a tiny virtual module that
-// re-exports the browser's native Web Fetch API.
-//
-// Why: those packages are designed for Node and pull in `node:net`,
-// `node:fs/promises`, `fetch-blob`, `formdata-polyfill`, and more — none of
-// which polyfill cleanly into a browser bundle. Modern browsers have a global
-// `fetch` API for years now, and in the UI5 runtime `globalThis.fetch` is
-// always available. This plugin short-circuits the resolution before
-// rollup-plugin-polyfill-node even sees the imports.
-//
-// The shim covers:
-//   - the package's "main" entry  (e.g. `import fetch from "node-fetch"`)
-//   - any subpath import          (e.g. `import {fetch} from "cross-fetch/polyfill"`)
-//
-// Consumers needing Node-specific helpers (`AbortError`, `FetchError`,
-// `isRedirect`, `blobFrom`, `fileFrom`) get inert stubs so the import
-// itself does not throw at parse time.
+/**
+ * Rollup plugin: replace server-only fetch packages with a Web Fetch shim.
+ *
+ * Intercepts `node-fetch`, `cross-fetch`, `isomorphic-fetch` (and any of
+ * their subpath imports, e.g. `cross-fetch/polyfill`) and substitutes a tiny
+ * virtual module that re-exports the browser's native Web Fetch API.
+ *
+ * Why: those packages are designed for Node and drag in `node:net`,
+ * `node:fs/promises`, `fetch-blob`, `formdata-polyfill`, and more — none of
+ * which polyfill cleanly into a browser bundle. Modern browsers have a
+ * global `fetch` for years, and in the UI5 runtime `globalThis.fetch` is
+ * always available. Intercepting at `resolveId` short-circuits resolution
+ * before commonjs / polyfill-node ever see the import, so the entire
+ * Node-only sub-graph drops out of the bundle.
+ *
+ * The shim re-exports `fetch`, `Headers`, `Request`, `Response`, `Blob`,
+ * `File`, `FormData`, `AbortController`, and `AbortSignal` from
+ * `globalThis`, plus inert `AbortError` / `FetchError` / `isRedirect` stubs
+ * for compatibility. Node-only helpers (`blobFrom`, `fileFrom`, ...) are
+ * stubbed to throw an explanatory error if invoked.
+ *
+ * @param {object}   [options]
+ * @param {string[]} [options.packages] override the default list of
+ *        intercepted packages (default: `node-fetch`, `cross-fetch`,
+ *        `isomorphic-fetch`)
+ * @param {{ verbose?: (msg: string) => void }} [options.log]
+ *        optional logger; `verbose` is called for every interception
+ * @returns {import('rollup').Plugin}
+ */
 
 const VIRTUAL_PREFIX = "\0fetch-shim:";
 
@@ -87,12 +98,6 @@ export const fileFrom = _nodeOnly("fileFrom");
 export const fileFromSync = _nodeOnly("fileFromSync");
 `;
 
-/**
- * @param {object} [options]
- * @param {string[]} [options.packages] override the list of packages to shim
- * @param {function} [options.log] logger for tracing the interception
- * @returns {import('rollup').Plugin}
- */
 module.exports = function fetchShim({ packages = SHIMMED_PACKAGES, log } = {}) {
 	const shimRegex = new RegExp(`^(${packages.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(?:/.*)?$`);
 

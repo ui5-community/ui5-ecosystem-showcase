@@ -1,3 +1,47 @@
+/**
+ * Rollup plugin: integrate UI5 Web Components into the UI5 control runtime.
+ *
+ * Walks every imported package that ships UI5 Web Components metadata and
+ * synthesizes the glue code so the components register with the UI5 runtime
+ * as first-class controls. Concretely:
+ *
+ *  - resolves bare Web Component imports against the workspace via the
+ *    injected `resolveModule` callback
+ *  - reads each package's `customElements.json` (or framework-specific
+ *    metadata) into an in-memory `WebComponentRegistry`
+ *  - emits a UI5 wrapper class per component (handlebars-rendered),
+ *    optionally with JSDoc and `.d.ts` companions
+ *  - applies CSS/asset scoping so multiple consumers of the same
+ *    component package coexist without leaking styles
+ *  - handles framework-version gating: skipped automatically when the
+ *    detected UI5 version is < 1.120.0 unless `force` is set
+ *
+ * Hooks used:
+ *  - `buildStart`: clears the per-build component registry
+ *  - `resolveId`:  routes Web Component package imports to the wrapper
+ *  - `load`:       returns generated wrapper / metadata sources
+ *  - `transform`:  rewrites web-component source for AMD compatibility
+ *  - `generateBundle`: emits side-car assets (CLDR, CSS, includeAssets, ...)
+ *
+ * @param {object} options plugin options
+ * @param {{ info, warn, verbose, error }} [options.log] UI5 task logger
+ * @param {(name: string) => string|undefined} options.resolveModule
+ *        callback that resolves a bare module spec to an absolute path
+ *        in the consumer's workspace
+ * @param {object} options.projectInfo
+ *        UI5 project info — `pkgJson`, `framework`, `type`, `version`
+ * @param {(absPath: string) => object} options.getPackageJson
+ *        cached `package.json` reader supplied by the parent task
+ * @param {object} [options.options] plugin tuning knobs:
+ *        `skip`, `scoping`, `scopeSuffix`, `enrichBusyIndicator`, `force`,
+ *        `includeAssets`, `forceAllAssets`, `moduleBasePath`,
+ *        `removeScopePrefix`, `skipJSDoc`, `skipDtsGeneration`,
+ *        `customJSDocTags`, `removeCLDRData`
+ * @param {object} [options.$metadata]
+ *        out-parameter object that receives the discovered Web Component
+ *        metadata so the parent task can re-use it across invocations
+ * @returns {import('rollup').Plugin} configured rollup plugin
+ */
 const { join, dirname, extname, posix } = require("path");
 const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");

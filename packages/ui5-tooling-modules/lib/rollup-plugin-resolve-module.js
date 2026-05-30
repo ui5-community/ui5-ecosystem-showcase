@@ -21,11 +21,11 @@
  *                            to the callback as an absolute path
  *  - bare specifiers      : handed to the callback verbatim
  *
- * @param {object}   options
+ * @param {object}   options plugin options
  * @param {(id: string) => string | null | undefined} options.resolveModule
  *        Callback that returns the resolved absolute file path for `id`,
  *        or a falsy value to let rollup fall through to its other resolvers.
- * @returns {import('rollup').Plugin}
+ * @returns {import('rollup').Plugin} configured rollup plugin
  */
 const path = require("path");
 

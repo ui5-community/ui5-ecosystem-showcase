@@ -1,3 +1,36 @@
+/**
+ * Rollup plugin: layered Node-builtin polyfill resolver.
+ *
+ * Wraps `rollup-plugin-polyfill-node` with a four-layer resolution chain
+ * for `node:<x>` / bare-builtin imports:
+ *
+ *  1. Per-project escape hatch: `<cwd>/_polyfill-overrides_/<module>.js` is
+ *     loaded verbatim if present. Use this for app-specific overrides
+ *     that should not become workspace defaults.
+ *  2. Centralized augmentation: `POLYFILL_AUGMENTATIONS[<module>]` is
+ *     appended to the upstream polyfill source. Use this for small,
+ *     workspace-wide patches (e.g. surfacing browser globals like
+ *     `TextEncoder` / `TextDecoder` that the upstream `util` polyfill is
+ *     missing). Tree-shaking removes the appended exports if nothing
+ *     imports them by name, so registering augmentations is safe.
+ *  3. Upstream `rollup-plugin-polyfill-node` polyfill set.
+ *  4. Empty-module fallback (`?polyfill-node-ignore`) so unsupported
+ *     builtins do not fail the bundle.
+ *
+ * The plugin also ships a companion {@link module.exports.inject} factory
+ * which produces an `@rollup/plugin-inject` configured to swap `process`,
+ * `Buffer`, `global`, `__filename`, `__dirname` references in user code
+ * for the polyfilled equivalents — kept in sync with the upstream plugin.
+ *
+ * @param {object} options plugin options
+ * @param {{ verbose?: (msg: string) => void }} [options.log] optional logger
+ * @param {string} options.cwd
+ *        project root used to locate `_polyfill-overrides_`
+ * @param {string[]} [options.moduleNames]
+ *        explicit entry-point names; entries here are NOT treated as
+ *        Node builtins even if `require.resolve` would map them as such
+ * @returns {import('rollup').Plugin} configured rollup plugin
+ */
 /* eslint-disable no-unused-vars */
 const { existsSync, readFileSync } = require("fs");
 const { join } = require("path");

@@ -1,3 +1,31 @@
+/**
+ * Rollup plugin: control whether `import()` calls survive the bundle.
+ *
+ * By default rollup statically resolves dynamic imports and folds them into
+ * the bundle. For UI5 apps that is rarely what you want — the runtime needs
+ * to keep the original `import()` call so the UI5 loader can fetch the
+ * resource on demand (and so apps can `import()` with a runtime variable).
+ *
+ * Hooks `renderDynamicImport` and decides per-import:
+ *  - if `keepDynamicImports` is `true`, every dynamic import is preserved
+ *  - if it is an array of package names, only imports whose owning package
+ *    (looked up via `findPackageJson`) appears in the list are preserved
+ *  - if it is `false`, rollup's default behaviour applies and the import is
+ *    inlined / merged like any other static import
+ *
+ * Variable-form dynamic imports (where `targetModuleId` is empty) are also
+ * preserved when the policy says so, since rollup cannot statically resolve
+ * them anyway.
+ *
+ * @param {object} options plugin options
+ * @param {(moduleId: string) => string} options.findPackageJson
+ *        Returns the absolute path of the closest `package.json` for the
+ *        given resolved module id. Used to look up the owning package name.
+ * @param {boolean | string[]} [options.keepDynamicImports]
+ *        Policy: `true` keeps all, `false` keeps none, an array keeps only
+ *        the listed package names.
+ * @returns {import('rollup').Plugin} configured rollup plugin
+ */
 const { existsSync, readFileSync } = require("fs");
 
 module.exports = function ({ findPackageJson, keepDynamicImports } = {}) {
