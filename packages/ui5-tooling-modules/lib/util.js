@@ -13,7 +13,7 @@ const fetchShim = require("./rollup-plugin-fetch-shim");
 const skipAssets = require("./rollup-plugin-skip-assets");
 const injectESModule = require("./rollup-plugin-inject-esmodule");
 const logger = require("./rollup-plugin-logger");
-const pnpmResolve = require("./rollup-plugin-pnpm-resolve");
+const resolveModulePlugin = require("./rollup-plugin-resolve-module");
 const dynamicImports = require("./rollup-plugin-dynamic-imports");
 const replace = require("@rollup/plugin-replace");
 const transformTopLevelThis = require("./rollup-plugin-transform-top-level-this");
@@ -1335,7 +1335,7 @@ module.exports = function (log, projectInfo) {
 					}),
 					// once the node polyfills are injected, we can
 					// resolve the modules from node_modules
-					pnpmResolve({
+					resolveModulePlugin({
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
