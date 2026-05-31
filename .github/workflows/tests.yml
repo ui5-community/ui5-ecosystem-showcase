@@ -50,10 +50,12 @@ jobs:
       # Fails the PR if no changeset describes the change.
       # Add one with `pnpm changeset` (or `pnpm changeset --empty` for
       # PRs that don't need a release entry) and commit it.
+      # We check `.changesets` (not `.releases`) so that empty changesets
+      # — which have 0 package bumps but still document the PR — pass.
       - name: Verify changeset is present
         run: |
           pnpm changeset status --since=origin/main --output=/tmp/cs.json
-          if [ "$(jq '.releases | length' /tmp/cs.json)" -eq 0 ]; then
+          if [ "$(jq '.changesets | length' /tmp/cs.json)" -eq 0 ]; then
             echo "::error::No changeset found on this PR. Run 'pnpm changeset' (or 'pnpm changeset --empty' for PRs that don't need a release entry) and commit the file."
             exit 1
           fi
