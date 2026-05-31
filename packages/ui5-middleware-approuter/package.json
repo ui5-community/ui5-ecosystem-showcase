@@ -32,7 +32,7 @@
     "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
-    "@ui5/cli": "^3",
+    "@ui5/cli": "^4",
     "@ui5/project": "^3",
     "@ui5/server": "^3",
     "ava": "^8.0.1",
