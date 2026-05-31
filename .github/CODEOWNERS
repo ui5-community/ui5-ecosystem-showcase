@@ -1,0 +1,20 @@
+# Code owners for supply-chain-sensitive paths.
+#
+# These are the files where a malicious change is hardest to undo
+# after the fact: workflows that run with secrets, the release config
+# that publishes to npm, the workspace overrides/allowBuilds list, and
+# the lockfile. Requiring a maintainer review on these paths is a
+# concrete defense against worm-style attacks where a compromised
+# contributor account otherwise pushes a single bad commit.
+#
+# Everything else is intentionally not covered here so day-to-day
+# package work is not gated on this team.
+
+/.github/workflows/        @ui5-community/maintainers
+/.github/dependabot.yml    @ui5-community/maintainers
+/.github/CODEOWNERS        @ui5-community/maintainers
+/.changeset/config.json    @ui5-community/maintainers
+/pnpm-workspace.yaml       @ui5-community/maintainers
+/pnpm-lock.yaml            @ui5-community/maintainers
+/package.json              @ui5-community/maintainers
+/SECURITY.md               @ui5-community/maintainers
