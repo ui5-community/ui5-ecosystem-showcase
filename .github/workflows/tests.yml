@@ -11,6 +11,53 @@ env:
   HUSKY_SKIP: true
 
 jobs:
+  changeset:
+    name: Changeset present
+    runs-on: ubuntu-latest
+    # Skip on the auto-generated release PR (it consumes all changesets).
+    if: "github.head_ref != 'changeset-release/main' && ! contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Need full history so `changeset status --since=origin/main` can diff.
+          fetch-depth: 0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          run_install: false
+
+      - id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path | tr -d '\n')" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        name: Setup pnpm-cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Fails the PR if no changeset describes the change.
+      # Add one with `pnpm changeset` (or `pnpm changeset --empty` for
+      # PRs that don't need a release entry) and commit it.
+      - name: Verify changeset is present
+        run: |
+          pnpm changeset status --since=origin/main --output=/tmp/cs.json
+          if [ "$(jq '.releases | length' /tmp/cs.json)" -eq 0 ]; then
+            echo "::error::No changeset found on this PR. Run 'pnpm changeset' (or 'pnpm changeset --empty' for PRs that don't need a release entry) and commit the file."
+            exit 1
+          fi
+
   build:
     name: Build (exercises task extensions)
     runs-on: ubuntu-latest
