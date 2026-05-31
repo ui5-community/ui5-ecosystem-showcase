@@ -48,6 +48,7 @@
     "@ui5/webcomponents": "^2.22.0",
     "@ui5/webcomponents-icons": "^2.22.0",
     "axios": "^1.16.1",
+    "before-after-hook": "^4.0.0",
     "cmis": "^1.0.3",
     "easytimer.js": "^4.6.0",
     "fetch-mock": "^12.6.0",
@@ -64,6 +65,7 @@
     "tui-image-editor": "^3.15.3",
     "ui5-lib": "workspace:^",
     "ui5-module": "workspace:^",
+    "universal-user-agent": "^7.0.3",
     "xml-js": "^1.6.11",
     "zod": "^4.4.3"
   },

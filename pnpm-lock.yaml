@@ -750,6 +750,9 @@ importers:
       axios:
         specifier: ^1.16.1
         version: 1.16.1(debug@4.4.3)
+      before-after-hook:
+        specifier: ^4.0.0
+        version: 4.0.0
       cmis:
         specifier: ^1.0.3
         version: 1.0.3
@@ -798,6 +801,9 @@ importers:
       ui5-module:
         specifier: workspace:^
         version: link:../ui5-module
+      universal-user-agent:
+        specifier: ^7.0.3
+        version: 7.0.3
       xml-js:
         specifier: ^1.6.11
         version: 1.6.11
