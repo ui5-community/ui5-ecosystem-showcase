@@ -66,22 +66,40 @@ This monorepo uses [Changesets](https://github.com/changesets/changesets) for ve
 
 The release flow is fully automated through GitHub Actions — no local `lerna` or push permissions on `main` required.
 
-**For contributors:** when your PR changes one or more public packages, add a changeset:
+**For contributors:** every PR must include a changeset — the [`Tests`](.github/workflows/tests.yml) workflow has a `Changeset present` gate that fails PRs without one.
+
+When your PR changes one or more public packages under `packages/*`, add a regular changeset:
 
 ```bash
 pnpm changeset
 ```
 
-The interactive prompt asks which packages changed and at what semver level (patch / minor / major) and writes a small markdown file under `.changeset/`. Commit that file with your code change. If your PR is docs- or tooling-only, you can skip this step.
+The interactive prompt asks which packages changed and at what semver level (patch / minor / major) and writes a small markdown file under `.changeset/`. The body of that file becomes the entry in each affected package's `CHANGELOG.md`, so write it for end users — explain *what changed and why*, not the implementation detail. Commit the file with your code change.
 
-**For maintainers:** the release itself happens entirely on GitHub.
+When your PR does **not** ship in any published package — CI / workflow tweaks, root-level docs, changes under `showcases/*`, test-only changes — add an empty changeset instead:
 
-- When a PR with changesets is merged into `main`, the [`Release`](.github/workflows/release.yml) workflow opens (or updates) a single **`Version Packages`** PR that aggregates all pending changesets — bumping versions, regenerating each package's `CHANGELOG.md`, and refreshing `pnpm-lock.yaml`.
+```bash
+pnpm changeset --empty
+```
+
+This satisfies the gate without bumping any package version. Optionally edit the file to add a short summary explaining what the PR did.
+
+**Picking the right semver level:** patch for bug fixes and internal changes; minor for new features that don't break existing behavior; major for breaking changes. When a public package changes major/minor, internal dependents are bumped automatically at patch level (configured via `updateInternalDependencies` in `.changeset/config.json`).
+
+**For maintainers:** the release itself happens entirely on GitHub through a two-phase flow:
+
+```text
+feature PR (with changeset) ──merge──▶  Version Packages PR ──merge──▶  npm publish
+```
+
+- When a PR with changesets is merged into `main`, the [`Release`](.github/workflows/release.yml) workflow opens (or updates) a single **`Version Packages`** PR that aggregates all pending changesets — bumping versions, regenerating each package's `CHANGELOG.md` (using `@changesets/changelog-github`, which links PRs and credits authors), and refreshing `pnpm-lock.yaml`. Empty changesets are consumed too, but contribute no version bump or changelog entry.
 - Review and merge that **`Version Packages`** PR when you want to cut a release.
 - The same workflow then automatically publishes the new versions to npm (OIDC trusted publishing, with `NPM_BOOTSTRAP_TOKEN` as a fallback) and creates the matching git tags.
 - Inspect the newly published artifacts on npmjs.com.
 
 You can also trigger the workflow manually via *Actions → Release → Run workflow* — useful if a previous run failed mid-publish.
+
+If `main` only ever accumulates empty changesets, no `Version Packages` PR appears and nothing is released — that's the intended behavior. As soon as a real changeset lands, the PR shows up with all pending bumps.
 
 ### Upgrading the version of the dependencies
 
