@@ -1,5 +1,21 @@
 # Change Log
 
+## 3.10.0
+
+### Minor Changes
+
+- [#1370](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1370) [`dd71c42`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dd71c421812409d75b7f2e41261b8a79580ea469) Thanks [@petermuessig](https://github.com/petermuessig)! - Upgrade `http-proxy-middleware` to v4. v4 ships as ESM-only and requires Node >= 22.15.0 (already the CI baseline). The exposed API surface used here (`target`, `changeOrigin`, `secure`, `agent`, `auth`, `headers`, `pathFilter`, `pathRewrite`, `selfHandleResponse`, `xfwd`, `autoRewrite`, `on.proxyReq`/`proxyRes`, `responseInterceptor`, `proxyMiddleware.upgrade`) is unchanged; the `require()` calls were switched to dynamic `await import()` inside the existing async scopes — same pattern already used for `proxy-from-env` and `https-proxy-agent`.
+
+### Patch Changes
+
+- [#1370](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1370) [`dd71c42`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dd71c421812409d75b7f2e41261b8a79580ea469) Thanks [@petermuessig](https://github.com/petermuessig)! - Bump runtime dependencies to clear open dependabot alerts and pick up upstream patch releases:
+  - `cds-plugin-ui5`: `semver` ^7.8.0 → ^7.8.1
+  - `ui5-middleware-approuter`: `@sap/approuter` ^22.0.0 → ^22.0.1
+  - `ui5-middleware-serveframework`: `node-fetch` ^2.7.0 → ^3.3.2
+  - `ui5-middleware-websocket`: `ws` ^8.20.1 → ^8.21.0
+  - `ui5-task-copyright`: `@typescript-eslint/typescript-estree` ^8.59.3 → ^8.60.0
+  - `ui5-tooling-transpile`: `@babel/core`, `@babel/preset-env`, `@babel/preset-typescript` → ^7.29.7
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
@@ -7,456 +23,245 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 # [3.9.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.8.2...ui5-middleware-approuter@3.9.0) (2026-03-12)
-
 
 ### Features
 
-* update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
-
-
-
-
+- update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
 
 ## [3.8.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.8.1...ui5-middleware-approuter@3.8.2) (2026-02-09)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-approuter:** properly handle destinations ([#1313](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1313)) ([70aa960](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/70aa9600146e477c0a7293991f8244a3fa49c518))
-
-
-
-
+- **ui5-middleware-approuter:** properly handle destinations ([#1313](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1313)) ([70aa960](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/70aa9600146e477c0a7293991f8244a3fa49c518))
 
 ## [3.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.8.0...ui5-middleware-approuter@3.8.1) (2026-01-15)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 # [3.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.7.2...ui5-middleware-approuter@3.8.0) (2025-12-02)
-
 
 ### Bug Fixes
 
-* **ui5-tooling-modules:** include also non-documented properties in wrappers ([#1299](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1299)) ([bd63306](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bd633061b3e03379cfed1b83a79a5bc317d65ddf))
-
+- **ui5-tooling-modules:** include also non-documented properties in wrappers ([#1299](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1299)) ([bd63306](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bd633061b3e03379cfed1b83a79a5bc317d65ddf))
 
 ### Features
 
-* update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
-
-
-
-
+- update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
 
 ## [3.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.7.1...ui5-middleware-approuter@3.7.2) (2025-11-02)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 ## [3.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.7.0...ui5-middleware-approuter@3.7.1) (2025-09-17)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 # [3.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.6.2...ui5-middleware-approuter@3.7.0) (2025-09-15)
-
 
 ### Features
 
-* **ui5-middleware-approuter:** upgrade to http-proxy-middleware@3.0.5 ([#1267](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1267)) ([b99b195](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b99b1959c68fbd09c49e650789bec707f26204e3)), closes [#1263](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1263)
-
-
-
-
+- **ui5-middleware-approuter:** upgrade to http-proxy-middleware@3.0.5 ([#1267](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1267)) ([b99b195](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b99b1959c68fbd09c49e650789bec707f26204e3)), closes [#1263](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1263)
 
 ## [3.6.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.6.1...ui5-middleware-approuter@3.6.2) (2025-07-06)
 
-
 ### Bug Fixes
 
-* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
-
-
-
-
+- update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
 
 ## [3.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.6.0...ui5-middleware-approuter@3.6.1) (2025-03-19)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 # [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.5.1...ui5-middleware-approuter@3.6.0) (2025-02-06)
-
 
 ### Features
 
-* general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
-
-
-
-
+- general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
 
 ## [3.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.5.0...ui5-middleware-approuter@3.5.1) (2024-11-01)
 
-
 ### Bug Fixes
 
-* update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
-
-
-
-
+- update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
 
 # [3.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.8...ui5-middleware-approuter@3.5.0) (2024-09-06)
 
-
 ### Features
 
-* enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
-
-
-
-
+- enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
 
 ## [3.4.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.7...ui5-middleware-approuter@3.4.8) (2024-07-22)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 ## [3.4.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.6...ui5-middleware-approuter@3.4.7) (2024-05-31)
 
 **Note:** Version bump only for package ui5-middleware-approuter
-
-
-
-
 
 ## [3.4.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.5...ui5-middleware-approuter@3.4.6) (2024-05-15)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 ## [3.4.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.4...ui5-middleware-approuter@3.4.5) (2024-02-18)
 
 **Note:** Version bump only for package ui5-middleware-approuter
-
-
-
-
 
 ## [3.4.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.3...ui5-middleware-approuter@3.4.4) (2024-01-25)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 ## [3.4.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.2...ui5-middleware-approuter@3.4.3) (2024-01-17)
 
 **Note:** Version bump only for package ui5-middleware-approuter
-
-
-
-
 
 ## [3.4.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.1...ui5-middleware-approuter@3.4.2) (2023-12-10)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 ## [3.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.4.0...ui5-middleware-approuter@3.4.1) (2023-11-10)
 
 **Note:** Version bump only for package ui5-middleware-approuter
 
-
-
-
-
 # 3.4.0 (2023-11-09)
-
 
 ### Features
 
-* **ui5-middleware-cfdestination:** rename to ui5-middleware-approuter ([#913](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/913)) ([6e45df3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6e45df33df8576aa493e11c73d84203be838d1e9))
-
-
-
-
+- **ui5-middleware-cfdestination:** rename to ui5-middleware-approuter ([#913](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/913)) ([6e45df3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6e45df33df8576aa493e11c73d84203be838d1e9))
 
 ## [3.3.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.10...ui5-middleware-cfdestination@3.3.11) (2023-11-03)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
 
-
-
-
-
 ## [3.3.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.9...ui5-middleware-cfdestination@3.3.10) (2023-10-14)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
 
-
-
-
-
 ## [3.3.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.8...ui5-middleware-cfdestination@3.3.9) (2023-10-07)
-
 
 ### Bug Fixes
 
-* **ui5-middleware-cfdestination:** fix x-forwarded-proto multi protocol issue ([#878](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/878)) ([d25e2eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d25e2eb5748aa835cce415561f1d690962994c2e))
-
-
-
-
+- **ui5-middleware-cfdestination:** fix x-forwarded-proto multi protocol issue ([#878](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/878)) ([d25e2eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d25e2eb5748aa835cce415561f1d690962994c2e))
 
 ## [3.3.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.7...ui5-middleware-cfdestination@3.3.8) (2023-10-05)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-cfdestination:** support x-forwarded-proto with multiple protocols ([#875](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/875)) ([e0435d8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e0435d8c61f39b9dc210b147b2a293c73155dcd0)), closes [#874](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/874)
-
-
-
-
+- **ui5-middleware-cfdestination:** support x-forwarded-proto with multiple protocols ([#875](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/875)) ([e0435d8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e0435d8c61f39b9dc210b147b2a293c73155dcd0)), closes [#874](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/874)
 
 ## [3.3.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.6...ui5-middleware-cfdestination@3.3.7) (2023-10-04)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
 
-
-
-
-
 ## [3.3.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.5...ui5-middleware-cfdestination@3.3.6) (2023-10-03)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
-
-
-
-
 
 ## [3.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.4...ui5-middleware-cfdestination@3.3.5) (2023-10-03)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
 
-
-
-
-
 ## [3.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.3...ui5-middleware-cfdestination@3.3.4) (2023-10-02)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
 
-
-
-
-
 ## [3.3.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.2...ui5-middleware-cfdestination@3.3.3) (2023-10-01)
-
 
 ### Bug Fixes
 
-* **cds-plugin-ui5:** rework collision detection ([#853](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/853)) ([b25fd5c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b25fd5c10600c15e0bd4977e3792c78fea7f366e))
-
-
-
-
+- **cds-plugin-ui5:** rework collision detection ([#853](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/853)) ([b25fd5c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b25fd5c10600c15e0bd4977e3792c78fea7f366e))
 
 ## [3.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.1...ui5-middleware-cfdestination@3.3.2) (2023-09-30)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
 
-
-
-
-
 ## [3.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.0...ui5-middleware-cfdestination@3.3.1) (2023-09-21)
-
 
 ### Bug Fixes
 
-* **ui5-middleware-cfdestination:** ensure proper index redirect without baseUrl ([#846](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/846)) ([d5aa59f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d5aa59fbc629b5fa5e875e7469c5696b91df5d22))
-
-
-
-
+- **ui5-middleware-cfdestination:** ensure proper index redirect without baseUrl ([#846](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/846)) ([d5aa59f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d5aa59fbc629b5fa5e875e7469c5696b91df5d22))
 
 # [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.2.0...ui5-middleware-cfdestination@3.3.0) (2023-09-19)
 
-
 ### Features
 
-* **ui5-middleware-cfdestination:** support for extensions ([#844](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/844)) ([7056fbf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7056fbff796c4e335b59fe38d7959f3745f06fa0))
-
-
-
-
+- **ui5-middleware-cfdestination:** support for extensions ([#844](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/844)) ([7056fbf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7056fbff796c4e335b59fe38d7959f3745f06fa0))
 
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.4...ui5-middleware-cfdestination@3.2.0) (2023-09-08)
 
-
 ### Features
 
-* **ui5-middleware-websocket:** enable websocket support for UI5 server ([#819](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/819)) ([9582167](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9582167dcf8be13df43b9966ef3af59561e1d98d)), closes [#557](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/557)
-
-
-
-
+- **ui5-middleware-websocket:** enable websocket support for UI5 server ([#819](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/819)) ([9582167](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9582167dcf8be13df43b9966ef3af59561e1d98d)), closes [#557](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/557)
 
 ## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.3...ui5-middleware-cfdestination@3.1.4) (2023-09-07)
 
-
 ### Bug Fixes
 
-* consistent request path handling of all middlewares ([#833](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/833)) ([11ad435](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/11ad4356ddb6f8503ebf46039ad898b1c4aec7c9)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
-
-
-
-
+- consistent request path handling of all middlewares ([#833](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/833)) ([11ad435](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/11ad4356ddb6f8503ebf46039ad898b1c4aec7c9)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
 
 ## [3.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.2...ui5-middleware-cfdestination@3.1.3) (2023-09-05)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-cfdestination:** properly calculate the content-type ([#832](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/832)) ([aab2cd0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aab2cd0b266b46e1af7798f7beb1e1af25384247))
-
-
-
-
+- **ui5-middleware-cfdestination:** properly calculate the content-type ([#832](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/832)) ([aab2cd0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aab2cd0b266b46e1af7798f7beb1e1af25384247))
 
 ## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.1...ui5-middleware-cfdestination@3.1.2) (2023-09-03)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-cfdestination:** support UAA flow ([#828](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/828)) ([20a0df1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20a0df16155f1f29b190525163cac457816c8a54)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
-
-
-
-
+- **ui5-middleware-cfdestination:** support UAA flow ([#828](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/828)) ([20a0df1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20a0df16155f1f29b190525163cac457816c8a54)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
 
 ## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.0...ui5-middleware-cfdestination@3.1.1) (2023-09-01)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-cfdestination:** ignore approuter config's welcomeFile ([#820](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/820)) ([652446a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/652446aa18118c88f9b7af935c066d759a326c8e))
-* **ui5-middleware-cfdestination:** make ws configurable ([#821](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/821)) ([2603135](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2603135afcadcaabad71f85acf56f829f4bc9f46))
-
-
-
-
+- **ui5-middleware-cfdestination:** ignore approuter config's welcomeFile ([#820](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/820)) ([652446a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/652446aa18118c88f9b7af935c066d759a326c8e))
+- **ui5-middleware-cfdestination:** make ws configurable ([#821](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/821)) ([2603135](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2603135afcadcaabad71f85acf56f829f4bc9f46))
 
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.2...ui5-middleware-cfdestination@3.1.0) (2023-08-31)
 
-
 ### Features
 
-* usage of http-proxy-middleware for proxies ([#818](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/818)) ([3d6d844](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3d6d844ba5894b4b0aa4c22a9e876039f1ddd72a)), closes [#557](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/557) [#748](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/748) [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817) [#816](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/816)
-
-
-
-
+- usage of http-proxy-middleware for proxies ([#818](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/818)) ([3d6d844](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3d6d844ba5894b4b0aa4c22a9e876039f1ddd72a)), closes [#557](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/557) [#748](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/748) [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817) [#816](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/816)
 
 ## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.1...ui5-middleware-cfdestination@3.0.2) (2023-08-29)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-cfdestination:** fixed mime info detection ([#815](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/815)) ([cca1106](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cca110682f45e785734d824246f771e5ecb81a65)), closes [#797](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/797)
-
-
-
-
+- **ui5-middleware-cfdestination:** fixed mime info detection ([#815](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/815)) ([cca1106](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cca110682f45e785734d824246f771e5ecb81a65)), closes [#797](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/797)
 
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.0...ui5-middleware-cfdestination@3.0.1) (2023-08-12)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
 
-
-
-
-
 # [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.11.0...ui5-middleware-cfdestination@3.0.0) (2023-07-31)
-
 
 ### Features
 
-* migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
-* prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
-
+- migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
+- prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
 
 ### BREAKING CHANGES
 
-* The support for UI5 Tooling V2 has been removed
-
-
-
-
+- The support for UI5 Tooling V2 has been removed
 
 # [0.11.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.16...ui5-middleware-cfdestination@0.11.0) (2023-07-16)
 
-
 ### Features
 
-* **ui5-middleware-cfdestination:** allow dest. to be maintained in .env ([#765](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/765)) ([d42db9e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d42db9ecc2115d3ae5964a654d6da6108aa2d78e))
-
-
-
-
+- **ui5-middleware-cfdestination:** allow dest. to be maintained in .env ([#765](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/765)) ([d42db9e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d42db9ecc2115d3ae5964a654d6da6108aa2d78e))
 
 ## [0.10.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.15...ui5-middleware-cfdestination@0.10.16) (2023-07-01)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
-
-
-
-
+- **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
 
 ## [0.10.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.14...ui5-middleware-cfdestination@0.10.15) (2023-06-15)
 
-
 ### Bug Fixes
 
-* update dependencies ([#754](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/754)) ([3893473](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/389347300795cfed881dc8be72eeb59d1bf45fff))
-
-
-
-
+- update dependencies ([#754](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/754)) ([3893473](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/389347300795cfed881dc8be72eeb59d1bf45fff))
 
 ## [0.10.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.13...ui5-middleware-cfdestination@0.10.14) (2023-06-03)
 

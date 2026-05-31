@@ -1,1864 +1,1053 @@
 # Change Log
 
+## 3.37.0
+
+### Minor Changes
+
+- [#1370](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1370) [`dd71c42`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dd71c421812409d75b7f2e41261b8a79580ea469) Thanks [@petermuessig](https://github.com/petermuessig)! - Replace `node-fetch` / `cross-fetch` / `isomorphic-fetch` (and any of their subpath imports) with a virtual rollup shim that re-exports `globalThis.fetch`, `Headers`, `Request`, `Response`, `Blob`, `File`, `FormData`, plus inert `AbortError` / `FetchError` / `isRedirect` stubs. The shim is hooked into the rollup chain before commonjs/polyfill resolution so the Node-only sub-graph (`fetch-blob`, `fs.promises`, `node:net`, …) never enters the browser bundle. Fixes the `"isIP" is not exported by "polyfill-node.net.js"` error that `node-fetch@3` introduced.
+
+### Patch Changes
+
+- [#1370](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1370) [`dd71c42`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dd71c421812409d75b7f2e41261b8a79580ea469) Thanks [@petermuessig](https://github.com/petermuessig)! - Bump `minimatch` from v7 to v10. v9 dropped the default export, so the five `require("minimatch")` sites were switched to the named export `const { minimatch } = require("minimatch")`. The runtime call shape `minimatch(path, pattern)` is unchanged. minimatch 8 raised the Node floor to 20+, which already matches the workspace engines (Node 22 in CI).
+
+- [#1370](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1370) [`dd71c42`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dd71c421812409d75b7f2e41261b8a79580ea469) Thanks [@petermuessig](https://github.com/petermuessig)! - Augment the bundled `node:util` polyfill with `TextEncoder` / `TextDecoder` exports out of the box (previously consumers had to drop a 720-line `_polyfill-overrides_/util.js` copy of the upstream polyfill into every app). Augmentations are registered via a `POLYFILL_AUGMENTATIONS` map keyed by Node built-in name; entries are appended verbatim to the upstream polyfill source as the bundler loads it, and tree-shaking strips appended exports that nothing imports. Per-project `_polyfill-overrides_/` directories remain available for app-specific overrides that should not become global defaults.
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 ## [3.36.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.36.0...ui5-tooling-modules@3.36.1) (2026-05-22)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** rework bundle cache invalidation ([#1365](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1365)) ([b8578cd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b8578cd9a8faeb0411eba77e08eca7c474a9a01e))
-
-
-
-
+- **ui5-tooling-modules:** rework bundle cache invalidation ([#1365](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1365)) ([b8578cd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b8578cd9a8faeb0411eba77e08eca7c474a9a01e))
 
 # [3.36.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.2...ui5-tooling-modules@3.36.0) (2026-05-21)
 
-
 ### Features
 
-* **ui5-tooling-modules:** allow deeper nested web component classes of the same name ([#1318](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1318)) ([485131b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/485131bcf3f2cad3ef5c8aa39acd4605907ca4b4))
-
-
-
-
+- **ui5-tooling-modules:** allow deeper nested web component classes of the same name ([#1318](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1318)) ([485131b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/485131bcf3f2cad3ef5c8aa39acd4605907ca4b4))
 
 ## [3.35.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.1...ui5-tooling-modules@3.35.2) (2026-05-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** version dependent interfaces for webc ([#1333](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1333)) ([0a72767](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a727677b7968cdd3539ed74e73faf3d6d02025f))
-
-
-
-
+- **ui5-tooling-modules:** version dependent interfaces for webc ([#1333](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1333)) ([0a72767](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a727677b7968cdd3539ed74e73faf3d6d02025f))
 
 ## [3.35.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.0...ui5-tooling-modules@3.35.1) (2026-04-28)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** resolve XML namespaces defined inline on elements ([#1337](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1337)) ([871a34e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/871a34e396af954da80afba70088ff8dd5ad3479))
-
-
-
-
+- **ui5-tooling-modules:** resolve XML namespaces defined inline on elements ([#1337](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1337)) ([871a34e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/871a34e396af954da80afba70088ff8dd5ad3479))
 
 # [3.35.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.6...ui5-tooling-modules@3.35.0) (2026-03-12)
 
-
 ### Features
 
-* update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
-
-
-
-
+- update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
 
 ## [3.34.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.5...ui5-tooling-modules@3.34.6) (2026-02-12)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** make prettier a direct dependency ([#1317](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1317)) ([0ab47e1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0ab47e1112952b7150b6ee28a4c65a76d44a1180))
-
-
-
-
+- **ui5-tooling-modules:** make prettier a direct dependency ([#1317](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1317)) ([0ab47e1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0ab47e1112952b7150b6ee28a4c65a76d44a1180))
 
 ## [3.34.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.4...ui5-tooling-modules@3.34.5) (2026-02-11)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** robust parsing and handling of webc metadata ([#1316](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1316)) ([8a5cd40](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8a5cd402f23e03720404f7cc0d1f65fb5cd30cfc))
-
-
-
-
+- **ui5-tooling-modules:** robust parsing and handling of webc metadata ([#1316](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1316)) ([8a5cd40](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8a5cd402f23e03720404f7cc0d1f65fb5cd30cfc))
 
 ## [3.34.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.3...ui5-tooling-modules@3.34.4) (2026-02-10)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** properly lookup package.json for workspaces ([#1314](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1314)) ([d7ab7a8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7ab7a8e0f27faa15b210e85e527317dcc0847d3))
-
-
-
-
+- **ui5-tooling-modules:** properly lookup package.json for workspaces ([#1314](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1314)) ([d7ab7a8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7ab7a8e0f27faa15b210e85e527317dcc0847d3))
 
 ## [3.34.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.2...ui5-tooling-modules@3.34.3) (2026-01-27)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** import base package for all entry modules ([#1310](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1310)) ([1ca62f1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ca62f1e2e790745c71ae4cbd1dc2eeb7d4769d1))
-
-
-
-
+- **ui5-tooling-modules:** import base package for all entry modules ([#1310](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1310)) ([1ca62f1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ca62f1e2e790745c71ae4cbd1dc2eeb7d4769d1))
 
 ## [3.34.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.1...ui5-tooling-modules@3.34.2) (2026-01-15)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 ## [3.34.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.0...ui5-tooling-modules@3.34.1) (2025-12-29)
-
 
 ### Bug Fixes
 
-* **ui5-tooling-modules:** proper rewrite of JSDoc and extend syntax ([#1305](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1305)) ([c4d467a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c4d467aff6ee49c741371f989bc89596234f9c3f))
-
-
-
-
+- **ui5-tooling-modules:** proper rewrite of JSDoc and extend syntax ([#1305](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1305)) ([c4d467a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c4d467aff6ee49c741371f989bc89596234f9c3f))
 
 # [3.34.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.8...ui5-tooling-modules@3.34.0) (2025-12-02)
 
-
 ### Features
 
-* update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
-
-
-
-
+- update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
 
 ## [3.33.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.7...ui5-tooling-modules@3.33.8) (2025-11-27)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** include also non-documented properties in wrappers ([#1299](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1299)) ([bd63306](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bd633061b3e03379cfed1b83a79a5bc317d65ddf))
-
-
-
-
+- **ui5-tooling-modules:** include also non-documented properties in wrappers ([#1299](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1299)) ([bd63306](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bd633061b3e03379cfed1b83a79a5bc317d65ddf))
 
 ## [3.33.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.6...ui5-tooling-modules@3.33.7) (2025-11-21)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** no scoping for non UI5Elements ([#1298](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1298)) ([81febf4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81febf47c038042b713a362521872b8d5e261f22)), closes [#1297](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1297)
-
-
-
-
+- **ui5-tooling-modules:** no scoping for non UI5Elements ([#1298](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1298)) ([81febf4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81febf47c038042b713a362521872b8d5e261f22)), closes [#1297](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1297)
 
 ## [3.33.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.5...ui5-tooling-modules@3.33.6) (2025-11-06)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** force include assets ([#1292](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1292)) ([7a18296](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7a18296c53dc6cdc4a3e481c878a0168d13b9ee4))
-
-
-
-
+- **ui5-tooling-modules:** force include assets ([#1292](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1292)) ([7a18296](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7a18296c53dc6cdc4a3e481c878a0168d13b9ee4))
 
 ## [3.33.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.4...ui5-tooling-modules@3.33.5) (2025-11-06)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** sanitize trailing whitespaces and windows line feeds ([#1291](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1291)) ([20c665a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20c665a7263d787e46946de341072c3092dc5168))
-
-
-
-
+- **ui5-tooling-modules:** sanitize trailing whitespaces and windows line feeds ([#1291](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1291)) ([20c665a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20c665a7263d787e46946de341072c3092dc5168))
 
 ## [3.33.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.3...ui5-tooling-modules@3.33.4) (2025-11-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** correct handling of association types ([#1290](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1290)) ([e54c089](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e54c0893f4fe49ccefa6f5f6bee7b189ad08ab8a))
-
-
-
-
+- **ui5-tooling-modules:** correct handling of association types ([#1290](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1290)) ([e54c089](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e54c0893f4fe49ccefa6f5f6bee7b189ad08ab8a))
 
 ## [3.33.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.2...ui5-tooling-modules@3.33.3) (2025-11-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** safely rewrite dependencies and module references ([#1289](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1289)) ([994a578](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/994a578e00cd5a53385e131d00fca948d606ad6f))
-
-
-
-
+- **ui5-tooling-modules:** safely rewrite dependencies and module references ([#1289](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1289)) ([994a578](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/994a578e00cd5a53385e131d00fca948d606ad6f))
 
 ## [3.33.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.1...ui5-tooling-modules@3.33.2) (2025-11-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** properly rewrite dependencies ([#1288](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1288)) ([e2b9091](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e2b909120912443bb44a2754eb8cfcc15899930b))
-
-
-
-
+- **ui5-tooling-modules:** properly rewrite dependencies ([#1288](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1288)) ([e2b9091](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e2b909120912443bb44a2754eb8cfcc15899930b))
 
 ## [3.33.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.0...ui5-tooling-modules@3.33.1) (2025-11-02)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** proper named export of enums, correct re-export ([#1286](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1286)) ([2f22526](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f225269a051bed0632edb0852c78555bf5ac862))
-
-
-
-
+- **ui5-tooling-modules:** proper named export of enums, correct re-export ([#1286](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1286)) ([2f22526](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f225269a051bed0632edb0852c78555bf5ac862))
 
 # [3.33.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.3...ui5-tooling-modules@3.33.0) (2025-10-14)
 
-
 ### Features
 
-* **ui5-tooling-modules:** support additional tags for jsdoc ([#1285](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1285)) ([66d4538](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/66d4538c0c6eff9bc4d69830adaf94c47c9c4661))
-
-
-
-
+- **ui5-tooling-modules:** support additional tags for jsdoc ([#1285](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1285)) ([66d4538](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/66d4538c0c6eff9bc4d69830adaf94c47c9c4661))
 
 ## [3.32.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.2...ui5-tooling-modules@3.32.3) (2025-10-10)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** avoid width/height property for base classes ([#1284](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1284)) ([24df790](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/24df79015ca4105d640102da1ec7997a80be327e))
-
-
-
-
+- **ui5-tooling-modules:** avoid width/height property for base classes ([#1284](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1284)) ([24df790](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/24df79015ca4105d640102da1ec7997a80be327e))
 
 ## [3.32.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.1...ui5-tooling-modules@3.32.2) (2025-10-09)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** noop locale data loader ([#1283](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1283)) ([74c2bdb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/74c2bdbc239db78d3198dbb4e66891119fc9b362))
-
-
-
-
+- **ui5-tooling-modules:** noop locale data loader ([#1283](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1283)) ([74c2bdb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/74c2bdbc239db78d3198dbb4e66891119fc9b362))
 
 ## [3.32.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.0...ui5-tooling-modules@3.32.1) (2025-10-09)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ignore duplicated cldr data for web components ([#1281](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1281)) ([846a640](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/846a640463abab14c601a9499fa903443025498d))
-* **ui5-tooling-modules:** support library prop in ui5 metadata ([#1282](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1282)) ([bb641a5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bb641a5d7bef02393f33b9bc775c90688a39d9c3))
-
-
-
-
+- **ui5-tooling-modules:** ignore duplicated cldr data for web components ([#1281](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1281)) ([846a640](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/846a640463abab14c601a9499fa903443025498d))
+- **ui5-tooling-modules:** support library prop in ui5 metadata ([#1282](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1282)) ([bb641a5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bb641a5d7bef02393f33b9bc775c90688a39d9c3))
 
 # [3.32.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.31.1...ui5-tooling-modules@3.32.0) (2025-10-07)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** properly rewrite "module:" jsdoc tags ([#1280](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1280)) ([3cffce9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3cffce911a549d4c8b542ccae3d77459fc0f36f6))
-* **ui5-tooling-modules:** support for isA(string|string[]) rewrite ([#1279](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1279)) ([55fccf2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/55fccf26b24beebe85eeb6651f16362def4d2fd1))
-
+- **ui5-tooling-modules:** properly rewrite "module:" jsdoc tags ([#1280](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1280)) ([3cffce9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3cffce911a549d4c8b542ccae3d77459fc0f36f6))
+- **ui5-tooling-modules:** support for isA(string|string[]) rewrite ([#1279](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1279)) ([55fccf2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/55fccf26b24beebe85eeb6651f16362def4d2fd1))
 
 ### Features
 
-* **ui5-tooling-modules:** make JSDoc visibility configurable ([#1278](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1278)) ([7720c3f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7720c3f1336dcefdc062c78f2f457abe5a5f916e))
-
-
-
-
+- **ui5-tooling-modules:** make JSDoc visibility configurable ([#1278](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1278)) ([7720c3f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7720c3f1336dcefdc062c78f2f457abe5a5f916e))
 
 ## [3.31.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.31.0...ui5-tooling-modules@3.31.1) (2025-09-30)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** escape regexes for dependencies ([#1277](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1277)) ([d5656f7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d5656f76ca034766df7c0ec55f3c8154a350dce2))
-
-
-
-
+- **ui5-tooling-modules:** escape regexes for dependencies ([#1277](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1277)) ([d5656f7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d5656f76ca034766df7c0ec55f3c8154a350dce2))
 
 # [3.31.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.9...ui5-tooling-modules@3.31.0) (2025-09-30)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** change defaults for prettier ([#1276](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1276)) ([b6457fa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b6457fa35007edab4af74dc002c58dd1a5fcf812))
-
+- **ui5-tooling-modules:** change defaults for prettier ([#1276](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1276)) ([b6457fa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b6457fa35007edab4af74dc002c58dd1a5fcf812))
 
 ### Features
 
-* **ui5-tooling-modules:** support declarative entry point modules ([#1275](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1275)) ([f6f0d8b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f6f0d8b796a9b43e020cdf675c499de55d4e57fd))
-
-
-
-
+- **ui5-tooling-modules:** support declarative entry point modules ([#1275](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1275)) ([f6f0d8b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f6f0d8b796a9b43e020cdf675c499de55d4e57fd))
 
 ## [3.30.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.8...ui5-tooling-modules@3.30.9) (2025-09-30)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure default text for enum values in jsdoc ([#1273](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1273)) ([0fde298](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0fde298f4b542e0d74e6b1b3ed9526aa8f3890ee))
-* **ui5-tooling-modules:** improve handling for missing superclass ([#1272](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1272)) ([9da86b1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9da86b1e72758d3a7592f62eab625cc0b1dcb3f2))
-* **ui5-tooling-modules:** rewrite jsdoc ([#1274](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1274)) ([ddd0c90](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ddd0c908272770b3ee2b143951a991319788e595))
-
-
-
-
+- **ui5-tooling-modules:** ensure default text for enum values in jsdoc ([#1273](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1273)) ([0fde298](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0fde298f4b542e0d74e6b1b3ed9526aa8f3890ee))
+- **ui5-tooling-modules:** improve handling for missing superclass ([#1272](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1272)) ([9da86b1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9da86b1e72758d3a7592f62eab625cc0b1dcb3f2))
+- **ui5-tooling-modules:** rewrite jsdoc ([#1274](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1274)) ([ddd0c90](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ddd0c908272770b3ee2b143951a991319788e595))
 
 ## [3.30.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.7...ui5-tooling-modules@3.30.8) (2025-09-17)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** do not rename the webc tag ([#1270](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1270)) ([3fb8d81](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3fb8d81d2d9ebdd8891d89bac29814505a030820))
-
-
-
-
+- **ui5-tooling-modules:** do not rename the webc tag ([#1270](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1270)) ([3fb8d81](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3fb8d81d2d9ebdd8891d89bac29814505a030820))
 
 ## [3.30.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.6...ui5-tooling-modules@3.30.7) (2025-09-17)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** proper handling of -package modules for non scoped webc pkgs ([#1269](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1269)) ([53e30ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/53e30ea36658a416836732ed56add46ddf3952ee))
-
-
-
-
+- **ui5-tooling-modules:** proper handling of -package modules for non scoped webc pkgs ([#1269](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1269)) ([53e30ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/53e30ea36658a416836732ed56add46ddf3952ee))
 
 ## [3.30.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.5...ui5-tooling-modules@3.30.6) (2025-09-15)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 ## [3.30.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.4...ui5-tooling-modules@3.30.5) (2025-09-11)
-
 
 ### Bug Fixes
 
-* **ui5-tooling-modules:** only use stellvertreter for bundled resources ([#1264](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1264)) ([4882c65](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4882c657cede901a7b43bf889c395d1b27b3bb1a))
-
-
-
-
+- **ui5-tooling-modules:** only use stellvertreter for bundled resources ([#1264](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1264)) ([4882c65](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4882c657cede901a7b43bf889c395d1b27b3bb1a))
 
 ## [3.30.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.3...ui5-tooling-modules@3.30.4) (2025-09-06)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support package modules for non-scope packages ([#1262](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1262)) ([aa8a2d4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aa8a2d4a05e5f4c43ee6ab3c1ea92df1ade253cb))
-
-
-
-
+- **ui5-tooling-modules:** support package modules for non-scope packages ([#1262](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1262)) ([aa8a2d4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aa8a2d4a05e5f4c43ee6ab3c1ea92df1ade253cb))
 
 ## [3.30.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.2...ui5-tooling-modules@3.30.3) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** tooltip property handling ([#1256](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1256)) ([66d3e81](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/66d3e818f28be564d42b8bc390e42ec68804a627))
-
-
-
-
+- **ui5-tooling-modules:** tooltip property handling ([#1256](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1256)) ([66d3e81](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/66d3e818f28be564d42b8bc390e42ec68804a627))
 
 ## [3.30.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.1...ui5-tooling-modules@3.30.2) (2025-08-19)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** references to webc-base/UI5Element now point to core.WebComponent ([#1252](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1252)) ([5e67119](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5e67119b6cd4923481de5716008efa026d16b3fd))
-
-
-
-
+- **ui5-tooling-modules:** references to webc-base/UI5Element now point to core.WebComponent ([#1252](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1252)) ([5e67119](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5e67119b6cd4923481de5716008efa026d16b3fd))
 
 ## [3.30.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.0...ui5-tooling-modules@3.30.1) (2025-08-14)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support npm packages with .js ext ([#1254](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1254)) ([9805b48](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9805b48962240e5d5a9deac3bac13b03bc6716f9)), closes [#1251](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1251)
-
-
-
-
+- **ui5-tooling-modules:** support npm packages with .js ext ([#1254](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1254)) ([9805b48](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9805b48962240e5d5a9deac3bac13b03bc6716f9)), closes [#1251](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1251)
 
 # [3.30.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.29.1...ui5-tooling-modules@3.30.0) (2025-08-07)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** aggregation typing is fixed when union type is defined for custom elements ([#1243](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1243)) ([f5ba033](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f5ba03383ffde6a5bf2a3df65260e2507208161a))
-* **ui5-tooling-modules:** fully exclude JSDocSerializer if skip-config is set ([#1249](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1249)) ([806fe27](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/806fe27280aaef041631f5f70eea7ff14c2e9a6b))
-
+- **ui5-tooling-modules:** aggregation typing is fixed when union type is defined for custom elements ([#1243](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1243)) ([f5ba033](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f5ba03383ffde6a5bf2a3df65260e2507208161a))
+- **ui5-tooling-modules:** fully exclude JSDocSerializer if skip-config is set ([#1249](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1249)) ([806fe27](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/806fe27280aaef041631f5f70eea7ff14c2e9a6b))
 
 ### Features
 
-* **ui5-tooling-modules:** support event mapping ([#1247](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1247)) ([225acbb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/225acbb87b52c55b3e9ac6b802544d642975910c))
-
-
-
-
+- **ui5-tooling-modules:** support event mapping ([#1247](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1247)) ([225acbb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/225acbb87b52c55b3e9ac6b802544d642975910c))
 
 ## [3.29.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.29.0...ui5-tooling-modules@3.29.1) (2025-07-31)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** only convert CSSSizes to px values for numbers ([#1246](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1246)) ([2942a1f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2942a1f8afac8a0af86da08d592f9d31f4a76937))
-
-
-
-
+- **ui5-tooling-modules:** only convert CSSSizes to px values for numbers ([#1246](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1246)) ([2942a1f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2942a1f8afac8a0af86da08d592f9d31f4a76937))
 
 # [3.29.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.28.1...ui5-tooling-modules@3.29.0) (2025-07-29)
 
-
 ### Features
 
-* use mutliple yamls with rte option ([#1238](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1238)) ([1a40cf3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1a40cf3c17707d25db9a3cba4da8b7b063305388))
-
-
-
-
+- use mutliple yamls with rte option ([#1238](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1238)) ([1a40cf3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1a40cf3c17707d25db9a3cba4da8b7b063305388))
 
 ## [3.28.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.28.0...ui5-tooling-modules@3.28.1) (2025-07-14)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure require webc classes for base classes ([#1239](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1239)) ([dbc51a1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dbc51a126115827bb99bdebf6a69b984f7d6b698))
-
-
-
-
+- **ui5-tooling-modules:** ensure require webc classes for base classes ([#1239](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1239)) ([dbc51a1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dbc51a126115827bb99bdebf6a69b984f7d6b698))
 
 # [3.28.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.7...ui5-tooling-modules@3.28.0) (2025-07-06)
 
-
 ### Bug Fixes
 
-* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
-
+- update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
 
 ### Features
 
-* make tooling extension self-registering ([#1236](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1236)) ([8a14c92](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8a14c922d142ff35659405e9acc532ef8b9a4b38))
-* **ui5-tooling-modules:** Add typescript support for control wrappers ([#1223](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1223)) ([08c5260](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/08c5260adb80b0a4ff5badb8a7f79356e55c1fc4))
-
-
-
-
+- make tooling extension self-registering ([#1236](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1236)) ([8a14c92](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8a14c922d142ff35659405e9acc532ef8b9a4b38))
+- **ui5-tooling-modules:** Add typescript support for control wrappers ([#1223](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1223)) ([08c5260](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/08c5260adb80b0a4ff5badb8a7f79356e55c1fc4))
 
 ## [3.27.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.6...ui5-tooling-modules@3.27.7) (2025-07-04)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure customdata support for newer ui5 releases + scan perfopt ([#1234](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1234)) ([c5c2cac](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c5c2cac941120248590f299679928b77897bafd1))
-
-
-
-
+- **ui5-tooling-modules:** ensure customdata support for newer ui5 releases + scan perfopt ([#1234](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1234)) ([c5c2cac](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c5c2cac941120248590f299679928b77897bafd1))
 
 ## [3.27.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.5...ui5-tooling-modules@3.27.6) (2025-06-11)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** align custom data logic with core impl ([#1230](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1230)) ([7458f28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7458f28e06b0e0ea9ebe79dfda7a23560a05c97b))
-
-
-
-
+- **ui5-tooling-modules:** align custom data logic with core impl ([#1230](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1230)) ([7458f28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7458f28e06b0e0ea9ebe79dfda7a23560a05c97b))
 
 ## [3.27.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.4...ui5-tooling-modules@3.27.5) (2025-06-06)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** only use substitution modules for js modules ([#1228](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1228)) ([e655c3d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e655c3dd722843ae2c6027aa7e9b1670cf63955e))
-
-
-
-
+- **ui5-tooling-modules:** only use substitution modules for js modules ([#1228](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1228)) ([e655c3d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e655c3dd722843ae2c6027aa7e9b1670cf63955e))
 
 ## [3.27.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.3...ui5-tooling-modules@3.27.4) (2025-06-02)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** webc to forward custom data to root shadow domref ([#1225](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1225)) ([1dfd20b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1dfd20b2dde4f1ff6f882ae7d8458907b4ad37b0))
-
-
-
-
+- **ui5-tooling-modules:** webc to forward custom data to root shadow domref ([#1225](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1225)) ([1dfd20b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1dfd20b2dde4f1ff6f882ae7d8458907b4ad37b0))
 
 ## [3.27.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.2...ui5-tooling-modules@3.27.3) (2025-05-23)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** add [@implements](https://github.com/implements) tag to wrapper JSDoc ([#1217](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1217)) ([4039961](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/40399610d443c9560078fd6d9ee6f6830140826d))
-* **ui5-tooling-modules:** forward webc event metadata to wrappers ([#1222](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1222)) ([68a8a95](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/68a8a95bddc2ce07435cc5160661541005d6bcd9))
-
-
-
-
+- **ui5-tooling-modules:** add [@implements](https://github.com/implements) tag to wrapper JSDoc ([#1217](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1217)) ([4039961](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/40399610d443c9560078fd6d9ee6f6830140826d))
+- **ui5-tooling-modules:** forward webc event metadata to wrappers ([#1222](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1222)) ([68a8a95](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/68a8a95bddc2ce07435cc5160661541005d6bcd9))
 
 ## [3.27.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.1...ui5-tooling-modules@3.27.2) (2025-05-21)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** do not convert dots to slashes for isA rewrite ([#1219](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1219)) ([aabdc99](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aabdc99d5f539be5ac5da309f8fabcb0a571ebad)), closes [#1218](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1218)
-
-
-
-
+- **ui5-tooling-modules:** do not convert dots to slashes for isA rewrite ([#1219](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1219)) ([aabdc99](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aabdc99d5f539be5ac5da309f8fabcb0a571ebad)), closes [#1218](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1218)
 
 ## [3.27.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.0...ui5-tooling-modules@3.27.1) (2025-05-15)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** properly move webc modules in gen folder ([#1214](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1214)) ([b84301f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b84301f65858d7e7a2db5e225c57ad210d266307))
-
-
-
-
+- **ui5-tooling-modules:** properly move webc modules in gen folder ([#1214](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1214)) ([b84301f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b84301f65858d7e7a2db5e225c57ad210d266307))
 
 # [3.27.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.26.0...ui5-tooling-modules@3.27.0) (2025-05-15)
 
-
 ### Features
 
-* **ui5-tooling-modules:** move webc entry modules into gen folder ([#1213](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1213)) ([92ae6f3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/92ae6f3ab82daa91a0ee524af4115a8bc6a9a743))
-
-
-
-
+- **ui5-tooling-modules:** move webc entry modules into gen folder ([#1213](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1213)) ([92ae6f3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/92ae6f3ab82daa91a0ee524af4115a8bc6a9a743))
 
 # [3.26.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.25.1...ui5-tooling-modules@3.26.0) (2025-05-14)
 
-
 ### Features
 
-* **ui5-tooling-modules:** jsdoc generation support for seamless web components ([#1210](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1210)) ([9379843](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9379843cebca49d20129c68da08b5046bf84b236))
-
-
-
-
+- **ui5-tooling-modules:** jsdoc generation support for seamless web components ([#1210](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1210)) ([9379843](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9379843cebca49d20129c68da08b5046bf84b236))
 
 ## [3.25.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.25.0...ui5-tooling-modules@3.25.1) (2025-04-18)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** adds option to skip JSDoc generation ([#1206](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1206)) ([3469249](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/34692496c031167a2823a6852f04d1e46949fd53))
-* **ui5-tooling-modules:** skip JSDoc generation by default until feature works ([#1207](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1207)) ([13b8b39](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/13b8b39fc6e423d2a0ac7c35999c49d8df2fe5a1))
-
-
-
-
+- **ui5-tooling-modules:** adds option to skip JSDoc generation ([#1206](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1206)) ([3469249](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/34692496c031167a2823a6852f04d1e46949fd53))
+- **ui5-tooling-modules:** skip JSDoc generation by default until feature works ([#1207](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1207)) ([13b8b39](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/13b8b39fc6e423d2a0ac7c35999c49d8df2fe5a1))
 
 # [3.25.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.17...ui5-tooling-modules@3.25.0) (2025-04-17)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** fixed precendence of module resolution via package.json ([#1204](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1204)) ([1ea7557](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ea7557b47654b7278331d77e1194ca48c9b996b)), closes [#1196](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1196)
-
+- **ui5-tooling-modules:** fixed precendence of module resolution via package.json ([#1204](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1204)) ([1ea7557](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ea7557b47654b7278331d77e1194ca48c9b996b)), closes [#1196](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1196)
 
 ### Features
 
-* **ui5-tooling-modules:** first version of serializer for JSDoc in control wrappers ([#1171](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1171)) ([fc6a038](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fc6a038f499dede63d09c593c0ece3f90ae4d8bd))
-
-
-
-
+- **ui5-tooling-modules:** first version of serializer for JSDoc in control wrappers ([#1171](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1171)) ([fc6a038](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fc6a038f499dede63d09c593c0ece3f90ae4d8bd))
 
 ## [3.24.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.16...ui5-tooling-modules@3.24.17) (2025-04-14)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-module:** ensure exports for mods using exports.default ([#1203](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1203)) ([50740c5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/50740c587687dc9c407fe80ff78e108e4c5a5216))
-
-
-
-
+- **ui5-tooling-module:** ensure exports for mods using exports.default ([#1203](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1203)) ([50740c5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/50740c587687dc9c407fe80ff78e108e4c5a5216))
 
 ## [3.24.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.15...ui5-tooling-modules@3.24.16) (2025-04-13)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support UI5 testsuite scenario ([#1202](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1202)) ([ee5c50a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ee5c50a4dc4eb258d3b98df6d3b7bc05ee63f6a2))
-
-
-
-
+- **ui5-tooling-modules:** support UI5 testsuite scenario ([#1202](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1202)) ([ee5c50a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ee5c50a4dc4eb258d3b98df6d3b7bc05ee63f6a2))
 
 ## [3.24.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.14...ui5-tooling-modules@3.24.15) (2025-04-09)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** keep comments for xml and sourcemaps for js ([#1201](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1201)) ([1958f37](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1958f37724cdfc0c0fc2da73fb08058692ebb79e))
-* **ui5-tooling-modules:** properly consider additionalDependencies ([#1199](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1199)) ([94daeee](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/94daeeef8e49964dad1bb3950c6cacf2ab95c094))
-
-
-
-
+- **ui5-tooling-modules:** keep comments for xml and sourcemaps for js ([#1201](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1201)) ([1958f37](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1958f37724cdfc0c0fc2da73fb08058692ebb79e))
+- **ui5-tooling-modules:** properly consider additionalDependencies ([#1199](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1199)) ([94daeee](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/94daeeef8e49964dad1bb3950c6cacf2ab95c094))
 
 ## [3.24.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.13...ui5-tooling-modules@3.24.14) (2025-04-04)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support primitive array types for webc ([#1198](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1198)) ([dceae64](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dceae6442720ce2b9a4c32a202eaf0fc1d79e9e9))
-
-
-
-
+- **ui5-tooling-modules:** support primitive array types for webc ([#1198](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1198)) ([dceae64](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dceae6442720ce2b9a4c32a202eaf0fc1d79e9e9))
 
 ## [3.24.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.12...ui5-tooling-modules@3.24.13) (2025-04-03)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support special settings for ui5-shellbar ([7c9e5d6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7c9e5d62caa93d040f6437fdad68f72808642493))
-
-
-
-
+- **ui5-tooling-modules:** support special settings for ui5-shellbar ([7c9e5d6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7c9e5d62caa93d040f6437fdad68f72808642493))
 
 ## [3.24.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.11...ui5-tooling-modules@3.24.12) (2025-04-03)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** avoid undefined issues in dep lookup ([#1197](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1197)) ([f053c9f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f053c9f7ad50b368cf3e4f7a9bea6f87d6e58d68))
-
-
-
-
+- **ui5-tooling-modules:** avoid undefined issues in dep lookup ([#1197](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1197)) ([f053c9f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f053c9f7ad50b368cf3e4f7a9bea6f87d6e58d68))
 
 ## [3.24.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.10...ui5-tooling-modules@3.24.11) (2025-04-01)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure forward default export in cjs use cases ([#1195](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1195)) ([27c8dd9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/27c8dd93c59a6f5926063d35d06635ecdd7feb4a))
-
-
-
-
+- **ui5-tooling-modules:** ensure forward default export in cjs use cases ([#1195](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1195)) ([27c8dd9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/27c8dd93c59a6f5926063d35d06635ecdd7feb4a))
 
 ## [3.24.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.9...ui5-tooling-modules@3.24.10) (2025-03-22)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support webc package inclusion on windows (separator chars) ([#1189](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1189)) ([7208e4c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7208e4c78bd37143e2c14e77c95f4ca85e742450))
-
-
-
-
+- **ui5-tooling-modules:** support webc package inclusion on windows (separator chars) ([#1189](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1189)) ([7208e4c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7208e4c78bd37143e2c14e77c95f4ca85e742450))
 
 ## [3.24.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.8...ui5-tooling-modules@3.24.9) (2025-03-19)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** use the correct chunk file as dependency ([#1187](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1187)) ([1d083a6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1d083a6b4cc2ffb3821b0a780175adead9cd758e))
-
-
-
-
+- **ui5-tooling-modules:** use the correct chunk file as dependency ([#1187](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1187)) ([1d083a6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1d083a6b4cc2ffb3821b0a780175adead9cd758e))
 
 ## [3.24.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.7...ui5-tooling-modules@3.24.8) (2025-03-19)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support including scripts from library projects ([#1186](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1186)) ([c750b7a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c750b7ad3a29e25c9b067eeea3ae0d697e3a5a46))
-
-
-
-
+- **ui5-tooling-modules:** support including scripts from library projects ([#1186](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1186)) ([c750b7a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c750b7ad3a29e25c9b067eeea3ae0d697e3a5a46))
 
 ## [3.24.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.6...ui5-tooling-modules@3.24.7) (2025-03-19)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support re-export of main package modules for webc packages ([c61afbd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c61afbd6db9a6665690248c3516ba3756bcd91d3))
-
-
-
-
+- **ui5-tooling-modules:** support re-export of main package modules for webc packages ([c61afbd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c61afbd6db9a6665690248c3516ba3756bcd91d3))
 
 ## [3.24.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.5...ui5-tooling-modules@3.24.6) (2025-03-13)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** special handling of substitutes for webc ([#1183](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1183)) ([487423a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/487423acb707f57cf3545c152a2b282e6470d83b))
-
-
-
-
+- **ui5-tooling-modules:** special handling of substitutes for webc ([#1183](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1183)) ([487423a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/487423acb707f57cf3545c152a2b282e6470d83b))
 
 ## [3.24.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.4...ui5-tooling-modules@3.24.5) (2025-03-12)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** rewrite deps in case of middleware ([#1182](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1182)) ([100d8e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/100d8e6f9dcbc09229743eb0ac9eec7d3ee81622))
-
-
-
-
+- **ui5-tooling-modules:** rewrite deps in case of middleware ([#1182](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1182)) ([100d8e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/100d8e6f9dcbc09229743eb0ac9eec7d3ee81622))
 
 ## [3.24.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.3...ui5-tooling-modules@3.24.4) (2025-03-09)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** watch transitive deps changes ([#1179](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1179)) ([8158ca9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8158ca938957f86612c60572838cf4b9e1851851))
-
-
-
-
+- **ui5-tooling-modules:** watch transitive deps changes ([#1179](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1179)) ([8158ca9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8158ca938957f86612c60572838cf4b9e1851851))
 
 ## [3.24.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.2...ui5-tooling-modules@3.24.3) (2025-03-04)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure to rewrite deps when addToNamespace ([ff6a002](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff6a0023b9b11f26ba179d98b0416e6e937fd859))
-
-
-
-
+- **ui5-tooling-modules:** ensure to rewrite deps when addToNamespace ([ff6a002](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff6a0023b9b11f26ba179d98b0416e6e937fd859))
 
 ## [3.24.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.1...ui5-tooling-modules@3.24.2) (2025-03-04)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure full rebuild after change of modules ([#1177](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1177)) ([4c2400b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4c2400b6950e3a2a99470551bdb8c039c6685b5f))
-* **ui5-tooling-modules:** support watching of additional files/folders ([#1176](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1176)) ([294d757](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/294d7579159c2369fab2948ad1390e057b3c7bfe))
-
-
-
-
+- **ui5-tooling-modules:** ensure full rebuild after change of modules ([#1177](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1177)) ([4c2400b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4c2400b6950e3a2a99470551bdb8c039c6685b5f))
+- **ui5-tooling-modules:** support watching of additional files/folders ([#1176](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1176)) ([294d757](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/294d7579159c2369fab2948ad1390e057b3c7bfe))
 
 ## [3.24.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.0...ui5-tooling-modules@3.24.1) (2025-03-03)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support cdn scenario with latest changes ([#1175](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1175)) ([8ad68bd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8ad68bd27be4aed685775dce45dfad5827856f40))
-
-
-
-
+- **ui5-tooling-modules:** support cdn scenario with latest changes ([#1175](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1175)) ([8ad68bd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8ad68bd27be4aed685775dce45dfad5827856f40))
 
 # [3.24.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.23.2...ui5-tooling-modules@3.24.0) (2025-03-03)
 
-
 ### Features
 
-* **ui5-tooling-modules:** support for sourcemaps ([#1174](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1174)) ([7fbfce4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7fbfce436e9cecbbceea92fba91c0e45b3ec6a36))
-
-
-
-
+- **ui5-tooling-modules:** support for sourcemaps ([#1174](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1174)) ([7fbfce4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7fbfce436e9cecbbceea92fba91c0e45b3ec6a36))
 
 ## [3.23.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.23.1...ui5-tooling-modules@3.23.2) (2025-03-02)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** introduce generation context for proper change handling ([ec23fb2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ec23fb23e6dda8dde36b45c5b2a28b14cb3c0b00))
-
-
-
-
+- **ui5-tooling-modules:** introduce generation context for proper change handling ([ec23fb2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ec23fb23e6dda8dde36b45c5b2a28b14cb3c0b00))
 
 ## [3.23.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.23.0...ui5-tooling-modules@3.23.1) (2025-03-02)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** fix error for generation of webc packages without enums ([#1173](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1173)) ([22a428b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/22a428bfa0494d14996708616662c324d7aae64a))
-* **ui5-tooling-modules:** improvements for handlebars templates ([76d37ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/76d37ea61699fbb81ad2fc5f8286a774760c9c43))
-
-
-
-
+- **ui5-tooling-modules:** fix error for generation of webc packages without enums ([#1173](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1173)) ([22a428b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/22a428bfa0494d14996708616662c324d7aae64a))
+- **ui5-tooling-modules:** improvements for handlebars templates ([76d37ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/76d37ea61699fbb81ad2fc5f8286a774760c9c43))
 
 # [3.23.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.22.1...ui5-tooling-modules@3.23.0) (2025-03-02)
 
-
 ### Features
 
-* **ui5-tooling-modules:** major rework of module generation (incl. webc) ([#1172](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1172)) ([779ba26](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/779ba262d80376ba61cdb715bde64b005046853d))
-
-
-
-
+- **ui5-tooling-modules:** major rework of module generation (incl. webc) ([#1172](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1172)) ([779ba26](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/779ba262d80376ba61cdb715bde64b005046853d))
 
 ## [3.22.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.22.0...ui5-tooling-modules@3.22.1) (2025-02-10)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** avoid issues with modified id in import-meta rollup plugin ([#1170](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1170)) ([21cd701](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/21cd7012d7e7ee1c9e0c0c847f8da5a4a7b8ab27))
-
-
-
-
+- **ui5-tooling-modules:** avoid issues with modified id in import-meta rollup plugin ([#1170](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1170)) ([21cd701](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/21cd7012d7e7ee1c9e0c0c847f8da5a4a7b8ab27))
 
 # [3.22.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.21.0...ui5-tooling-modules@3.22.0) (2025-02-07)
 
-
 ### Features
 
-* **ui5-tooling-modules:** de-support AMD modules to ensure copyright headers ([#1167](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1167)) ([83cd60b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/83cd60be34a8ea96a12eb7890b7477793e67cdb5)), closes [#1163](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1163)
-
-
-
-
+- **ui5-tooling-modules:** de-support AMD modules to ensure copyright headers ([#1167](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1167)) ([83cd60b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/83cd60be34a8ea96a12eb7890b7477793e67cdb5)), closes [#1163](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1163)
 
 # [3.21.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.6...ui5-tooling-modules@3.21.0) (2025-02-06)
 
-
 ### Features
 
-* general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
-
-
-
-
+- general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
 
 ## [3.20.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.5...ui5-tooling-modules@3.20.6) (2025-02-03)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** improved detection of relevant package.json and cwd ([#1161](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1161)) ([ed1dad8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ed1dad8415f2fa533ca7bf25ed214258b0f6b2fb))
-
-
-
-
+- **ui5-tooling-modules:** improved detection of relevant package.json and cwd ([#1161](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1161)) ([ed1dad8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ed1dad8415f2fa533ca7bf25ed214258b0f6b2fb))
 
 ## [3.20.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.4...ui5-tooling-modules@3.20.5) (2025-01-31)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** get location of package.json from environment variable if present ([#1158](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1158)) ([9188bf0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9188bf0ec8baa7e746b5d13d361d46f737e01f5e))
-
-
-
-
+- **ui5-tooling-modules:** get location of package.json from environment variable if present ([#1158](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1158)) ([9188bf0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9188bf0ec8baa7e746b5d13d361d46f737e01f5e))
 
 ## [3.20.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.3...ui5-tooling-modules@3.20.4) (2025-01-31)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** get location of package.json from environment variable if present ([#1157](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1157)) ([8f27e2e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f27e2ea0d893311cfcc26fac168f17aa82aa89e))
-
-
-
-
+- **ui5-tooling-modules:** get location of package.json from environment variable if present ([#1157](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1157)) ([8f27e2e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f27e2ea0d893311cfcc26fac168f17aa82aa89e))
 
 ## [3.20.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.2...ui5-tooling-modules@3.20.3) (2025-01-30)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure consistent scoping suffix ([#1153](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1153)) ([373264c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/373264c4fbb1a73da281f0bcdb4f8d77b5cce774))
-
-
-
-
+- **ui5-tooling-modules:** ensure consistent scoping suffix ([#1153](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1153)) ([373264c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/373264c4fbb1a73da281f0bcdb4f8d77b5cce774))
 
 ## [3.20.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.1...ui5-tooling-modules@3.20.2) (2025-01-08)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure rewrites of deps only for require/define APIs ([#1147](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1147)) ([cf48106](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cf4810687b8e81ef73c21d2d64d817cb3ad665de)), closes [#1146](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1146)
-
-
-
-
+- **ui5-tooling-modules:** ensure rewrites of deps only for require/define APIs ([#1147](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1147)) ([cf48106](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cf4810687b8e81ef73c21d2d64d817cb3ad665de)), closes [#1146](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1146)
 
 ## [3.20.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.0...ui5-tooling-modules@3.20.1) (2025-01-04)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ignore scoping for non-UI5Elements ([#1140](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1140)) ([d383f71](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d383f71976f8016ce7dd43226f69ca9c302699e4))
-
-
-
-
+- **ui5-tooling-modules:** ignore scoping for non-UI5Elements ([#1140](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1140)) ([d383f71](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d383f71976f8016ce7dd43226f69ca9c302699e4))
 
 # [3.20.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.19.1...ui5-tooling-modules@3.20.0) (2025-01-02)
 
-
 ### Features
 
-* **ui5-tooling-modules:** support conditions for module resolution ([#1139](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1139)) ([ab89a62](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ab89a6260c2957d55c214ead624c3f310335d3ae))
-
-
-
-
+- **ui5-tooling-modules:** support conditions for module resolution ([#1139](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1139)) ([ab89a62](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ab89a6260c2957d55c214ead624c3f310335d3ae))
 
 ## [3.19.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.19.0...ui5-tooling-modules@3.19.1) (2024-12-26)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** get rid of external module error in tests ([49ea178](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/49ea178896bf4f3cc8efd4f67da56b6b4093462e))
-* **ui5-tooling-modules:** inherited properties are not accidentally overwritten by subclass anymore ([#1136](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1136)) ([a71be3f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a71be3f351484e79d6a8506396cda7cc7f64be7e))
-* **ui5-tooling-modules:** monkey patch mapValueState for older versions of UI5 ([#1137](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1137)) ([d0abfbf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d0abfbf083ddffd28457f790da47e877383052f5))
-
-
-
-
+- **ui5-tooling-modules:** get rid of external module error in tests ([49ea178](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/49ea178896bf4f3cc8efd4f67da56b6b4093462e))
+- **ui5-tooling-modules:** inherited properties are not accidentally overwritten by subclass anymore ([#1136](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1136)) ([a71be3f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a71be3f351484e79d6a8506396cda7cc7f64be7e))
+- **ui5-tooling-modules:** monkey patch mapValueState for older versions of UI5 ([#1137](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1137)) ([d0abfbf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d0abfbf083ddffd28457f790da47e877383052f5))
 
 # [3.19.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.8...ui5-tooling-modules@3.19.0) (2024-12-13)
 
-
 ### Features
 
-* **ui5-tooling-modules:** adds basic support for valueStates ([#1125](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1125)) ([8f37d3c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f37d3c16046f1bbd700f7dabf9ae1c0cf66d2d4))
-
-
-
-
+- **ui5-tooling-modules:** adds basic support for valueStates ([#1125](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1125)) ([8f37d3c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f37d3c16046f1bbd700f7dabf9ae1c0cf66d2d4))
 
 ## [3.18.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.7...ui5-tooling-modules@3.18.8) (2024-12-13)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** also consider to rewrite entry point modules ([#1131](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1131)) ([d9b1546](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d9b154676fd0ab61372c51cef8f717f71e7ad911))
-
-
-
-
+- **ui5-tooling-modules:** also consider to rewrite entry point modules ([#1131](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1131)) ([d9b1546](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d9b154676fd0ab61372c51cef8f717f71e7ad911))
 
 ## [3.18.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.6...ui5-tooling-modules@3.18.7) (2024-11-22)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** do not load metadata from npm packages twice ([#1126](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1126)) ([2199f93](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2199f935539e329404f8061c5e149a9bc8b6f228))
-
-
-
-
+- **ui5-tooling-modules:** do not load metadata from npm packages twice ([#1126](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1126)) ([2199f93](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2199f935539e329404f8061c5e149a9bc8b6f228))
 
 ## [3.18.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.5...ui5-tooling-modules@3.18.6) (2024-11-20)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** cross package superclass detection for WebC ([#1124](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1124)) ([78597c6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/78597c66f068b2ec6dbe14d64e853a1f414bbeb4))
-
-
-
-
+- **ui5-tooling-modules:** cross package superclass detection for WebC ([#1124](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1124)) ([78597c6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/78597c66f068b2ec6dbe14d64e853a1f414bbeb4))
 
 ## [3.18.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.4...ui5-tooling-modules@3.18.5) (2024-11-14)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** apply sap/ui/core/EnabledPropagator mixin ([#1122](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1122)) ([774a209](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/774a20943367c551d6140c2dcf45a6cc964f09ca))
-* **ui5-tooling-modules:** ensure scoping suffix is set before define of modules ([#1123](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1123)) ([db10bd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/db10bd346b2d12073def3642c320d682785aed2a))
-
-
-
-
+- **ui5-tooling-modules:** apply sap/ui/core/EnabledPropagator mixin ([#1122](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1122)) ([774a209](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/774a20943367c551d6140c2dcf45a6cc964f09ca))
+- **ui5-tooling-modules:** ensure scoping suffix is set before define of modules ([#1123](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1123)) ([db10bd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/db10bd346b2d12073def3642c320d682785aed2a))
 
 ## [3.18.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.3...ui5-tooling-modules@3.18.4) (2024-11-07)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** debounce file change events ([#1121](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1121)) ([ff725b3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff725b3aa4610c8b2e7e7ce3aa43fd8cdea1242a))
-
-
-
-
+- **ui5-tooling-modules:** debounce file change events ([#1121](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1121)) ([ff725b3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff725b3aa4610c8b2e7e7ce3aa43fd8cdea1242a))
 
 ## [3.18.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.2...ui5-tooling-modules@3.18.3) (2024-11-07)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** restrict the fs watching to relevant source files only ([#1120](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1120)) ([a92532e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a92532e279baef6affa1807031a20bb9cf66c9c7))
-
-
-
-
+- **ui5-tooling-modules:** restrict the fs watching to relevant source files only ([#1120](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1120)) ([a92532e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a92532e279baef6affa1807031a20bb9cf66c9c7))
 
 ## [3.18.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.1...ui5-tooling-modules@3.18.2) (2024-11-06)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** taming chokidar once more ([#1119](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1119)) ([2757648](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2757648f668d3139763abccba68028870240073c))
-
-
-
-
+- **ui5-tooling-modules:** taming chokidar once more ([#1119](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1119)) ([2757648](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2757648f668d3139763abccba68028870240073c))
 
 ## [3.18.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.0...ui5-tooling-modules@3.18.1) (2024-11-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** upgrade to chokidar 4.x ([#1118](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1118)) ([75043e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/75043e6e28307c0644a1853f8c5e4c3d9c66e6d4))
-
-
-
-
+- **ui5-tooling-modules:** upgrade to chokidar 4.x ([#1118](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1118)) ([75043e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/75043e6e28307c0644a1853f8c5e4c3d9c66e6d4))
 
 # [3.18.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.17.0...ui5-tooling-modules@3.18.0) (2024-11-01)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** include LabelEnablement to list of external deps ([#1116](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1116)) ([4ca258c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4ca258c8102372332cc0999a837acb23f6ecbf7a))
-* update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
-
+- **ui5-tooling-modules:** include LabelEnablement to list of external deps ([#1116](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1116)) ([4ca258c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4ca258c8102372332cc0999a837acb23f6ecbf7a))
+- update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
 
 ### Features
 
-* **ui5-tooling-modules:** support special UI5 settings for web components ([#1108](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1108)) ([d0c7cde](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d0c7cde0974b0eba4fd3dd6757320dc6a84129de))
-
-
-
-
+- **ui5-tooling-modules:** support special UI5 settings for web components ([#1108](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1108)) ([d0c7cde](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d0c7cde0974b0eba4fd3dd6757320dc6a84129de))
 
 # [3.17.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.6...ui5-tooling-modules@3.17.0) (2024-10-30)
 
-
 ### Features
 
-* **ui5-tooling-modules:** support including Assets for Web Components ([#1112](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1112)) ([15c3420](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/15c3420e838d73f58092cf20c767d6e13a22288f))
-
-
-
-
+- **ui5-tooling-modules:** support including Assets for Web Components ([#1112](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1112)) ([15c3420](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/15c3420e838d73f58092cf20c767d6e13a22288f))
 
 ## [3.16.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.5...ui5-tooling-modules@3.16.6) (2024-10-28)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure module resolution across linked projects ([#1110](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1110)) ([42e09f9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/42e09f9107df63043de6da9417015f3f85b38434))
-
-
-
-
+- **ui5-tooling-modules:** ensure module resolution across linked projects ([#1110](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1110)) ([42e09f9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/42e09f9107df63043de6da9417015f3f85b38434))
 
 ## [3.16.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.4...ui5-tooling-modules@3.16.5) (2024-10-22)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** also consider optionalDependencies ([#1105](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1105)) ([4463058](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4463058fcb1aa8b0a3b61386cc8b8c6c357254a3))
-
-
-
-
+- **ui5-tooling-modules:** also consider optionalDependencies ([#1105](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1105)) ([4463058](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4463058fcb1aa8b0a3b61386cc8b8c6c357254a3))
 
 ## [3.16.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.3...ui5-tooling-modules@3.16.4) (2024-10-19)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** advanced dependency detection ([#1104](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1104)) ([8011cab](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8011cab8bac03592a59e31fb941c887b25380da9))
-
-
-
-
+- **ui5-tooling-modules:** advanced dependency detection ([#1104](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1104)) ([8011cab](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8011cab8bac03592a59e31fb941c887b25380da9))
 
 ## [3.16.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.2...ui5-tooling-modules@3.16.3) (2024-10-18)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** named aggregations can also be marked as default aggregation ([#1096](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1096)) ([49db54e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/49db54ebd2115f08e013ab67e8193396fa6e2ee3))
-* **ui5-tooling-modules:** properly support keepDynamicImports ([#1101](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1101)) ([94b9762](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/94b976297a55d75f78899ba99cc183d26f192bf0))
-
-
-
-
+- **ui5-tooling-modules:** named aggregations can also be marked as default aggregation ([#1096](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1096)) ([49db54e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/49db54ebd2115f08e013ab67e8193396fa6e2ee3))
+- **ui5-tooling-modules:** properly support keepDynamicImports ([#1101](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1101)) ([94b9762](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/94b976297a55d75f78899ba99cc183d26f192bf0))
 
 ## [3.16.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.1...ui5-tooling-modules@3.16.2) (2024-10-17)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** merge additionalDependencies custom config ([#1095](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1095)) ([9b24d7b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9b24d7b452cf1ed460f21ab967ebf45db05375e3))
-
-
-
-
+- **ui5-tooling-modules:** merge additionalDependencies custom config ([#1095](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1095)) ([9b24d7b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9b24d7b452cf1ed460f21ab967ebf45db05375e3))
 
 ## [3.16.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.0...ui5-tooling-modules@3.16.1) (2024-10-12)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support 'as default' exports in modules ([#1092](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1092)) ([db647f4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/db647f401b1f956d4099534903e0eefd5bb3115b))
-
-
-
-
+- **ui5-tooling-modules:** support 'as default' exports in modules ([#1092](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1092)) ([db647f4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/db647f401b1f956d4099534903e0eefd5bb3115b))
 
 # [3.16.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.15.1...ui5-tooling-modules@3.16.0) (2024-10-06)
 
-
 ### Features
 
-* **ui5-tooling-modules:** scoping and import.meta support for webc ([#1089](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1089)) ([8c434ec](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8c434ecdf26d0d48b5d5cd0f76e2944bb52508d5))
-
-
-
-
+- **ui5-tooling-modules:** scoping and import.meta support for webc ([#1089](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1089)) ([8c434ec](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8c434ecdf26d0d48b5d5cd0f76e2944bb52508d5))
 
 ## [3.15.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.15.0...ui5-tooling-modules@3.15.1) (2024-10-06)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support for additionalDependencies (repackaging) ([#1088](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1088)) ([a49712b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a49712b032e1f402a66969600d15109db42b6985))
-
-
-
-
+- **ui5-tooling-modules:** support for additionalDependencies (repackaging) ([#1088](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1088)) ([a49712b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a49712b032e1f402a66969600d15109db42b6985))
 
 # [3.15.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.14.1...ui5-tooling-modules@3.15.0) (2024-10-05)
 
-
 ### Features
 
-* **ui5-tooling-modules:** new module resolution ([#1087](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1087)) ([2e6c50c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2e6c50c9f3f42924094136a4d078c9a2eb09076f))
-
-
-
-
+- **ui5-tooling-modules:** new module resolution ([#1087](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1087)) ([2e6c50c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2e6c50c9f3f42924094136a4d078c9a2eb09076f))
 
 ## [3.14.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.14.0...ui5-tooling-modules@3.14.1) (2024-10-02)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** further performance improvements ([#1086](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1086)) ([83a2709](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/83a27090addc07a1d5fa27df4a0d8a9b8a2f0f64))
-
-
-
-
+- **ui5-tooling-modules:** further performance improvements ([#1086](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1086)) ([83a2709](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/83a27090addc07a1d5fa27df4a0d8a9b8a2f0f64))
 
 # [3.14.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.13.1...ui5-tooling-modules@3.14.0) (2024-10-01)
 
-
 ### Features
 
-* **ui5-tooling-modules:** support webc scoping and enablement ([#1083](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1083)) ([87dfc9f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/87dfc9f790dbff3ae416fd7a2ad392743427e129))
-
-
-
-
+- **ui5-tooling-modules:** support webc scoping and enablement ([#1083](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1083)) ([87dfc9f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/87dfc9f790dbff3ae416fd7a2ad392743427e129))
 
 ## [3.13.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.13.0...ui5-tooling-modules@3.13.1) (2024-10-01)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** windows support and performance improvements ([#1085](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1085)) ([170b462](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/170b46233bdaaa3db098769aa098dd025330cbf0))
-
-
-
-
+- **ui5-tooling-modules:** windows support and performance improvements ([#1085](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1085)) ([170b462](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/170b46233bdaaa3db098769aa098dd025330cbf0))
 
 # [3.13.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.12.0...ui5-tooling-modules@3.13.0) (2024-09-14)
 
-
 ### Features
 
-* **ui5-tooling-modules:** do not consider webc npm packages as libraries ([#1080](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1080)) ([2643a13](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2643a13fee9782c1f7f2aa86f168237c452efe89))
-* **ui5-tooling-modules:** seamless webcomponents part 2 - readonly & methods ([#1081](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1081)) ([f610e6f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f610e6f1b4c763bb52f0b09d0c494a99255e6141))
-
-
-
-
+- **ui5-tooling-modules:** do not consider webc npm packages as libraries ([#1080](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1080)) ([2643a13](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2643a13fee9782c1f7f2aa86f168237c452efe89))
+- **ui5-tooling-modules:** seamless webcomponents part 2 - readonly & methods ([#1081](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1081)) ([f610e6f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f610e6f1b4c763bb52f0b09d0c494a99255e6141))
 
 # [3.12.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.11.0...ui5-tooling-modules@3.12.0) (2024-09-10)
 
-
 ### Features
 
-* **ui5-tooling-modules:** addToNamespace=true is the default now ([#1075](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1075)) ([997fa6a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/997fa6a23af04f14cbbb9d6bc91a12fb9162a8e4))
-
-
-
-
+- **ui5-tooling-modules:** addToNamespace=true is the default now ([#1075](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1075)) ([997fa6a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/997fa6a23af04f14cbbb9d6bc91a12fb9162a8e4))
 
 # [3.11.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.10.2...ui5-tooling-modules@3.11.0) (2024-09-06)
 
-
 ### Features
 
-* enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
-
-
-
-
+- enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
 
 ## [3.10.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.10.1...ui5-tooling-modules@3.10.2) (2024-08-30)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** properly resolve local dependencies ([#1069](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1069)) ([3606ea5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3606ea576804215cf8be9b284fb9f39129484bdf)), closes [#1068](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1068)
-
-
-
-
+- **ui5-tooling-modules:** properly resolve local dependencies ([#1069](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1069)) ([3606ea5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3606ea576804215cf8be9b284fb9f39129484bdf)), closes [#1068](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1068)
 
 ## [3.10.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.10.0...ui5-tooling-modules@3.10.1) (2024-08-25)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** include hypenate into external module detection ([#1065](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1065)) ([2c24aec](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2c24aec83ef35746bf7bc71d8f4d1e88f741c8ac))
-
-
-
-
+- **ui5-tooling-modules:** include hypenate into external module detection ([#1065](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1065)) ([2c24aec](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2c24aec83ef35746bf7bc71d8f4d1e88f741c8ac))
 
 # [3.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.9.1...ui5-tooling-modules@3.10.0) (2024-08-25)
 
-
 ### Features
 
-* **ui5-tooling-modules:** seamless web components support phase 1 ([#1051](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1051)) ([f2cc93e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f2cc93ed6ecd8200d6675f4340ee0b1a734ec964))
-
-
-
-
+- **ui5-tooling-modules:** seamless web components support phase 1 ([#1051](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1051)) ([f2cc93e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f2cc93ed6ecd8200d6675f4340ee0b1a734ec964))
 
 ## [3.9.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.9.0...ui5-tooling-modules@3.9.1) (2024-08-13)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** perf-opt for module type detection ([#1060](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1060)) ([ce17e87](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce17e875476df049c8e3eb90a4da60ad2bf28698))
-
-
-
-
+- **ui5-tooling-modules:** perf-opt for module type detection ([#1060](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1060)) ([ce17e87](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce17e875476df049c8e3eb90a4da60ad2bf28698))
 
 # [3.9.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.8.1...ui5-tooling-modules@3.9.0) (2024-08-12)
 
-
 ### Bug Fixes
 
-* decouple tooling extensions from UI5 tooling version ([#1058](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1058)) ([6694c59](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6694c59422ac37d9aea971679de46f5f59b8025c)), closes [#1054](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1054)
-
+- decouple tooling extensions from UI5 tooling version ([#1058](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1058)) ([6694c59](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6694c59422ac37d9aea971679de46f5f59b8025c)), closes [#1054](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1054)
 
 ### Features
 
-* **ui5-tooling-modules:** performance opt + persistent bundle info cache ([#1059](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1059)) ([b02e050](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b02e050e5e338626c6370db11025c3a0256c3fe5)), closes [#1052](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1052)
-
-
-
-
+- **ui5-tooling-modules:** performance opt + persistent bundle info cache ([#1059](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1059)) ([b02e050](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b02e050e5e338626c6370db11025c3a0256c3fe5)), closes [#1052](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1052)
 
 ## [3.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.8.0...ui5-tooling-modules@3.8.1) (2024-07-22)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 # [3.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.7.0...ui5-tooling-modules@3.8.0) (2024-07-21)
-
 
 ### Bug Fixes
 
-* **ui5-tooling-modules:** only consider js, cjs or mjs files as bundle entry points ([#1040](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1040)) ([87ec01e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/87ec01ed5987d84e8bdcff3a9a8485f52958bdaa))
-* **ui5-tooling-modules:** perf-opt to avoid bundling without changes ([#1042](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1042)) ([65e30aa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/65e30aab5744a4144f8b745ce0692f1e27df3d14))
-
+- **ui5-tooling-modules:** only consider js, cjs or mjs files as bundle entry points ([#1040](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1040)) ([87ec01e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/87ec01ed5987d84e8bdcff3a9a8485f52958bdaa))
+- **ui5-tooling-modules:** perf-opt to avoid bundling without changes ([#1042](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1042)) ([65e30aa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/65e30aab5744a4144f8b745ce0692f1e27df3d14))
 
 ### Features
 
-* **ui5-tooling-modules:** improved dependency resolution ([#1039](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1039)) ([b3695cb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b3695cbb1df87c0cb4af3819198f40aa6d816a11)), closes [#1032](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1032)
-* **ui5-tooling-modules:** support instructions ?url, ?inline in modules ([#1041](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1041)) ([71677eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/71677ebaebbd19bc35494be80e04bce1c340e932))
-
-
-
-
+- **ui5-tooling-modules:** improved dependency resolution ([#1039](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1039)) ([b3695cb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b3695cbb1df87c0cb4af3819198f40aa6d816a11)), closes [#1032](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1032)
+- **ui5-tooling-modules:** support instructions ?url, ?inline in modules ([#1041](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1041)) ([71677eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/71677ebaebbd19bc35494be80e04bce1c340e932))
 
 # [3.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.6.2...ui5-tooling-modules@3.7.0) (2024-06-30)
 
-
 ### Features
 
-* **ui5-tooling-modules:** entry point modules must be project dependencies ([#1026](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1026)) ([d81b770](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d81b770535196e2ebda53fa4cc1c6e1d334bd673))
-
-
-
-
+- **ui5-tooling-modules:** entry point modules must be project dependencies ([#1026](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1026)) ([d81b770](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d81b770535196e2ebda53fa4cc1c6e1d334bd673))
 
 ## [3.6.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.6.1...ui5-tooling-modules@3.6.2) (2024-06-10)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** usage of estree-walker for modern ES support ([#1020](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1020)) ([77a6059](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/77a6059380f6f45156b47fd8d4a4dc7dcf6eb1f9))
-
-
-
-
+- **ui5-tooling-modules:** usage of estree-walker for modern ES support ([#1020](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1020)) ([77a6059](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/77a6059380f6f45156b47fd8d4a4dc7dcf6eb1f9))
 
 ## [3.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.6.0...ui5-tooling-modules@3.6.1) (2024-06-02)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** skip transpile of SystemJS modules ([#1013](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1013)) ([199750e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/199750ef1c14a9ad840be2e159fd2186a0051889))
-
-
-
-
+- **ui5-tooling-modules:** skip transpile of SystemJS modules ([#1013](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1013)) ([199750e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/199750ef1c14a9ad840be2e159fd2186a0051889))
 
 # [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.6...ui5-tooling-modules@3.6.0) (2024-05-31)
 
-
 ### Features
 
-* **ui5-tooling-modules:** improved handling of chunks ([#1009](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1009)) ([8f35651](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f356514367d47a68b4517ecbd5fec46fb6444c7)), closes [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
-* **ui5-tooling-modules:** support alternative thirdparty namespace ([#1010](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1010)) ([eb7556f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/eb7556fd24ec82b1160ff219374e8f95bf5562c5))
-
-
-
-
+- **ui5-tooling-modules:** improved handling of chunks ([#1009](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1009)) ([8f35651](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f356514367d47a68b4517ecbd5fec46fb6444c7)), closes [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
+- **ui5-tooling-modules:** support alternative thirdparty namespace ([#1010](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1010)) ([eb7556f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/eb7556fd24ec82b1160ff219374e8f95bf5562c5))
 
 ## [3.5.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.5...ui5-tooling-modules@3.5.6) (2024-05-15)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** do not handle ts files as jsx when parsing AST ([#1003](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1003)) ([395da08](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/395da08d04eb121d539b0ee0afb1cf934ef37776))
-
-
-
-
+- **ui5-tooling-modules:** do not handle ts files as jsx when parsing AST ([#1003](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1003)) ([395da08](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/395da08d04eb121d539b0ee0afb1cf934ef37776))
 
 ## [3.5.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.4...ui5-tooling-modules@3.5.5) (2024-05-15)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** improvement of node_modules lookup logic ([#1001](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1001)) ([e3bc1f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e3bc1f65299fb52482bfbc9c3b34f2c7648acc71))
-
-
-
-
+- **ui5-tooling-modules:** improvement of node_modules lookup logic ([#1001](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1001)) ([e3bc1f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e3bc1f65299fb52482bfbc9c3b34f2c7648acc71))
 
 ## [3.5.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.3...ui5-tooling-modules@3.5.4) (2024-05-13)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support dynamic imports ([#998](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/998)) ([c6c0459](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c6c0459516d0c1fcfd8cb32dc54fd043fcf9daa2))
-
-
-
-
+- **ui5-tooling-modules:** support dynamic imports ([#998](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/998)) ([c6c0459](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c6c0459516d0c1fcfd8cb32dc54fd043fcf9daa2))
 
 ## [3.5.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.2...ui5-tooling-modules@3.5.3) (2024-05-11)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** avoid file extension for unique modules ([#997](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/997)) ([3931692](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3931692b6483a58dadddab0679f002077382f03a))
-
-
-
-
+- **ui5-tooling-modules:** avoid file extension for unique modules ([#997](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/997)) ([3931692](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3931692b6483a58dadddab0679f002077382f03a))
 
 ## [3.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.1...ui5-tooling-modules@3.5.2) (2024-05-10)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** keep default export for compat with interopRequireDefault ([#996](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/996)) ([879282b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/879282bd9814f157329a8f51f18c6f2cb97b67ed))
-
-
-
-
+- **ui5-tooling-modules:** keep default export for compat with interopRequireDefault ([#996](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/996)) ([879282b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/879282bd9814f157329a8f51f18c6f2cb97b67ed))
 
 ## [3.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.0...ui5-tooling-modules@3.5.1) (2024-05-10)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ignore non-existing files in getResource ([#995](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/995)) ([1089355](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1089355e7f14fa0cc37b402a844b2160a037994b))
-
-
-
-
+- **ui5-tooling-modules:** ignore non-existing files in getResource ([#995](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/995)) ([1089355](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1089355e7f14fa0cc37b402a844b2160a037994b))
 
 # [3.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.6...ui5-tooling-modules@3.5.0) (2024-05-07)
 
-
 ### Features
 
-* **ui5-tooling-modules:** support ESM and TS for dependency scan ([#991](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/991)) ([011c8a6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/011c8a60a7239c215a7b6c843e4017f4cbe1bb90))
-
-
-
-
+- **ui5-tooling-modules:** support ESM and TS for dependency scan ([#991](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/991)) ([011c8a6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/011c8a60a7239c215a7b6c843e4017f4cbe1bb90))
 
 ## [3.4.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.5...ui5-tooling-modules@3.4.6) (2024-03-31)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** fix undefined error in middleware ([2e7674c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2e7674c71b9e2495efd3c8c1f32cdd1ae21504b5))
-
-
-
-
+- **ui5-tooling-modules:** fix undefined error in middleware ([2e7674c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2e7674c71b9e2495efd3c8c1f32cdd1ae21504b5))
 
 ## [3.4.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.4...ui5-tooling-modules@3.4.5) (2024-03-31)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ignore unkown modules for bundling ([#985](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/985)) ([fe201be](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fe201be0ad1c6e72edf9fc65c920811478767fcc)), closes [#977](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/977)
-
-
-
-
+- **ui5-tooling-modules:** ignore unkown modules for bundling ([#985](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/985)) ([fe201be](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fe201be0ad1c6e72edf9fc65c920811478767fcc)), closes [#977](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/977)
 
 ## [3.4.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.3...ui5-tooling-modules@3.4.4) (2024-03-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** make import fix more robust ([#973](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/973)) ([13a4037](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/13a403775a4b6eff83390678203a4f448a079cc4))
-
-
-
-
+- **ui5-tooling-modules:** make import fix more robust ([#973](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/973)) ([13a4037](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/13a403775a4b6eff83390678203a4f448a079cc4))
 
 ## [3.4.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.2...ui5-tooling-modules@3.4.3) (2024-03-04)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure proper handling of aggregations for WebCs ([#968](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/968)) ([9cd1273](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9cd1273ef805e2b2da359c3aa6d986171764fd07))
-
-
-
-
+- **ui5-tooling-modules:** ensure proper handling of aggregations for WebCs ([#968](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/968)) ([9cd1273](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9cd1273ef805e2b2da359c3aa6d986171764fd07))
 
 ## [3.4.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.1...ui5-tooling-modules@3.4.2) (2024-02-29)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support relative paths for chunks also on W… ([#965](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/965)) ([f373bbb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f373bbb00f92c1c2af153a0eb56f3d434b738d26))
-
-
-
-
+- **ui5-tooling-modules:** support relative paths for chunks also on W… ([#965](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/965)) ([f373bbb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f373bbb00f92c1c2af153a0eb56f3d434b738d26))
 
 ## [3.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.0...ui5-tooling-modules@3.4.1) (2024-02-27)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** ensure proper handling of 3rd party resources ([#961](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/961)) ([06b81f3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/06b81f3b79abab9c3175b59af09d905c9b5470ab))
-
-
-
-
+- **ui5-tooling-modules:** ensure proper handling of 3rd party resources ([#961](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/961)) ([06b81f3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/06b81f3b79abab9c3175b59af09d905c9b5470ab))
 
 # [3.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.5...ui5-tooling-modules@3.4.0) (2024-02-19)
 
-
 ### Features
 
-* **ui5-tooling-modules:** support minification of generated code ([#953](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/953)) ([4513a36](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4513a360be97c234928fa7b5a91054701a5b5758))
-
-
-
-
+- **ui5-tooling-modules:** support minification of generated code ([#953](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/953)) ([4513a36](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4513a360be97c234928fa7b5a91054701a5b5758))
 
 ## [3.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.4...ui5-tooling-modules@3.3.5) (2024-02-18)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 ## [3.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.3...ui5-tooling-modules@3.3.4) (2024-01-30)
-
 
 ### Bug Fixes
 
-* **ui5-tooling-modules:** scan modules also in dependencies ([#942](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/942)) ([b5d5289](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b5d52895b98f77cc2955c15027b82aa7a635bc93))
-
-
-
-
+- **ui5-tooling-modules:** scan modules also in dependencies ([#942](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/942)) ([b5d5289](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b5d52895b98f77cc2955c15027b82aa7a635bc93))
 
 ## [3.3.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.2...ui5-tooling-modules@3.3.3) (2024-01-25)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support for dynamic modules during development ([#940](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/940)) ([f1fc84f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f1fc84fe8b0eac208475c08d808c995eea97e27f))
-
-
-
-
+- **ui5-tooling-modules:** support for dynamic modules during development ([#940](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/940)) ([f1fc84f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f1fc84fe8b0eac208475c08d808c995eea97e27f))
 
 ## [3.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.1...ui5-tooling-modules@3.3.2) (2024-01-25)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** add support to inject imports for Globals ([#939](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/939)) ([d4657f8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4657f8d5aa8eace00a69a19beeea03e9004d053))
-
-
-
-
+- **ui5-tooling-modules:** add support to inject imports for Globals ([#939](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/939)) ([d4657f8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4657f8d5aa8eace00a69a19beeea03e9004d053))
 
 ## [3.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.0...ui5-tooling-modules@3.3.1) (2024-01-24)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** experimental native UI5 WebC support ([#937](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/937)) ([087ac24](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/087ac247b8945277878a3f8087a0d93a548f06b2))
-
-
-
-
+- **ui5-tooling-modules:** experimental native UI5 WebC support ([#937](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/937)) ([087ac24](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/087ac247b8945277878a3f8087a0d93a548f06b2))
 
 # [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.7...ui5-tooling-modules@3.3.0) (2024-01-21)
 
-
 ### Features
 
-* **ui5-tooling-modules:** introduce bundle generation ([#936](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/936)) ([81588f1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81588f1148ef5296726f7fe7275fb697fb3afabd))
-
-
-
-
+- **ui5-tooling-modules:** introduce bundle generation ([#936](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/936)) ([81588f1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81588f1148ef5296726f7fe7275fb697fb3afabd))
 
 ## [3.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.6...ui5-tooling-modules@3.2.7) (2024-01-17)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 ## [3.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.5...ui5-tooling-modules@3.2.6) (2023-12-25)
-
 
 ### Bug Fixes
 
-* **ui5-tooling-modules:** improved packaging of npm packages ([#929](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/929)) ([b8c6b25](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b8c6b25fd3ded0e5d6f113ffbdb6929729f5d244)), closes [#927](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/927) [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
-
-
-
-
+- **ui5-tooling-modules:** improved packaging of npm packages ([#929](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/929)) ([b8c6b25](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b8c6b25fd3ded0e5d6f113ffbdb6929729f5d244)), closes [#927](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/927) [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
 
 ## [3.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.4...ui5-tooling-modules@3.2.5) (2023-12-10)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** chunks are stored in module name folder ([#922](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/922)) ([c2ad65d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c2ad65d06cecd7fbcccd39c2179cac079d32aaef)), closes [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
-
-
-
-
+- **ui5-tooling-modules:** chunks are stored in module name folder ([#922](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/922)) ([c2ad65d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c2ad65d06cecd7fbcccd39c2179cac079d32aaef)), closes [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
 
 ## [3.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.3...ui5-tooling-modules@3.2.4) (2023-10-31)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** keep non-text content alive using middleware ([#907](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/907)) ([433fa62](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/433fa6282725b819d7e95fe24bba88201fe1c132)), closes [#904](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/904)
-
-
-
-
+- **ui5-tooling-modules:** keep non-text content alive using middleware ([#907](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/907)) ([433fa62](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/433fa6282725b819d7e95fe24bba88201fe1c132)), closes [#904](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/904)
 
 ## [3.2.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.2...ui5-tooling-modules@3.2.3) (2023-10-30)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** copy resources as stream to not kill encoding ([#904](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/904)) ([e4b63a5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e4b63a520fb7562a6533698ce12cefe1ee610dd0)), closes [#902](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/902)
-
-
-
-
+- **ui5-tooling-modules:** copy resources as stream to not kill encoding ([#904](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/904)) ([e4b63a5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e4b63a520fb7562a6533698ce12cefe1ee610dd0)), closes [#902](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/902)
 
 ## [3.2.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.1...ui5-tooling-modules@3.2.2) (2023-10-17)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** keep sourcemaps when rewriting module urls ([#887](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/887)) ([d3a17ff](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d3a17ffa5caecafb30e71b1b000c124b4a4583ef))
-
-
-
-
+- **ui5-tooling-modules:** keep sourcemaps when rewriting module urls ([#887](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/887)) ([d3a17ff](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d3a17ffa5caecafb30e71b1b000c124b4a4583ef))
 
 ## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.0...ui5-tooling-modules@3.2.1) (2023-10-14)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.1.0...ui5-tooling-modules@3.2.0) (2023-10-05)
-
 
 ### Features
 
-* **ui5-tooling-modules:** consider dependency paths for module resolution ([#877](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/877)) ([ff54f4f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff54f4f2d75feffdef505d3fab4641210c5b6e64))
-
-
-
-
+- **ui5-tooling-modules:** consider dependency paths for module resolution ([#877](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/877)) ([ff54f4f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff54f4f2d75feffdef505d3fab4641210c5b6e64))
 
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.10...ui5-tooling-modules@3.1.0) (2023-10-05)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** listResources requires cwd ([#876](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/876)) ([0c94495](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0c94495221215aa91742c07e9a78cfdd847acd96))
-
+- **ui5-tooling-modules:** listResources requires cwd ([#876](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/876)) ([0c94495](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0c94495221215aa91742c07e9a78cfdd847acd96))
 
 ### Features
 
-* **ui5-middleware-cap:** wrap @sap/cds/bin/serve command ([#869](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/869)) ([541e6e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/541e6e6d8f877e4bf4e472bc576e7e33224f0e03))
-
-
-
-
+- **ui5-middleware-cap:** wrap @sap/cds/bin/serve command ([#869](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/869)) ([541e6e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/541e6e6d8f877e4bf4e472bc576e7e33224f0e03))
 
 ## [3.0.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.9...ui5-tooling-modules@3.0.10) (2023-10-02)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 ## [3.0.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.8...ui5-tooling-modules@3.0.9) (2023-10-01)
-
 
 ### Bug Fixes
 
-* **ui5-tooling-modules:** make module resolution cwd aware ([#852](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/852)) ([90a1e17](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/90a1e178c5590a821494183cc2010c99d5bae795))
-* **ui5-tooling-module:** support this context in modules ([#858](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/858)) ([678f3bd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/678f3bde91f1317ea8d90c8214767ef09d3ce2eb))
-
-
-
-
+- **ui5-tooling-modules:** make module resolution cwd aware ([#852](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/852)) ([90a1e17](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/90a1e178c5590a821494183cc2010c99d5bae795))
+- **ui5-tooling-module:** support this context in modules ([#858](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/858)) ([678f3bd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/678f3bde91f1317ea8d90c8214767ef09d3ce2eb))
 
 ## [3.0.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.7...ui5-tooling-modules@3.0.8) (2023-09-25)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support repackaging of es modules ([#848](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/848)) ([f8d5ea5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f8d5ea59217190b61311cd96ac4adbfaab80bd9a))
-
-
-
-
+- **ui5-tooling-modules:** support repackaging of es modules ([#848](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/848)) ([f8d5ea5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f8d5ea59217190b61311cd96ac4adbfaab80bd9a))
 
 ## [3.0.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.6...ui5-tooling-modules@3.0.7) (2023-09-08)
 
 **Note:** Version bump only for package ui5-tooling-modules
 
-
-
-
-
 ## [3.0.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.5...ui5-tooling-modules@3.0.6) (2023-09-07)
-
 
 ### Bug Fixes
 
-* consistent request path handling of all middlewares ([#833](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/833)) ([11ad435](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/11ad4356ddb6f8503ebf46039ad898b1c4aec7c9)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
-
-
-
-
+- consistent request path handling of all middlewares ([#833](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/833)) ([11ad435](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/11ad4356ddb6f8503ebf46039ad898b1c4aec7c9)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
 
 ## [3.0.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.4...ui5-tooling-modules@3.0.5) (2023-08-27)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** proper error messages ([#812](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/812)) ([e822697](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e822697090f2e811ba1cd39b40a0e0de21068929))
-
-
-
-
+- **ui5-tooling-modules:** proper error messages ([#812](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/812)) ([e822697](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e822697090f2e811ba1cd39b40a0e0de21068929))
 
 ## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.3...ui5-tooling-modules@3.0.4) (2023-08-18)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** consider skipTransform for rewrite of deps ([#799](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/799)) ([be67457](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/be67457f372db391244b8c9c151b95f9f5f2a913))
-
-
-
-
+- **ui5-tooling-modules:** consider skipTransform for rewrite of deps ([#799](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/799)) ([be67457](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/be67457f372db391244b8c9c151b95f9f5f2a913))
 
 ## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.2...ui5-tooling-modules@3.0.3) (2023-08-14)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** support to skip transformation of modules ([#795](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/795)) ([75f628e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/75f628ee20a683aadfa4423c69c9e5206619fe8e))
-
-
-
-
+- **ui5-tooling-modules:** support to skip transformation of modules ([#795](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/795)) ([75f628e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/75f628ee20a683aadfa4423c69c9e5206619fe8e))
 
 ## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.1...ui5-tooling-modules@3.0.2) (2023-08-12)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** activate keepDynamicImports by default ([#794](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/794)) ([7f2ea27](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7f2ea272d12c311c459c47cbc235df854ffd38c6))
-
-
-
-
+- **ui5-tooling-modules:** activate keepDynamicImports by default ([#794](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/794)) ([7f2ea27](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7f2ea272d12c311c459c47cbc235df854ffd38c6))
 
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.0...ui5-tooling-modules@3.0.1) (2023-08-12)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** allow to skip convert of dynamic imports ([#792](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/792)) ([c27500b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c27500be0495d76b6f62aed40490532d03dfdc6d))
-
-
-
-
+- **ui5-tooling-modules:** allow to skip convert of dynamic imports ([#792](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/792)) ([c27500b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c27500be0495d76b6f62aed40490532d03dfdc6d))
 
 # [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.13...ui5-tooling-modules@3.0.0) (2023-07-31)
 
-
 ### Bug Fixes
 
-* more cleanup of obsolete deps ([#779](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/779)) ([221a843](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/221a843ed1693f8db4233c5c6ea03ce368374046))
-
+- more cleanup of obsolete deps ([#779](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/779)) ([221a843](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/221a843ed1693f8db4233c5c6ea03ce368374046))
 
 ### Features
 
-* migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
-* prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
-
+- migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
+- prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
 
 ### BREAKING CHANGES
 
-* The support for UI5 Tooling V2 has been removed
-
-
-
-
+- The support for UI5 Tooling V2 has been removed
 
 ## [0.9.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.12...ui5-tooling-modules@0.9.13) (2023-07-17)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-modules:** re-enable chunks for middleware ([#767](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/767)) ([aaea4b0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aaea4b0691d6d5e2dc03e9c4715637b4de277d58))
-
-
-
-
+- **ui5-tooling-modules:** re-enable chunks for middleware ([#767](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/767)) ([aaea4b0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aaea4b0691d6d5e2dc03e9c4715637b4de277d58))
 
 ## [0.9.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.11...ui5-tooling-modules@0.9.12) (2023-07-01)
 
-
 ### Bug Fixes
 
-* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
-
-
-
-
+- **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
 
 ## [0.9.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.10...ui5-tooling-modules@0.9.11) (2023-06-15)
 
-
 ### Bug Fixes
 
-* update dependencies ([#754](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/754)) ([3893473](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/389347300795cfed881dc8be72eeb59d1bf45fff))
-
-
-
-
+- update dependencies ([#754](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/754)) ([3893473](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/389347300795cfed881dc8be72eeb59d1bf45fff))
 
 ## [0.9.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.9...ui5-tooling-modules@0.9.10) (2023-06-03)
 
