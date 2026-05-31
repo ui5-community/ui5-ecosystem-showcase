@@ -38,6 +38,14 @@ allowBuilds:
 
 enablePrePostScripts: false
 
+# Refuse to install package versions younger than this many minutes. The
+# typical npm-worm window (Shai-Hulud, etc.) is hours: malicious
+# versions are usually yanked well within a day. pnpm 11 defaults to
+# 1440 (24h); pin it explicitly so the setting can't silently change
+# under us if pnpm flips the default in a future major, and so
+# anyone running pnpm 10 here picks up the same behavior.
+minimumReleaseAge: 1440
+
 minimumReleaseAgeExclude:
   - "@eslint/plugin-kit@0.7.2"
   - eslint@10.4.1
