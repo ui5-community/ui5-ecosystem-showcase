@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.8.2
+
+### Patch Changes
+
+- [#1370](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1370) [`dd71c42`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dd71c421812409d75b7f2e41261b8a79580ea469) Thanks [@petermuessig](https://github.com/petermuessig)! - Bump runtime dependencies to clear open dependabot alerts and pick up upstream patch releases:
+  - `cds-plugin-ui5`: `semver` ^7.8.0 → ^7.8.1
+  - `ui5-middleware-approuter`: `@sap/approuter` ^22.0.0 → ^22.0.1
+  - `ui5-middleware-serveframework`: `node-fetch` ^2.7.0 → ^3.3.2
+  - `ui5-middleware-websocket`: `ws` ^8.20.1 → ^8.21.0
+  - `ui5-task-copyright`: `@typescript-eslint/typescript-estree` ^8.59.3 → ^8.60.0
+  - `ui5-tooling-transpile`: `@babel/core`, `@babel/preset-env`, `@babel/preset-typescript` → ^7.29.7
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
@@ -7,277 +19,150 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 # [3.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.7.1...ui5-middleware-serveframework@3.8.0) (2026-03-12)
-
 
 ### Features
 
-* update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
-
-
-
-
+- update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
 
 ## [3.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.7.0...ui5-middleware-serveframework@3.7.1) (2026-01-15)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 # [3.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.6.3...ui5-middleware-serveframework@3.7.0) (2025-12-02)
-
 
 ### Features
 
-* update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
-
-
-
-
+- update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
 
 ## [3.6.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.6.2...ui5-middleware-serveframework@3.6.3) (2025-09-17)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 ## [3.6.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.6.1...ui5-middleware-serveframework@3.6.2) (2025-09-15)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 ## [3.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.6.0...ui5-middleware-serveframework@3.6.1) (2025-07-06)
-
 
 ### Bug Fixes
 
-* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
-
-
-
-
+- update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
 
 # [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.5.0...ui5-middleware-serveframework@3.6.0) (2025-05-25)
 
-
 ### Features
 
-* **ui5-middleware-serveframework:** respect defined libraries in local config ([#1221](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1221)) ([09cfc5f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/09cfc5f9a18f4081695011b88ee5ccb3c0f1f477))
-
-
-
-
+- **ui5-middleware-serveframework:** respect defined libraries in local config ([#1221](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1221)) ([09cfc5f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/09cfc5f9a18f4081695011b88ee5ccb3c0f1f477))
 
 # [3.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.4.0...ui5-middleware-serveframework@3.5.0) (2025-02-06)
 
-
 ### Features
 
-* general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
-
-
-
-
+- general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
 
 # [3.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.3.1...ui5-middleware-serveframework@3.4.0) (2024-12-04)
 
-
 ### Features
 
-* **ui5-middleware-serverframework:** custom path to save libs ([#1130](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1130)) ([4ddfec7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4ddfec71cca3a5ced43ecc3f85981de225ce3544))
-
-
-
-
+- **ui5-middleware-serverframework:** custom path to save libs ([#1130](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1130)) ([4ddfec7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4ddfec71cca3a5ced43ecc3f85981de225ce3544))
 
 ## [3.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.3.0...ui5-middleware-serveframework@3.3.1) (2024-11-22)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-serveframework:** include mandatory dependency to @ui5/builder ([#1127](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1127)) ([d34721a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d34721a3e9f759a4c5c6ba8461abcd7feca5b8b5))
-
-
-
-
+- **ui5-middleware-serveframework:** include mandatory dependency to @ui5/builder ([#1127](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1127)) ([d34721a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d34721a3e9f759a4c5c6ba8461abcd7feca5b8b5))
 
 # [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.2.0...ui5-middleware-serveframework@3.3.0) (2024-09-10)
 
-
 ### Features
 
-* **ui5-middleware-serveframework:** allow usage with self signed certificates ([#1073](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1073)) ([089fdbc](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/089fdbc0981f59acc1fd72864e877802810ed5f4))
-
-
-
-
+- **ui5-middleware-serveframework:** allow usage with self signed certificates ([#1073](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1073)) ([089fdbc](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/089fdbc0981f59acc1fd72864e877802810ed5f4))
 
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.1.3...ui5-middleware-serveframework@3.2.0) (2024-09-06)
 
-
 ### Features
 
-* enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
-
-
-
-
+- enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
 
 ## [3.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.1.2...ui5-middleware-serveframework@3.1.3) (2024-08-11)
 
-
 ### Bug Fixes
 
-* decouple tooling extensions from UI5 tooling version ([#1058](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1058)) ([6694c59](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6694c59422ac37d9aea971679de46f5f59b8025c)), closes [#1054](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1054)
-
-
-
-
+- decouple tooling extensions from UI5 tooling version ([#1058](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1058)) ([6694c59](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6694c59422ac37d9aea971679de46f5f59b8025c)), closes [#1054](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1054)
 
 ## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.1.1...ui5-middleware-serveframework@3.1.2) (2024-07-22)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 ## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.1.0...ui5-middleware-serveframework@3.1.1) (2024-05-15)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.6...ui5-middleware-serveframework@3.1.0) (2024-03-27)
-
 
 ### Features
 
-* **ui5-middleware-serveframework:** provide custom ui5 version from environment variable ([#978](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/978)) ([ce420af](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce420af72ad03b12b8c1d497178a9a8ccd7e435e))
-
-
-
-
+- **ui5-middleware-serveframework:** provide custom ui5 version from environment variable ([#978](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/978)) ([ce420af](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce420af72ad03b12b8c1d497178a9a8ccd7e435e))
 
 ## [3.0.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.5...ui5-middleware-serveframework@3.0.6) (2024-03-05)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-serveframework:** make workspace detection work os independent ([#974](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/974)) ([dfa4e1a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dfa4e1a847c1c00cd3ad47d55cbf5fca3b2a7cf6))
-
-
-
-
+- **ui5-middleware-serveframework:** make workspace detection work os independent ([#974](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/974)) ([dfa4e1a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dfa4e1a847c1c00cd3ad47d55cbf5fca3b2a7cf6))
 
 ## [3.0.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.4...ui5-middleware-serveframework@3.0.5) (2024-03-04)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-serveframework:** improved workspace detection ([#972](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/972)) ([16d157f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/16d157f7d38e4a2751c90b5e3f0f328eab01c8fc))
-
-
-
-
+- **ui5-middleware-serveframework:** improved workspace detection ([#972](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/972)) ([16d157f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/16d157f7d38e4a2751c90b5e3f0f328eab01c8fc))
 
 ## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.3...ui5-middleware-serveframework@3.0.4) (2024-02-18)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 ## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.2...ui5-middleware-serveframework@3.0.3) (2024-01-17)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
-
-
-
-
 
 ## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.1...ui5-middleware-serveframework@3.0.2) (2023-12-10)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0...ui5-middleware-serveframework@3.0.1) (2023-12-04)
-
 
 ### Bug Fixes
 
-* **ui5-middleware-serveframework:** disable for UI5 workspaces ([#917](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/917)) ([e8f726e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e8f726e7e9e8e35476db85d93aef9cc093e1c751))
-
-
-
-
+- **ui5-middleware-serveframework:** disable for UI5 workspaces ([#917](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/917)) ([e8f726e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e8f726e7e9e8e35476db85d93aef9cc093e1c751))
 
 # [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0-alpha.4...ui5-middleware-serveframework@3.0.0) (2023-11-10)
 
-
 ### Features
 
-* remove alpha version from ui5-middleware-[serveframework|ui5|websocket] ([8d980ff](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8d980ff5f646a92c5677aca525b300d96704d069))
-
+- remove alpha version from ui5-middleware-[serveframework|ui5|websocket] ([8d980ff](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8d980ff5f646a92c5677aca525b300d96704d069))
 
 ### BREAKING CHANGES
 
-* remove alpha version suffix
-
-
-
-
+- remove alpha version suffix
 
 # [3.0.0-alpha.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0-alpha.3...ui5-middleware-serveframework@3.0.0-alpha.4) (2023-10-18)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-serveframework:** enable proxy support ([#891](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/891)) ([5933d8e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5933d8ee1f622d4f3e869c069c4a0bbbf3d5b31a)), closes [#890](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/890)
-
-
-
-
+- **ui5-middleware-serveframework:** enable proxy support ([#891](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/891)) ([5933d8e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5933d8ee1f622d4f3e869c069c4a0bbbf3d5b31a)), closes [#890](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/890)
 
 # [3.0.0-alpha.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0-alpha.2...ui5-middleware-serveframework@3.0.0-alpha.3) (2023-10-14)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
 
-
-
-
-
 # [3.0.0-alpha.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0-alpha.1...ui5-middleware-serveframework@3.0.0-alpha.2) (2023-10-01)
-
 
 ### Bug Fixes
 
-* **ui5-middleware-serveframework:** ignore directories ([#855](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/855)) ([9fb1e67](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9fb1e67617ee9db4df86a656bb186e58ffe27537))
-
-
-
-
+- **ui5-middleware-serveframework:** ignore directories ([#855](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/855)) ([9fb1e67](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9fb1e67617ee9db4df86a656bb186e58ffe27537))
 
 # 3.0.0-alpha.1 (2023-09-12)
 
-
 ### Features
 
-* **ui5-middleware-serveframework:** serves a built variant of the configured UI5 framework ([#840](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/840)) ([8afb3ef](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8afb3ef671169af07d5028b5364acd0bf8e994a0))
+- **ui5-middleware-serveframework:** serves a built variant of the configured UI5 framework ([#840](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/840)) ([8afb3ef](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8afb3ef671169af07d5028b5364acd0bf8e994a0))
