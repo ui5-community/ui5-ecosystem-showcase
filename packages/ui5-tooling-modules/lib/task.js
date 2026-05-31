@@ -145,9 +145,21 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	};
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
+	function stripRelativeSegments(value) {
+		// loop until stable so crafted inputs like "....//" cannot leave a residual "../"
+		let previous;
+		let current = value;
+		do {
+			previous = current;
+			current = current.replaceAll(/\.?\.\//g, "");
+		} while (current !== previous);
+		return current;
+	}
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteDep(dep, bundleInfo, useDottedNamespace) {
 		// remove the relative path and the project namespace
-		const aDep = dep.replaceAll(`${options.projectNamespace}/resources/`, "").replaceAll(/\.?\.\//g, "");
+		const aDep = stripRelativeSegments(dep.replaceAll(`${options.projectNamespace}/resources/`, ""));
 		const resource = config.addToNamespace && bundleInfo.getBundledResources().find(({ name }) => aDep === name);
 		if (config.addToNamespace && (resource || uniqueResources.has(aDep) || uniqueNS.has(aDep) || isAssetIncluded(aDep))) {
 			let d = aDep;
