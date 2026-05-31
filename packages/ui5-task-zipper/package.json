@@ -27,7 +27,7 @@
     "yazl": "^3.3.1"
   },
   "devDependencies": {
-    "@ui5/cli": "^3",
+    "@ui5/cli": "^4",
     "ava": "^8.0.1",
     "yauzl": "^3.3.1"
   }
