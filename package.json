@@ -57,6 +57,7 @@
     "watch": "pnpm --filter ui5-app watch",
     "changeset": "changeset",
     "changeset:auto": "node scripts/auto-changeset.mjs",
+    "changeset:empty": "changeset --empty",
     "version-packages": "changeset version && pnpm install --lockfile-only",
     "release-publish": "changeset publish",
     "lint": "pnpm --workspace-concurrency 1 -r lint",

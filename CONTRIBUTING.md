@@ -66,13 +66,15 @@ This monorepo uses [Changesets](https://github.com/changesets/changesets) for ve
 
 The release flow is fully automated through GitHub Actions — no local `lerna` or push permissions on `main` required.
 
-**For contributors:** when your PR changes one or more public packages, add a changeset:
+**For contributors:** when your PR changes one or more public packages, add a changeset. There are three options, pick whichever fits:
 
-```bash
-pnpm changeset
-```
+| Command | When to use |
+| --- | --- |
+| `pnpm changeset:auto` | Recommended for most PRs. Walks the conventional-commit history on your branch and writes one `.changeset/auto-<sha>.md` per qualifying commit (packages from the commit `scope`, bump from the `type`, summary from the `subject`). Idempotent — safe to re-run. Already-covered commits are skipped, so hand-written changesets always win. |
+| `pnpm changeset` | Interactive — pick packages, bump type, and write a summary by hand. Use when the auto-derived bump or summary is wrong (e.g. a `chore:` commit that secretly contains a `feat:`); the next `:auto` run will skip the commit because it's covered. |
+| `pnpm changeset:empty` | Docs- or tooling-only PRs that touch no public package. Writes an empty `.changeset/*.md` so the CI changeset gate passes without producing any CHANGELOG entry. |
 
-The interactive prompt asks which packages changed and at what semver level (patch / minor / major) and writes a small markdown file under `.changeset/`. Commit that file with your code change. If your PR is docs- or tooling-only, you can skip this step.
+Whichever you pick, commit the resulting `.changeset/*.md` file alongside your code change.
 
 **For maintainers:** the release itself happens entirely on GitHub.
 
