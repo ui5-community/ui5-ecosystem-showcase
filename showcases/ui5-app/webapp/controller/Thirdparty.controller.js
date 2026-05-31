@@ -7,7 +7,7 @@ sap.ui.define(
 		"@e965/xlsx",
 		"cmis",
 		"@supabase/supabase-js",
-		"@octokit/core", // requires node-fetch@2 and is-plain-object@5
+		"@octokit/core", // requires universal-user-agent and before-after-hook (pnpm doesn't hoist them — see #1196)
 		"axios",
 		"@js-temporal/polyfill",
 		"@stomp/stompjs",
