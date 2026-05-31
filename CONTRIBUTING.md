@@ -7,8 +7,8 @@ A sub-package **may** have an additional CONTRIBUTING.md file if needed.
 
 ### Pre-Requisites
 
-- [PNPM](https://pnpm.io/installation) >= 10.26.2
-- A [Long-Term Support version](https://nodejs.org/en/about/releases/) of Node.js
+- [PNPM](https://pnpm.io/installation) >= 11.5.0
+- A [Long-Term Support version](https://nodejs.org/en/about/releases/) of Node.js >= 22
 - (optional) [commitizen](https://github.com/commitizen/cz-cli#installing-the-command-line-tool) for managing commit messages.
 
 ### Branches
@@ -43,12 +43,12 @@ This project is implemented using plain ECMAScript without any compilation / tra
 
 There is no consistent testing tooling used for this repository. Some of the sub-packages are using [AVA][ava] (e.g. `ui5-middleware-approuter` or `ui5-task-zipper`). Creating tests for your UI5 CLI extensions is highly recommended and appreciated.
 
-The UI5 application is using [QUnit][qunit], [OPA5][opa5] and [WDIO5][wdio5] tests for validation.
+The UI5 application is using [QUnit][qunit], [OPA5][opa5] and [WDI5][wdi5] tests for validation.
 
 [ava]: https://github.com/avajs/ava
-[qunit]: https://openui5.hana.ondemand.com/topic/09d145cd86ee4f8e9d08715f1b364c51
-[opa5]: https://openui5.hana.ondemand.com/topic/22f175e7084247bc896c15280af9d1dc
-[wdi5]: https://github.com/js-soft/wdi5#readme
+[qunit]: https://sdk.openui5.org/topic/09d145cd86ee4f8e9d08715f1b364c51/
+[opa5]: https://sdk.openui5.org/#/topic/22f175e7084247bc896c15280af9d1dc/
+[wdi5]: https://ui5-community.github.io/wdi5/
 
 ### GitHub Actions
 
@@ -60,19 +60,28 @@ act pull_request -W .github/workflows/tests.yml -e .github/workflows/.local-env.
 
 ### Release Life-Cycle
 
-This monorepo uses Lerna's [Independent][lerna-mode] mode which allows subpackages to have different versions.
-
-[lerna-mode]: https://github.com/lerna/lerna#independent-mode
+This monorepo uses [Changesets](https://github.com/changesets/changesets) for versioning and publishing. Each public package under `packages/*` keeps its own version (independent versioning); private showcases under `showcases/*` are not published.
 
 ### Release Process
 
-Performing a release requires push permissions to the repository.
+The release flow is fully automated through GitHub Actions — no local `lerna` or push permissions on `main` required.
 
-- Ensure you are on the default branch and synced with origin.
-- `pnpm release:version`
-- Follow the lerna CLI instructions.
-- Track the newly pushed **commit** with the message (`chore(release): publish`) which triggers the `Release (automatic)` GitHub action until successful completion.
-- Inspect the newly artifacts published on npmjs.com.
+**For contributors:** when your PR changes one or more public packages, add a changeset:
+
+```bash
+pnpm changeset
+```
+
+The interactive prompt asks which packages changed and at what semver level (patch / minor / major) and writes a small markdown file under `.changeset/`. Commit that file with your code change. If your PR is docs- or tooling-only, you can skip this step.
+
+**For maintainers:** the release itself happens entirely on GitHub.
+
+- When a PR with changesets is merged into `main`, the [`Release`](.github/workflows/release.yml) workflow opens (or updates) a single **`Version Packages`** PR that aggregates all pending changesets — bumping versions, regenerating each package's `CHANGELOG.md`, and refreshing `pnpm-lock.yaml`.
+- Review and merge that **`Version Packages`** PR when you want to cut a release.
+- The same workflow then automatically publishes the new versions to npm (OIDC trusted publishing, with `NPM_BOOTSTRAP_TOKEN` as a fallback) and creates the matching git tags.
+- Inspect the newly published artifacts on npmjs.com.
+
+You can also trigger the workflow manually via *Actions → Release → Run workflow* — useful if a previous run failed mid-publish.
 
 ### Upgrading the version of the dependencies
 

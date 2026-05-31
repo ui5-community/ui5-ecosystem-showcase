@@ -1,4 +1,4 @@
-name: Publish packages to NPM
+name: Release
 
 on:
   push:
@@ -8,14 +8,20 @@ on:
 env:
   HUSKY_SKIP: true
 
+# Skip when the head commit is the workflow's own version-bump commit, to avoid loops.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
-  contents: read
-  id-token: write # REQUIRED for OIDC flow
+  contents: write # create the "Version Packages" PR and tags
+  pull-requests: write # open/update the version PR
+  id-token: write # REQUIRED for npm OIDC trusted publishing
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -37,7 +43,7 @@ jobs:
       - name: Detect token usage (optional safety)
         run: |
           if npm whoami 2>/dev/null; then
-            echo "::warning::Token-based auth active (expected only for first publish)"
+            echo "::warning::Token-based auth active (expected only when OIDC isn't configured)"
           else
             echo "OIDC auth active"
           fi
@@ -49,14 +55,15 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_BOOTSTRAP_TOKEN}" >> ~/.npmrc
 
-      - name: Publish packages
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1.8.0
+        with:
+          version: pnpm run version-packages
+          publish: pnpm run release-publish
+          commit: "chore(release): publish"
+          title: "chore(release): publish"
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "Manual trigger → running release:publish-manual"
-            npm run release:publish-manual
-          else
-            echo "Automatic trigger → running release:publish"
-            npm run release:publish
-          fi
+          NPM_CONFIG_PROVENANCE: "true"
