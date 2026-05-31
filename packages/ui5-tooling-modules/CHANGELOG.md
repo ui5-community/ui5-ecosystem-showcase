@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.37.1
+
+### Patch Changes
+
+- [#1373](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1373) [`3c544b7`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3c544b78ccc85f11d74431f043e53134f712dc5d) Thanks [@petermuessig](https://github.com/petermuessig)! - Harden `rewriteDep` path-segment stripping to defeat crafted inputs like `....//` that previously left a residual `../`. Addresses CodeQL alert `js/incomplete-multi-character-sanitization` ([#268](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/268)).
+
 ## 3.37.0
 
 ### Minor Changes
