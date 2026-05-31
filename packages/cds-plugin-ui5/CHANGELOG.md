@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.17.3
+
+### Patch Changes
+
+- [#1373](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1373) [`3c544b7`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3c544b78ccc85f11d74431f043e53134f712dc5d) Thanks [@petermuessig](https://github.com/petermuessig)! - Bump the `express` peerDependency floor from `>=4.18.2` to `>=4.19.2` so the declared range no longer permits versions affected by GHSA-rv95-896h-c2vc (open redirect). Closes Dependabot alerts [#110](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/110), [#111](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/111), [#113](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/113), [#114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/114), [#115](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/115), [#117](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/117).
+
 ## 0.17.2
 
 ### Patch Changes
