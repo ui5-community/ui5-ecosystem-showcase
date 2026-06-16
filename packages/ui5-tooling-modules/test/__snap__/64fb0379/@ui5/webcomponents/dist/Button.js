@@ -18,7 +18,7 @@ sap.ui.define(
           namespace: "@ui5/webcomponents",
           qualifiedNamespace: "@ui5.webcomponents",
           tag: "ui5-button",
-          interfaces: ["@ui5.webcomponents.dist.Button"],
+          interfaces: ["@ui5.webcomponents.dist.Button.IButton"],
           properties: {
             accessibilityAttributes: {
               type: "any",

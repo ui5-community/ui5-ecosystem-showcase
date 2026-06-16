@@ -1,10 +1,10 @@
 sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { 'use strict';
 
-  const t$2=new WeakMap;let a$2 = class a{static get tasks(){return t$2}static enqueue(s,e){t$2.has(s)||t$2.set(s,[]),t$2.get(s).push(e);}static run(s,e){return t$2.has(s)||t$2.set(s,[]),e().then(()=>{const T=t$2.get(s);if(T.length>0)return a.run(s,T.shift());t$2.delete(s);})}static push(s,e){t$2.get(s)?a.enqueue(s,e):a.run(s,e);}};
+  const t$2=new WeakMap;let a$3 = class a{static get tasks(){return t$2}static enqueue(s,e){t$2.has(s)||t$2.set(s,[]),t$2.get(s).push(e);}static run(s,e){return t$2.has(s)||t$2.set(s,[]),e().then(()=>{const T=t$2.get(s);if(T.length>0)return a.run(s,T.shift());t$2.delete(s);})}static push(s,e){t$2.get(s)?a.enqueue(s,e):a.run(s,e);}};
 
-  const f$2=e=>{let n=null,a=false,i,o,r;const m=new Promise((t,c)=>{r=u=>{n=n||u;const d=u-n,l=e.duration-d;if(d<=e.duration){const s=1-l/e.duration;e.advance(s),a||(i=requestAnimationFrame(r));}else e.advance(1),t();},o=()=>{a=true,cancelAnimationFrame(i),c(new Error("animation stopped"));};}).catch(t=>t);return a$2.push(e.element,()=>(typeof e.beforeStart=="function"&&e.beforeStart(),requestAnimationFrame(r),new Promise(t=>{m.then(()=>t());}))),{promise:()=>m,stop:()=>o}},v$1=400;
+  const f$2=e=>{let n=null,a=false,i,o,r;const m=new Promise((t,c)=>{r=u=>{n=n||u;const d=u-n,l=e.duration-d;if(d<=e.duration){const s=1-l/e.duration;e.advance(s),a||(i=requestAnimationFrame(r));}else e.advance(1),t();},o=()=>{a=true,cancelAnimationFrame(i),c(new Error("animation stopped"));};}).catch(t=>t);return a$3.push(e.element,()=>(typeof e.beforeStart=="function"&&e.beforeStart(),requestAnimationFrame(r),new Promise(t=>{m.then(()=>t());}))),{promise:()=>m,stop:()=>o}},v$1=400;
 
-  const n$2=(r,c,a)=>{let o,l;return f$2({beforeStart:()=>{o=r.scrollLeft,l=r.scrollTop;},duration:v$1,element:r,advance:t=>{r.scrollLeft=o+t*c,r.scrollTop=l+t*a;}})};
+  const n$3=(r,c,a)=>{let o,l;return f$2({beforeStart:()=>{o=r.scrollLeft,l=r.scrollTop;},duration:v$1,element:r,advance:t=>{r.scrollLeft=o+t*c,r.scrollTop=l+t*a;}})};
 
   const b$2=t=>{let o,a,d,r,s,p,g,y,n,l,h,T;const B=f$2({beforeStart:()=>{t.style.display="block",o=getComputedStyle(t),a=parseFloat(o.paddingTop),d=parseFloat(o.paddingBottom),r=parseFloat(o.marginTop),s=parseFloat(o.marginBottom),p=parseFloat(o.height),g=t.style.overflow,y=t.style.paddingTop,n=t.style.paddingBottom,l=t.style.marginTop,h=t.style.marginBottom,T=t.style.height,t.style.overflow="hidden",t.style.paddingTop="0",t.style.paddingBottom="0",t.style.marginTop="0",t.style.marginBottom="0",t.style.height="0";},duration:v$1,element:t,advance:i=>{t.style.display="block",t.style.paddingTop=`${a*i}px`,t.style.paddingBottom=`${d*i}px`,t.style.marginTop=`${r*i}px`,t.style.marginBottom=`${s*i}px`,t.style.height=`${p*i}px`;}});return B.promise().then(()=>{t.style.overflow=g,t.style.paddingTop=y,t.style.paddingBottom=n,t.style.marginTop=l,t.style.marginBottom=h,t.style.height=T;}),B};
 
@@ -16,11 +16,11 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
 
   const l$2=2;const u=async e$1=>{const t=document.createElement("div"),n=await webcomponents.f("@ui5/webcomponents-base"),r=t.attachShadow({mode:"open"}),o=new CSSStyleSheet;return o.replaceSync(m),r.adoptedStyleSheets=[o],r.textContent=n.getText(e,e$1),t},s=async(e,t)=>{if(e<l$2){console.warn(`Cannot start multiple drag with count ${e}. Minimum is ${l$2}.`);return}if(!t.dataTransfer)return;const n=await u(e);document.body.appendChild(n),t.dataTransfer.setDragImage(n,0,0),requestAnimationFrame(()=>{n.remove();});};
 
+  let r;const a$2=()=>(r===void 0&&(r=webcomponents.I()),r),n$2=e=>{r=e;};
+
   const b$1=(n,e={})=>t=>{Object.prototype.hasOwnProperty.call(t,"metadata")||(t.metadata={});const a=t.metadata;a.events||(a.events={});const l=a.events;l[n]||(e.bubbles=!!e.bubbles,e.cancelable=!!e.cancelable,l[n]=e);};
 
-  const d$1=e=>(l,a)=>{const r=l.constructor;Object.prototype.hasOwnProperty.call(r,"metadata")||(r.metadata={});const o=r.metadata;o.slots||(o.slots={});const t=o.slots;if(e&&e.default&&t.default)throw new Error("Only one slot can be the default slot.");const n=e&&e.default?"default":a;e=e||{type:HTMLElement},e.type||(e.type=HTMLElement),t[n]||(t[n]=e),e.default&&(delete t.default.default,t.default.propertyName=a),r.metadata.managedSlots=true;};
-
-  function d(t){return (r,a)=>{const n=r.constructor;Object.prototype.hasOwnProperty.call(n,"metadata")||(n.metadata={});const o=n.metadata;o.slots||(o.slots={});const e=o.slots;if(t&&t.default&&e.default)throw new Error("Only one slot can be the default slot.");const l=t&&t.default?"default":a;t=t||{type:HTMLElement},t.type||(t.type=HTMLElement),e[l]||(e[l]=t),t.default&&(delete e.default.default,e.default.propertyName=a),n.metadata.managedSlots=true;}}
+  const d=e=>(l,a)=>{const r=l.constructor;Object.prototype.hasOwnProperty.call(r,"metadata")||(r.metadata={});const o=r.metadata;o.slots||(o.slots={});const t=o.slots;if(e&&e.default&&t.default)throw new Error("Only one slot can be the default slot.");const n=e&&e.default?"default":a;e=e||{type:HTMLElement},e.type||(e.type=HTMLElement),t[n]||(t[n]=e),e.default&&(delete t.default.default,t.default.propertyName=a),r.metadata.managedSlots=true;};
 
   const t$1=()=>{let e=document.activeElement;for(;e&&e.shadowRoot&&e.shadowRoot.activeElement;)e=e.shadowRoot.activeElement;return e};
 
@@ -28,11 +28,11 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
 
   let n$1;const l$1=new Map,a$1=()=>(n$1||(n$1=new window.ResizeObserver(r=>{window.requestAnimationFrame(()=>{r.forEach(t=>{const s=l$1.get(t.target);s&&Promise.all(s.map(e=>e()));});});})),n$1),c$1=(r,t)=>{const s=l$1.get(r)||[];s.length||a$1().observe(r),l$1.set(r,[...s,t]);},b=(r,t)=>{const s=l$1.get(r)||[];if(s.length===0)return;const e=s.filter(o=>o!==t);e.length===0?(a$1().unobserve(r),l$1.delete(r)):l$1.set(r,e);};class f{static register(t,s){let e=t;webcomponents.y(e)&&(e=e.getDomRef()),e instanceof HTMLElement?c$1(e,s):console.warn("Cannot register ResizeHandler for element",t);}static deregister(t,s){let e=t;webcomponents.y(e)&&(e=e.getDomRef()),e instanceof HTMLElement?b(e,s):console.warn("Cannot deregister ResizeHandler for element",t);}}
 
-  const l="scroll",p=webcomponents.l$1()?"touchend":"mouseup";class v extends webcomponents.i{constructor(t){super();this.supportsTouch=webcomponents.l$1();this.containerComponent=t,this.mouseMove=this.ontouchmove.bind(this),this.mouseUp=this.ontouchend.bind(this),this.touchStart=this.ontouchstart.bind(this),this.supportsTouch=webcomponents.l$1(),this.cachedValue={dragX:0,dragY:0},this.startX=0,this.startY=0,this.supportsTouch?(t.addEventListener("touchstart",this.touchStart,{passive:true}),t.addEventListener("touchmove",this.mouseMove,{passive:true}),t.addEventListener("touchend",this.mouseUp,{passive:true})):t.addEventListener("mousedown",this.touchStart,{passive:true});}set scrollContainer(t){this._container=t;}get scrollContainer(){return this._container}async scrollTo(t,e,s=0,o=0){let r=this.scrollContainer.clientHeight>0&&this.scrollContainer.clientWidth>0;for(;!r&&s>0;)await new Promise(n=>{setTimeout(()=>{r=this.scrollContainer.clientHeight>0&&this.scrollContainer.clientWidth>0,s--,n();},o);});this._container.scrollLeft=t,this._container.scrollTop=e;}move(t,e,s){if(s){this._container.scrollLeft+=t,this._container.scrollTop+=e;return}if(this._container)return n$2(this._container,t,e)}getScrollLeft(){return this._container.scrollLeft}getScrollTop(){return this._container.scrollTop}_isTouchInside(t){let e=null;this.supportsTouch&&t instanceof TouchEvent&&(e=t.touches[0]);const s=this._container.getBoundingClientRect(),o=this.supportsTouch?e.clientX:t.x,r=this.supportsTouch?e.clientY:t.y;return o>=s.left&&o<=s.right&&r>=s.top&&r<=s.bottom}ontouchstart(t){let e=null;this.supportsTouch&&t instanceof TouchEvent&&(e=t.touches[0]),e?(this.startX=e.pageX,this.startY=e.pageY):(document.addEventListener("mouseup",this.mouseUp,{passive:true}),document.addEventListener("mousemove",this.mouseMove,{passive:true})),e&&(this._prevDragX=e.pageX,this._prevDragY=e.pageY),t instanceof MouseEvent&&(this._prevDragX=t.x,this._prevDragY=t.y),this._canScroll=this._isTouchInside(t);}ontouchmove(t){if(!this._canScroll)return;const e=this._container,s=this.supportsTouch?t.touches[0]:null,o=this.supportsTouch?s.pageX:t.x,r=this.supportsTouch?s.pageY:t.y;e.scrollLeft+=this._prevDragX-o,e.scrollTop+=this._prevDragY-r,this.fireEvent(l,{isLeft:o>this._prevDragX,isRight:o<this._prevDragX}),this.cachedValue.dragX=this._prevDragX,this.cachedValue.dragY=this._prevDragY,this._prevDragX=o,this._prevDragY=r;}ontouchend(t){if(this.supportsTouch){const h=Math.abs(t.changedTouches[0].pageX-this.startX),c=Math.abs(t.changedTouches[0].pageY-this.startY);if(h<10&&c<10)return}if(!this._canScroll)return;const e=this._container,s=this.supportsTouch?t.changedTouches[0].pageX:t.x,o=this.supportsTouch?t.changedTouches[0].pageY:t.y;e.scrollLeft+=this._prevDragX-s,e.scrollTop+=this._prevDragY-o;const n=s===this._prevDragX?this.cachedValue.dragX:s;this.fireEvent(p,{isLeft:n<this._prevDragX,isRight:n>this._prevDragX}),this._prevDragX=s,this._prevDragY=o,this.supportsTouch||(document.removeEventListener("mousemove",this.mouseMove),document.removeEventListener("mouseup",this.mouseUp));}}
+  const l="scroll",p=webcomponents.l$1()?"touchend":"mouseup";class v extends webcomponents.i{constructor(t){super();this.supportsTouch=webcomponents.l$1();this.containerComponent=t,this.mouseMove=this.ontouchmove.bind(this),this.mouseUp=this.ontouchend.bind(this),this.touchStart=this.ontouchstart.bind(this),this.supportsTouch=webcomponents.l$1(),this.cachedValue={dragX:0,dragY:0},this.startX=0,this.startY=0,this.supportsTouch?(t.addEventListener("touchstart",this.touchStart,{passive:true}),t.addEventListener("touchmove",this.mouseMove,{passive:true}),t.addEventListener("touchend",this.mouseUp,{passive:true})):t.addEventListener("mousedown",this.touchStart,{passive:true});}set scrollContainer(t){this._container=t;}get scrollContainer(){return this._container}async scrollTo(t,e,s=0,o=0){let r=this.scrollContainer.clientHeight>0&&this.scrollContainer.clientWidth>0;for(;!r&&s>0;)await new Promise(n=>{setTimeout(()=>{r=this.scrollContainer.clientHeight>0&&this.scrollContainer.clientWidth>0,s--,n();},o);});this._container.scrollLeft=t,this._container.scrollTop=e;}move(t,e,s){if(s){this._container.scrollLeft+=t,this._container.scrollTop+=e;return}if(this._container)return n$3(this._container,t,e)}getScrollLeft(){return this._container.scrollLeft}getScrollTop(){return this._container.scrollTop}_isTouchInside(t){let e=null;this.supportsTouch&&t instanceof TouchEvent&&(e=t.touches[0]);const s=this._container.getBoundingClientRect(),o=this.supportsTouch?e.clientX:t.x,r=this.supportsTouch?e.clientY:t.y;return o>=s.left&&o<=s.right&&r>=s.top&&r<=s.bottom}ontouchstart(t){let e=null;this.supportsTouch&&t instanceof TouchEvent&&(e=t.touches[0]),e?(this.startX=e.pageX,this.startY=e.pageY):(document.addEventListener("mouseup",this.mouseUp,{passive:true}),document.addEventListener("mousemove",this.mouseMove,{passive:true})),e&&(this._prevDragX=e.pageX,this._prevDragY=e.pageY),t instanceof MouseEvent&&(this._prevDragX=t.x,this._prevDragY=t.y),this._canScroll=this._isTouchInside(t);}ontouchmove(t){if(!this._canScroll)return;const e=this._container,s=this.supportsTouch?t.touches[0]:null,o=this.supportsTouch?s.pageX:t.x,r=this.supportsTouch?s.pageY:t.y;e.scrollLeft+=this._prevDragX-o,e.scrollTop+=this._prevDragY-r,this.fireEvent(l,{isLeft:o>this._prevDragX,isRight:o<this._prevDragX}),this.cachedValue.dragX=this._prevDragX,this.cachedValue.dragY=this._prevDragY,this._prevDragX=o,this._prevDragY=r;}ontouchend(t){if(this.supportsTouch){const h=Math.abs(t.changedTouches[0].pageX-this.startX),c=Math.abs(t.changedTouches[0].pageY-this.startY);if(h<10&&c<10)return}if(!this._canScroll)return;const e=this._container,s=this.supportsTouch?t.changedTouches[0].pageX:t.x,o=this.supportsTouch?t.changedTouches[0].pageY:t.y;e.scrollLeft+=this._prevDragX-s,e.scrollTop+=this._prevDragY-o;const n=s===this._prevDragX?this.cachedValue.dragX:s;this.fireEvent(p,{isLeft:n<this._prevDragX,isRight:n>this._prevDragX}),this._prevDragX=s,this._prevDragY=o,this.supportsTouch||(document.removeEventListener("mousemove",this.mouseMove),document.removeEventListener("mouseup",this.mouseUp));}}
 
   const n=new webcomponents.i,t="directionChange",a=e=>{n.attachEvent(t,e);},c=e=>{n.detachEvent(t,e);},o=()=>n.fireEvent(t,void 0);
 
-  const i=async()=>{const e=o();await Promise.all(e),await webcomponents.C({rtlAware:true});};
+  const i=async()=>{const e=o();await Promise.all(e),await webcomponents.b({rtlAware:true});};
 
   // TODO-evo:assert on node throws an error if the assertion is violated
 
@@ -118,11 +118,11 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
     URLListValidator: webcomponents.oURLListValidator,
     addCustomCSS: webcomponents.g,
     applyDirection: i,
-    attachBoot: webcomponents.P,
+    attachBoot: webcomponents.O,
     attachDirectionChange: a,
     attachLanguageChange: webcomponents.t$1,
     attachThemeLoaded: webcomponents.o,
-    cancelRender: webcomponents.h,
+    cancelRender: webcomponents.P,
     customElement: Keys.m,
     default: webcomponents.S,
     detachDirectionChange: c,
@@ -134,7 +134,7 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
     getCustomElementsScopingRules: webcomponents.m,
     getCustomElementsScopingSuffix: webcomponents.c,
     getDefaultIconCollection: webcomponents.c$1,
-    getDefaultLanguage: webcomponents.C$1,
+    getDefaultLanguage: webcomponents.C,
     getDefaultTheme: webcomponents.y$1,
     getEffectiveDir: webcomponents.r$2,
     getEffectiveIconCollection: webcomponents.i$3,
@@ -142,6 +142,7 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
     getFetchDefaultLanguage: webcomponents.D,
     getFirstDayOfWeek: webcomponents.n$1,
     getI18nBundle: webcomponents.f,
+    getIgnoreUrlParams: a$2,
     getLanguage: webcomponents.L,
     getLegacyDateCalendarCustomizing: webcomponents.m$1,
     getNoConflict: webcomponents.o$1,
@@ -150,34 +151,35 @@ sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { '
     isChrome: webcomponents.g$1,
     isCombi: webcomponents.m$2,
     isDesktop: webcomponents.f$1,
-    isFirefox: webcomponents.b,
+    isFirefox: webcomponents.b$1,
     isIOS: webcomponents.w,
     isPhone: webcomponents.d$2,
-    isSafari: webcomponents.h$1,
+    isSafari: webcomponents.h,
     isTablet: webcomponents.a,
     property: Keys.s,
     registerCustomI18nBundleGetter: webcomponents.y$2,
     registerI18nLoader: webcomponents.$,
-    registerIconLoader: webcomponents.C$2,
+    registerIconLoader: webcomponents.C$1,
     registerLocaleDataLoader: webcomponents.m$3,
     registerThemePropertiesLoader: webcomponents.f$2,
     renderDeferred: webcomponents.l$2,
-    renderFinished: webcomponents.f$3,
-    renderImmediately: webcomponents.c$2,
+    renderFinished: webcomponents.w$1,
+    renderImmediately: webcomponents.u$1,
     sanitizeHTML: fnSanitizeHTML,
-    scroll: n$2,
+    scroll: n$3,
     setAnimationMode: webcomponents.m$4,
     setCustomElementsScopingRules: webcomponents.g$2,
     setCustomElementsScopingSuffix: webcomponents.p,
     setDefaultIconCollection: webcomponents.e,
     setFetchDefaultLanguage: webcomponents.p$1,
-    setLanguage: webcomponents.h$2,
-    setNoConflict: webcomponents.f$4,
+    setIgnoreUrlParams: n$2,
+    setLanguage: webcomponents.h$1,
+    setNoConflict: webcomponents.f$3,
     setTheme: webcomponents.l$3,
     slideDown: b$2,
     slideUp: u$1,
-    slot: d$1,
-    slotStrict: d,
+    slot: d,
+    slotStrict: Keys.d,
     startMultipleDrag: s,
     supportsTouch: webcomponents.l$1
   });
