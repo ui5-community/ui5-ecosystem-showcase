@@ -267,6 +267,48 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 					dtsFilePromises.push(workspace.write(dtsFile));
 				};
 
+				// helper to re-add `export` modifiers to top-level declarations that
+				// TSC strips when it re-emits the source inside the ambient
+				// `declare module "<fqn>" { ... }` wrapper applied above. Without
+				// this, public re-exports in the original *.ts file (e.g.
+				// `export type Foo`, `export enum Bar`, `export interface Baz`,
+				// `export class Qux`, `export const X`, ...) become module-private
+				// in the generated *.d.ts and are no longer importable by
+				// consumers of the library. See issue #1380.
+				const EXPORTABLE_KINDS = "type|enum|interface|class|abstract\\s+class|function|const|let|var|namespace";
+				const restoreStrippedExports = function (dtsContent, originalSource) {
+					// collect names that were re-exported in the original source
+					const exportedNames = new Set();
+					const exportRe = new RegExp(`\\bexport\\s+(?:${EXPORTABLE_KINDS})\\s+(\\w+)`, "g");
+					let match;
+					while ((match = exportRe.exec(originalSource)) !== null) {
+						exportedNames.add(match[1]);
+					}
+					if (exportedNames.size === 0) {
+						return dtsContent;
+					}
+					// walk lines, track brace depth, and re-add `export` at depth 1
+					// (the body of the `declare module "<fqn>" { ... }` wrapper)
+					const declRe = new RegExp(`^(\\s+)(${EXPORTABLE_KINDS})\\s+(\\w+)`);
+					const lines = dtsContent.split(/\r?\n/);
+					let depth = 0;
+					for (let i = 0; i < lines.length; i++) {
+						const line = lines[i];
+						if (depth === 1) {
+							const decl = declRe.exec(line);
+							if (decl && exportedNames.has(decl[3])) {
+								lines[i] = `${decl[1]}export ${line.slice(decl[1].length)}`;
+							}
+						}
+						for (let c = 0; c < line.length; c++) {
+							const ch = line[c];
+							if (ch === "{") depth++;
+							else if (ch === "}") depth--;
+						}
+					}
+					return lines.join("\n");
+				};
+
 				// emit type definitions in-memory and read/write resources from the UI5 workspace
 				const typeDefs = {};
 				const host = ts.createCompilerHost(options);
@@ -289,6 +331,17 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				host.writeFile = function (fileName, content, writeByteOrderMark, onError, sourceFiles /*, data*/) {
 					const sourceFile = sourceFiles[0]; // we typically only have one source file!
 					config.debug && log.info(`  + [${/(\.d\.ts(?:\.map)?)$/.exec(fileName)[0]}] ${fileName}`);
+					if (/\.d\.ts$/.test(fileName)) {
+						// restore `export` modifiers stripped by TSC's d.ts emitter
+						// when the source was wrapped in `declare module "<fqn>" { ... }`
+						const resourcePath = /^\//.test(sourceFile.fileName)
+							? sourceFile.fileName
+							: `/${sourceFile.fileName}`;
+						const originalSource = sourcesMap[resourcePath];
+						if (originalSource) {
+							content = restoreStrippedExports(content, originalSource);
+						}
+					}
 					if (/\.d\.ts\.map$/.test(fileName)) {
 						// for d.ts.map we need to fix the sources mapping in order to be
 						// able to use the "Go to Source Definition" feature of VSCode
