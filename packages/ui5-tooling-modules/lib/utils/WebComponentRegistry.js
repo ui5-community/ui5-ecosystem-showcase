@@ -143,8 +143,13 @@ class RegistryEntry {
 				const interfaceDef = moduleContent.interfaces[interfaceName];
 				// interface definitions do not automatically track their module path in the custom-elements-metadata!
 				interfaceDef.module = module.path;
-				// interfaces are typically exported in a module by a different name, so we add the interface's name to the end
-				interfaceDef._ui5QualifiedName = this.#deriveUi5ClassNames(interfaceDef)._ui5QualifiedName + "." + interfaceName;
+				// Interfaces are typically exported in a module by a different name (e.g. "IButton" lives
+				// inside "dist/Button.js"). The dotted UI5 type name appends the interface name to the
+				// class-qualified name, while the slashed module reference keeps the module path slashed
+				// and only the named export trailing the dot (cf. prefixnsAsModule).
+				const classNames = this.#deriveUi5ClassNames(interfaceDef);
+				interfaceDef._ui5QualifiedName = `${classNames._ui5QualifiedName}.${interfaceName}`;
+				interfaceDef._ui5QualifiedNameSlashes = `${classNames._ui5QualifiedNameSlashes}.${interfaceName}`;
 				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(interfaceDef);
 				this.interfaces[cacheKey] = interfaceDef;
 			}
@@ -337,6 +342,7 @@ class RegistryEntry {
 		if (packageRef.interfaces[cacheKey]) {
 			return {
 				...base,
+				ui5Type: ui5names._ui5QualifiedName + "." + typeInfo.name,
 				isInterface: true,
 			};
 		} else if (packageRef.enums[cacheKey]) {
@@ -932,7 +938,7 @@ class RegistryEntry {
 				if (this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)]) {
 					interfaceDef = this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)];
 					ui5metadata.interfaces.push(interfaceDef._ui5QualifiedName);
-					jsdocInterfaces.push(`module:${this.namespace}.${interfaceDef.name}`);
+					jsdocInterfaces.push(`module:${interfaceDef._ui5QualifiedNameSlashes}`);
 				} else {
 					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
 					unknowInterfaces.add(interfaceDef.name);
@@ -1292,13 +1298,12 @@ class RegistryEntry {
 		Object.keys(this.interfaces).forEach((interfaceCacheKey) => {
 			// derive correct names
 			const interfaceDef = this.interfaces[interfaceCacheKey];
-			const names = this.#deriveUi5ClassNames(interfaceDef);
 			this.interfaces[interfaceCacheKey] = {
 				name: interfaceDef.name,
-				_ui5QualifiedName: names._ui5QualifiedName,
+				_ui5QualifiedName: interfaceDef._ui5QualifiedName,
 				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
+				_ui5QualifiedNameSlashes: interfaceDef._ui5QualifiedNameSlashes,
 				description: this.interfaces[interfaceCacheKey].description || "",
 			};
 		});

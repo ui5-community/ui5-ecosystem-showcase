@@ -4,6 +4,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	const s=o=>(p,r)=>{const t=p.constructor;Object.prototype.hasOwnProperty.call(t,"metadata")||(t.metadata={});const e=t.metadata;e.properties||(e.properties={});const a=e.properties;a[r]||(a[r]=o??{});};
 
+	function d(t){return (r,a)=>{const n=r.constructor;Object.prototype.hasOwnProperty.call(n,"metadata")||(n.metadata={});const o=n.metadata;o.slots||(o.slots={});const e=o.slots;if(t&&t.default&&e.default)throw new Error("Only one slot can be the default slot.");const l=t&&t.default?"default":a;t=t||{type:HTMLElement},t.type||(t.type=HTMLElement),e[l]||(e[l]=t),t.default&&(delete e.default.default,e.default.propertyName=a),n.metadata.managedSlots=true;}}
+
 	const y={ENTER:13,SPACE:32,PAGE_UP:33,PAGE_DOWN:34,END:35,HOME:36,ARROW_LEFT:37,ARROW_UP:38,ARROW_RIGHT:39,ARROW_DOWN:40},b=o=>(o.key?o.key==="Enter":o.keyCode===y.ENTER)&&!a(o),A=o=>(o.key?o.key==="Spacebar"||o.key===" ":o.keyCode===y.SPACE)&&!a(o),D=o=>(o.key?o.key==="ArrowLeft"||o.key==="Left":o.keyCode===y.ARROW_LEFT)&&!a(o),R=o=>(o.key?o.key==="ArrowRight"||o.key==="Right":o.keyCode===y.ARROW_RIGHT)&&!a(o),P=o=>(o.key?o.key==="ArrowUp"||o.key==="Up":o.keyCode===y.ARROW_UP)&&!a(o),_=o=>(o.key?o.key==="ArrowDown"||o.key==="Down":o.keyCode===y.ARROW_DOWN)&&!a(o),M=o=>(o.key?o.key==="Home":o.keyCode===y.HOME)&&!a(o),n=o=>(o.key?o.key==="End":o.keyCode===y.END)&&!a(o),j=o=>(o.key?o.key==="PageUp":o.keyCode===y.PAGE_UP)&&!a(o),q=o=>(o.key?o.key==="PageDown":o.keyCode===y.PAGE_DOWN)&&!a(o),a=o=>o.shiftKey||o.altKey||k(o),k=o=>!!(o.metaKey||o.ctrlKey);
 
 	exports.A = A;
@@ -13,6 +15,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	exports.R = R;
 	exports._ = _;
 	exports.b = b;
+	exports.d = d;
 	exports.j = j;
 	exports.m = m;
 	exports.n = n;

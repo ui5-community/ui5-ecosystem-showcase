@@ -17,7 +17,7 @@ sap.ui.define(
     // export the UI5 metadata along with the package
     pkg["_ui5metadata"] = {
       name: "@ui5/webcomponents-base",
-      version: "2.22.0",
+      version: "2.23.1",
       dependencies: ["sap.ui.core"],
       types: [
         "@ui5.webcomponents-base.dist.types.AnimationMode",
@@ -40,7 +40,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/AnimationMode
-     * @ui5-module-override @ui5/webcomponents-base dist/types/AnimationMode.js>>AnimationMode
+     * @ui5-module-override @ui5/webcomponents-base AnimationMode
      * @private
      */
     pkg["AnimationMode"] = {
@@ -78,7 +78,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/CalendarType
-     * @ui5-module-override @ui5/webcomponents-base dist/types/CalendarType.js>>CalendarType
+     * @ui5-module-override @ui5/webcomponents-base CalendarType
      * @private
      */
     pkg["CalendarType"] = {
@@ -122,7 +122,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/ItemNavigationBehavior
-     * @ui5-module-override @ui5/webcomponents-base dist/types/ItemNavigationBehavior.js>>ItemNavigationBehavior
+     * @ui5-module-override @ui5/webcomponents-base ItemNavigationBehavior
      * @private
      */
     pkg["ItemNavigationBehavior"] = {
@@ -148,7 +148,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/MovePlacement
-     * @ui5-module-override @ui5/webcomponents-base dist/types/MovePlacement.js>>MovePlacement
+     * @ui5-module-override @ui5/webcomponents-base MovePlacement
      * @private
      */
     pkg["MovePlacement"] = {
@@ -180,7 +180,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/NavigationMode
-     * @ui5-module-override @ui5/webcomponents-base dist/types/NavigationMode.js>>NavigationMode
+     * @ui5-module-override @ui5/webcomponents-base NavigationMode
      * @private
      */
     pkg["NavigationMode"] = {
@@ -218,7 +218,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/SortOrder
-     * @ui5-module-override @ui5/webcomponents-base dist/types/SortOrder.js>>SortOrder
+     * @ui5-module-override @ui5/webcomponents-base SortOrder
      * @private
      */
     pkg["SortOrder"] = {
@@ -250,7 +250,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/ValueState
-     * @ui5-module-override @ui5/webcomponents-base dist/types/ValueState.js>>ValueState
+     * @ui5-module-override @ui5/webcomponents-base ValueState
      * @private
      */
     pkg["ValueState"] = {

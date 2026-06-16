@@ -217,7 +217,8 @@ const JSDocSerializer = {
 				description: `${description}${description ? "\n" : ""}`,
 				alias: `@name module:${interfaceDef._ui5QualifiedNameSlashes}`,
 				entityType: "@interface",
-				override: `@ui5-module-override ${registryEntry.namespace} ${interfaceName}`,
+				// TODO: the override tag is not really correct, as the interface itself is not overridden but its implementing classes are. We might want to change this in the future.
+				override: `@ui5-module-override ${registryEntry.namespace} ${interfaceDef.name}`,
 				additionalTags: registryEntry.customJSDocTags.map((tag) => `@${tag}`).join("\n"),
 			});
 		});
@@ -232,7 +233,8 @@ const JSDocSerializer = {
 				entityType: "@enum {string}",
 				additionalTags: registryEntry.customJSDocTags.map((tag) => `@${tag}`).join("\n"),
 				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
-				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
+				// TODO: the override tag is not really correct, as the enum itself is not overridden but its values are. We might want to change this in the future.
+				override: `@ui5-module-override ${registryEntry.namespace} ${enumDef.name}`,
 			});
 			enumDef.values.forEach((value) => {
 				const description = value.description || value.name;

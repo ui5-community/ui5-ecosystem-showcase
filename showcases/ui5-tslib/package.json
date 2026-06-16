@@ -47,7 +47,7 @@
     "ui5-tooling-transpile": "workspace:^"
   },
   "dependencies": {
-    "@ui5/webcomponents": "^2.22.0",
+    "@ui5/webcomponents": "^2.23.1",
     "showdown": "^2.1.0"
   }
 }
