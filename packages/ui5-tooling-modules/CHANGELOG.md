@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.37.3
+
+### Patch Changes
+
+- [#1386](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1386) [`f96206f`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f96206fec2aa833fe427883ec5f346125f612b1e) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(ui5-tooling-modules): keep Node.js 20 support by holding `ignore-walk` at `^8.0.0`
+
+  `ignore-walk@9` is a Node-engines-only bump (no API changes) that raises the required Node.js version to `^22.22.2 || ^24.15.0 || >=26.0.0`. Since the only usage site is unchanged between v8 and v9, downgrade to `^8.0.0` so the package keeps working on Node.js 20 (`^20.17.0 || >=22.9.0`). See `DEPENDENCIES.md` for the rationale and the conditions under which this hold-back can be lifted.
+
 ## 3.37.2
 
 ### Patch Changes
