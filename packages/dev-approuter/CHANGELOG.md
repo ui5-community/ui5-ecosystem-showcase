@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.7.2
+
+### Patch Changes
+
+- [#1388](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1388) [`aede5b6`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aede5b6c6b28d4b8d37c78bb950126591a3df8d7) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(dev-approuter): drop stale `engines.node: ">=18"` declaration
+
+  The package declared `engines.node: ">=18"`, but its `@sap/approuter@22` dependency actually requires `^22.0.0 || ^24.0.0`. The declaration was therefore misleading — `npm install` on Node 18 would have looked allowed by `dev-approuter` itself but failed (or at least warned) on the transitive `@sap/approuter` constraint.
+
+  Removing the field aligns `dev-approuter` with every other publishable package in the monorepo (none declare `engines`) and lets the effective Node.js floor be correctly inherited from `@sap/approuter`. See `DEPENDENCIES.md` for the audit details.
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
@@ -7,656 +17,338 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 # [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.6.3...dev-approuter@0.7.0) (2026-03-12)
-
 
 ### Features
 
-* update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
-
-
-
-
+- update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
 
 ## [0.6.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.6.2...dev-approuter@0.6.3) (2026-01-15)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.6.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.6.1...dev-approuter@0.6.2) (2026-01-15)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.6.0...dev-approuter@0.6.1) (2025-12-05)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 # [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.12...dev-approuter@0.6.0) (2025-12-02)
-
 
 ### Features
 
-* update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
-
-
-
-
+- update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
 
 ## [0.5.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.11...dev-approuter@0.5.12) (2025-11-16)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.5.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.10...dev-approuter@0.5.11) (2025-11-02)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.5.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.9...dev-approuter@0.5.10) (2025-09-17)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.5.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.8...dev-approuter@0.5.9) (2025-09-15)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.5.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.7...dev-approuter@0.5.8) (2025-07-31)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.5.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.6...dev-approuter@0.5.7) (2025-07-29)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.5.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.5...dev-approuter@0.5.6) (2025-07-06)
-
 
 ### Bug Fixes
 
-* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
-
-
-
-
+- update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
 
 ## [0.5.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.4...dev-approuter@0.5.5) (2025-06-09)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.5.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.3...dev-approuter@0.5.4) (2025-05-20)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.5.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.2...dev-approuter@0.5.3) (2025-05-18)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.1...dev-approuter@0.5.2) (2025-05-15)
-
 
 ### Bug Fixes
 
-* **dev-approuter:** switch to custom logger to avoid loading cds.env … ([#1211](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1211)) ([9327c0a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9327c0a8b968ac5652e0f83b8a156c8fd04e0905))
-
-
-
-
+- **dev-approuter:** switch to custom logger to avoid loading cds.env … ([#1211](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1211)) ([9327c0a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9327c0a8b968ac5652e0f83b8a156c8fd04e0905))
 
 ## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.5.0...dev-approuter@0.5.1) (2025-03-19)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 # [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.4.0...dev-approuter@0.5.0) (2025-02-06)
-
 
 ### Features
 
-* general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
-
-
-
-
+- general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
 
 # [0.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.3.4...dev-approuter@0.4.0) (2024-12-26)
 
-
 ### Features
 
-* **dev-approuter:** add custom /my-jwt route for debugging auth(n,z) ([#1134](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1134)) ([3e7b72b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3e7b72b35403d964ad9977f6b77670d67e87b961)), closes [#1133](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1133)
-
-
-
-
+- **dev-approuter:** add custom /my-jwt route for debugging auth(n,z) ([#1134](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1134)) ([3e7b72b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3e7b72b35403d964ad9977f6b77670d67e87b961)), closes [#1133](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1133)
 
 ## [0.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.3.3...dev-approuter@0.3.4) (2024-12-04)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.3.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.3.2...dev-approuter@0.3.3) (2024-11-05)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.3.1...dev-approuter@0.3.2) (2024-11-01)
-
 
 ### Bug Fixes
 
-* update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
-
-
-
-
+- update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
 
 ## [0.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.3.0...dev-approuter@0.3.1) (2024-10-10)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 # [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.27...dev-approuter@0.3.0) (2024-09-06)
-
 
 ### Features
 
-* enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
-
-
-
-
+- enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
 
 ## [0.2.27](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.26...dev-approuter@0.2.27) (2024-08-29)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.26](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.25...dev-approuter@0.2.26) (2024-08-11)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.25](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.24...dev-approuter@0.2.25) (2024-07-23)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.24](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.23...dev-approuter@0.2.24) (2024-07-22)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.23](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.22...dev-approuter@0.2.23) (2024-07-22)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.22](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.21...dev-approuter@0.2.22) (2024-07-19)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.21](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.20...dev-approuter@0.2.21) (2024-06-04)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.20](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.19...dev-approuter@0.2.20) (2024-05-31)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.19](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.18...dev-approuter@0.2.19) (2024-05-15)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.18](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.17...dev-approuter@0.2.18) (2024-05-14)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.16...dev-approuter@0.2.17) (2024-05-13)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.15...dev-approuter@0.2.16) (2024-03-30)
-
 
 ### Bug Fixes
 
-* cleanup of dependencies and improved approuter logic ([#984](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/984)) ([65ffaed](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/65ffaedb7968015e008e2eb6aa66ff1e0a03a73a))
-
-
-
-
+- cleanup of dependencies and improved approuter logic ([#984](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/984)) ([65ffaed](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/65ffaedb7968015e008e2eb6aa66ff1e0a03a73a))
 
 ## [0.2.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.14...dev-approuter@0.2.15) (2024-03-04)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.13...dev-approuter@0.2.14) (2024-02-18)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.12...dev-approuter@0.2.13) (2024-01-25)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.11...dev-approuter@0.2.12) (2024-01-17)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.10...dev-approuter@0.2.11) (2023-12-25)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.9...dev-approuter@0.2.10) (2023-12-15)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.8...dev-approuter@0.2.9) (2023-12-10)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.7...dev-approuter@0.2.8) (2023-12-04)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.6...dev-approuter@0.2.7) (2023-11-03)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.5...dev-approuter@0.2.6) (2023-10-30)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.4...dev-approuter@0.2.5) (2023-10-30)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.3...dev-approuter@0.2.4) (2023-10-17)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.2.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.2...dev-approuter@0.2.3) (2023-10-14)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.2.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.1...dev-approuter@0.2.2) (2023-10-04)
-
 
 ### Bug Fixes
 
-* **dev-approuter:** fix detection of cds local apps ([#873](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/873)) ([ad56ba8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ad56ba888d8fb3db1005e1cedc7dbd3b9bf625b5))
-
-
-
-
+- **dev-approuter:** fix detection of cds local apps ([#873](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/873)) ([ad56ba8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ad56ba888d8fb3db1005e1cedc7dbd3b9bf625b5))
 
 ## [0.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.2.0...dev-approuter@0.2.1) (2023-10-04)
 
-
 ### Bug Fixes
 
-* **dev-approuter:** consider the UI5 middleware config ([#872](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/872)) ([e724aee](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e724aeeee9bbb66d3ee2070474f63f7f4ea57299))
-
-
-
-
+- **dev-approuter:** consider the UI5 middleware config ([#872](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/872)) ([e724aee](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e724aeeee9bbb66d3ee2070474f63f7f4ea57299))
 
 # [0.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.22...dev-approuter@0.2.0) (2023-10-03)
 
-
 ### Features
 
-* **ui5-middleware-cap:** wrap @sap/cds/bin/serve command ([#869](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/869)) ([541e6e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/541e6e6d8f877e4bf4e472bc576e7e33224f0e03))
-
-
-
-
+- **ui5-middleware-cap:** wrap @sap/cds/bin/serve command ([#869](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/869)) ([541e6e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/541e6e6d8f877e4bf4e472bc576e7e33224f0e03))
 
 ## [0.1.22](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.21...dev-approuter@0.1.22) (2023-10-02)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.21](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.20...dev-approuter@0.1.21) (2023-10-01)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.1.20](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.19...dev-approuter@0.1.20) (2023-09-25)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.19](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.18...dev-approuter@0.1.19) (2023-09-15)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.18](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.17...dev-approuter@0.1.18) (2023-09-15)
-
 
 ### Bug Fixes
 
-* prevent side-effects for combined scenarios ([#842](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/842)) ([36aaa5f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/36aaa5f8d8b8404725250664704a560229055943))
-
-
-
-
+- prevent side-effects for combined scenarios ([#842](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/842)) ([36aaa5f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/36aaa5f8d8b8404725250664704a560229055943))
 
 ## [0.1.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.16...dev-approuter@0.1.17) (2023-09-14)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.15...dev-approuter@0.1.16) (2023-09-13)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.1.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.14...dev-approuter@0.1.15) (2023-09-13)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.13...dev-approuter@0.1.14) (2023-09-13)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.1.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.12...dev-approuter@0.1.13) (2023-09-10)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.11...dev-approuter@0.1.12) (2023-09-10)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.1.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.10...dev-approuter@0.1.11) (2023-09-08)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.9...dev-approuter@0.1.10) (2023-09-08)
-
 
 ### Bug Fixes
 
-* **cds-plugin-ui5:** allow relative config files in package.json ([#838](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/838)) ([735b24d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/735b24d34cebee5463c97c3bb5a3d58e07dace24))
-
-
-
-
+- **cds-plugin-ui5:** allow relative config files in package.json ([#838](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/838)) ([735b24d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/735b24d34cebee5463c97c3bb5a3d58e07dace24))
 
 ## [0.1.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.8...dev-approuter@0.1.9) (2023-09-08)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.7...dev-approuter@0.1.8) (2023-09-08)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.1.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.6...dev-approuter@0.1.7) (2023-09-07)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.5...dev-approuter@0.1.6) (2023-09-02)
-
 
 ### Bug Fixes
 
-* cap endpoint detection, dev-approuter showcase ([#827](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/827)) ([c3abb2a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c3abb2aeb23ff7a1dced632c8b2e1abad168e274)), closes [#826](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/826)
-
-
-
-
+- cap endpoint detection, dev-approuter showcase ([#827](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/827)) ([c3abb2a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c3abb2aeb23ff7a1dced632c8b2e1abad168e274)), closes [#826](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/826)
 
 ## [0.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.4...dev-approuter@0.1.5) (2023-09-02)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.3...dev-approuter@0.1.4) (2023-09-02)
 
 **Note:** Version bump only for package dev-approuter
-
-
-
-
 
 ## [0.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.2...dev-approuter@0.1.3) (2023-08-29)
 
 **Note:** Version bump only for package dev-approuter
 
-
-
-
-
 ## [0.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.1...dev-approuter@0.1.2) (2023-08-25)
-
 
 ### Bug Fixes
 
-* **dev-approuter:** make CAP projects work without reference in xs-dev.json ([#809](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/809)) ([d52a432](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d52a432609630da3ac215cdcc1a501d7be37655d))
-
-
-
-
+- **dev-approuter:** make CAP projects work without reference in xs-dev.json ([#809](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/809)) ([d52a432](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d52a432609630da3ac215cdcc1a501d7be37655d))
 
 ## [0.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.0...dev-approuter@0.1.1) (2023-08-25)
 
-
 ### Bug Fixes
 
-* **dev-approuter:** add missing require('fs') ([#808](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/808)) ([0793907](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/07939070bb60f4acb81864b2fd59d2b730f19e7f))
-
-
-
-
+- **dev-approuter:** add missing require('fs') ([#808](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/808)) ([0793907](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/07939070bb60f4acb81864b2fd59d2b730f19e7f))
 
 # 0.1.0 (2023-08-25)
 
-
 ### Features
 
-* **dev-approuter:** initial commit ([#801](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/801)) ([324890f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/324890f9916e6a3379685e353007c1ee6e73ca4c))
+- **dev-approuter:** initial commit ([#801](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/801)) ([324890f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/324890f9916e6a3379685e353007c1ee6e73ca4c))
