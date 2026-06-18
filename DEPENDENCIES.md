@@ -103,8 +103,14 @@ last Node-20-OK majors are:
 ### `peerDependencies` and explicit `engines`
 
 - No `peerDependencies` in any workspace package require Node `>=22`.
-- Only `packages/dev-approuter` declares `engines.node` explicitly
-  (`>=18`); all other publishable packages omit `engines` and inherit the
-  effective floor from their runtime dependencies. With `ignore-walk` held
-  at `^8`, that effective floor for `ui5-tooling-modules` consumers is
-  Node `^20.17.0 || >=22.9.0`.
+- No publishable package declares `engines.node` explicitly — they all
+  inherit the effective floor from their runtime dependencies. With
+  `ignore-walk` held at `^8`, that effective floor for
+  `ui5-tooling-modules` consumers is Node `^20.17.0 || >=22.9.0`.
+- Note: `packages/dev-approuter` previously declared
+  `engines.node: ">=18"`, but its `@sap/approuter@22` dependency actually
+  requires `^22.0.0 || ^24.0.0`. The stale `engines` field has been
+  removed; the effective floor is now correctly inherited from
+  `@sap/approuter`. (`@sap/approuter` is SAP's published runtime — there
+  is no Node-20-compatible v21 line to hold it back to, and `dev-approuter`
+  is a dev-time wrapper, so this Node-22 floor is intentional.)
