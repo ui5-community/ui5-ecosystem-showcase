@@ -10,9 +10,6 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/dev-approuter"
   },
-  "engines": {
-    "node": ">=18"
-  },
   "dependencies": {
     "@sap/approuter": ">=22",
     "@sap/xsenv": "6.2.1",
