@@ -53,3 +53,58 @@ ahead of a project-wide Node.js floor bump.
 
 When any of the above is true, bump to the latest `ignore-walk` and remove
 this entry.
+
+---
+
+## Node-22-only devDependencies (intentionally **not** held back)
+
+The following `devDependencies` require Node.js `>=22` in their currently
+pinned major. They are deliberately **not** held back: they only affect
+contributors and the CI matrix that builds this monorepo. They do **not**
+appear in any published package's `dependencies` or `peerDependencies`, so
+consumers of the published UI5 CLI extensions on Node.js 20 are unaffected.
+
+This section exists so a future maintainer doesn't have to re-derive this
+audit when reviewing Dependabot/Renovate PRs against these tools.
+
+| Package               | Range     | `engines.node`                 | Declared in       |
+| --------------------- | --------- | ------------------------------ | ----------------- |
+| `@commitlint/cli`     | `^21.0.2` | `>=22.12.0`                    | root              |
+| `lint-staged`         | `^17.0.6` | `>=22.22.1`                    | root              |
+| `eslint-plugin-jsdoc` | `^63.0.0` | `^22.13.0 \|\| >=24`           | root              |
+| `ava`                 | `^8.0.1`  | `^22.20 \|\| ^24.12 \|\| >=26` | seven packages\*  |
+
+\* `ui5-middleware-approuter`, `ui5-middleware-simpleproxy`,
+`ui5-task-cachebuster`, `ui5-task-copyright`, `ui5-task-zipper`,
+`ui5-tooling-modules`, `ui5-tooling-transpile`.
+
+### Why not held back
+
+- `ignore-walk` (above) is a **runtime** dependency of `ui5-tooling-modules`,
+  so its Node-engines floor leaks all the way to the consuming UI5 build
+  pipeline.
+- The four entries above are **devDependencies of this repo only** —
+  testing (`ava`), linting (`eslint-plugin-jsdoc`), and commit hygiene
+  (`@commitlint/cli`, `lint-staged`). They are not bundled, not re-exported,
+  and never installed alongside the published packages.
+
+### Last Node-20-compatible major (if we ever need it)
+
+If the project later decides to support Node 20 contributors as well, the
+last Node-20-OK majors are:
+
+| Package               | Last Node-20-OK major |
+| --------------------- | --------------------- |
+| `@commitlint/cli`     | `^20`                 |
+| `lint-staged`         | `^16`                 |
+| `eslint-plugin-jsdoc` | `^62`                 |
+| `ava`                 | `^7`                  |
+
+### `peerDependencies` and explicit `engines`
+
+- No `peerDependencies` in any workspace package require Node `>=22`.
+- Only `packages/dev-approuter` declares `engines.node` explicitly
+  (`>=18`); all other publishable packages omit `engines` and inherit the
+  effective floor from their runtime dependencies. With `ignore-walk` held
+  at `^8`, that effective floor for `ui5-tooling-modules` consumers is
+  Node `^20.17.0 || >=22.9.0`.
