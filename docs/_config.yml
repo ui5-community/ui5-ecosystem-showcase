@@ -1,1 +1,34 @@
-theme: jekyll-theme-slate
+title: UI5 Ecosystem Showcase
+description: Community-maintained UI5 CLI extensions and showcases
+remote_theme: just-the-docs/just-the-docs
+
+url: https://ui5-community.github.io
+baseurl: /ui5-ecosystem-showcase
+
+# just-the-docs settings
+search_enabled: true
+search:
+  heading_level: 2
+  previews: 2
+  preview_words_before: 3
+  preview_words_after: 3
+
+color_scheme: light
+heading_anchors: true
+
+aux_links:
+  "GitHub":
+    - "https://github.com/ui5-community/ui5-ecosystem-showcase"
+  "Best of UI5":
+    - "https://bestofui5.org/"
+  "OpenUI5 Slack":
+    - "https://ui5-slack-invite.cfapps.eu10.hana.ondemand.com/"
+
+aux_links_new_tab: true
+
+footer_content: 'Apache 2.0 &middot; A community project of <a href="https://github.com/ui5-community">ui5-community</a> &middot; <a href="https://github.com/ui5-community/ui5-ecosystem-showcase">View on GitHub</a>'
+
+# Disable Jekyll plugins not allowed on GH Pages safe mode beyond defaults
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
