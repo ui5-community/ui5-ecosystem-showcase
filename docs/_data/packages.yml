@@ -1,0 +1,191 @@
+# Single source of truth for the extensions catalog rendered on extensions.md.
+# `bestofui5_indexed: false` triggers an inline note on the rendered card.
+
+- name: cds-plugin-ui5
+  category: CDS Integration
+  description: A CDS server `cds-plugin` that embeds UI5 CLI based projects via express middlewares into the CDS server.
+  github_path: packages/cds-plugin-ui5
+  npm: cds-plugin-ui5
+  bestofui5_indexed: false
+
+- name: dev-approuter
+  category: CDS Integration
+  description: Dev-time wrapper for the SAP Application Router that can serve UI5 and CAP modules added as (dev)dependencies.
+  github_path: packages/dev-approuter
+  npm: dev-approuter
+  bestofui5_indexed: false
+
+- name: karma-ui5-transpile
+  category: Test Tooling
+  description: Karma preprocessor that transpiles UI5 sources using `ui5-tooling-transpile`.
+  github_path: packages/karma-ui5-transpile
+  npm: karma-ui5-transpile
+  bestofui5_indexed: false
+
+- name: ui5-middleware-approuter
+  category: Middleware
+  description: Use the SAP `@sap/approuter` as proxy for SAP BTP / Cloud Foundry / XSA destinations during local development.
+  github_path: packages/ui5-middleware-approuter
+  npm: ui5-middleware-approuter
+  bestofui5_indexed: true
+
+- name: ui5-middleware-cap
+  category: Middleware
+  description: Embed the CAP CDS server middlewares inside the UI5 CLI dev server.
+  github_path: packages/ui5-middleware-cap
+  npm: ui5-middleware-cap
+  bestofui5_indexed: true
+
+- name: ui5-middleware-iasync
+  category: Middleware
+  description: Sync UI interactions across connected browsers (alpha).
+  github_path: packages/ui5-middleware-iasync
+  npm: ui5-middleware-iasync
+  bestofui5_indexed: true
+
+- name: ui5-middleware-index
+  category: Middleware
+  description: Serve a generated welcome / start page for the UI5 dev server root.
+  github_path: packages/ui5-middleware-index
+  npm: ui5-middleware-index
+  bestofui5_indexed: true
+
+- name: ui5-middleware-livereload
+  category: Middleware
+  description: Live-reload `webapp` resources whenever they change.
+  github_path: packages/ui5-middleware-livereload
+  npm: ui5-middleware-livereload
+  bestofui5_indexed: true
+
+- name: ui5-middleware-onelogin
+  category: Middleware
+  description: Universal / generic login support for the UI5 CLI.
+  github_path: packages/ui5-middleware-onelogin
+  npm: ui5-middleware-onelogin
+  bestofui5_indexed: true
+
+- name: ui5-middleware-serveframework
+  category: Middleware
+  description: Serve resources from a locally built UI5 framework.
+  github_path: packages/ui5-middleware-serveframework
+  npm: ui5-middleware-serveframework
+  bestofui5_indexed: true
+
+- name: ui5-middleware-servestatic
+  category: Middleware
+  description: Serve static resources via the UI5 dev server.
+  github_path: packages/ui5-middleware-servestatic
+  npm: ui5-middleware-servestatic
+  bestofui5_indexed: true
+
+- name: ui5-middleware-simpleproxy
+  category: Middleware
+  description: Simple express proxy for forwarding requests to backend services.
+  github_path: packages/ui5-middleware-simpleproxy
+  npm: ui5-middleware-simpleproxy
+  bestofui5_indexed: true
+
+- name: ui5-middleware-ui5
+  category: Middleware
+  description: Make UI5 applications available as dependencies for the UI5 dev server.
+  github_path: packages/ui5-middleware-ui5
+  npm: ui5-middleware-ui5
+  bestofui5_indexed: true
+
+- name: ui5-middleware-webjars
+  category: Middleware
+  description: Deliver content from JAR files (WebJars) through the UI5 dev server.
+  github_path: packages/ui5-middleware-webjars
+  npm: ui5-middleware-webjars
+  bestofui5_indexed: true
+
+- name: ui5-middleware-websocket
+  category: Middleware
+  description: Enable WebSockets for express servers like the UI5 dev server.
+  github_path: packages/ui5-middleware-websocket
+  npm: ui5-middleware-websocket
+  bestofui5_indexed: true
+
+- name: ui5-task-cachebuster
+  category: Task
+  description: Cache-busting for standalone UI5 applications.
+  github_path: packages/ui5-task-cachebuster
+  npm: ui5-task-cachebuster
+  bestofui5_indexed: true
+
+- name: ui5-task-copyright
+  category: Task
+  description: Append copyright headers to TypeScript, JavaScript and XML files at build time.
+  github_path: packages/ui5-task-copyright
+  npm: ui5-task-copyright
+  bestofui5_indexed: false
+
+- name: ui5-task-flatten-library
+  category: Task
+  description: Flatten the library folder structure for deployment to SAP NetWeaver.
+  github_path: packages/ui5-task-flatten-library
+  npm: ui5-task-flatten-library
+  bestofui5_indexed: true
+
+- name: ui5-task-i18ncheck
+  category: Task
+  description: Detect missing i18n translations referenced in XML views.
+  github_path: packages/ui5-task-i18ncheck
+  npm: ui5-task-i18ncheck
+  bestofui5_indexed: true
+
+- name: ui5-task-minify-xml
+  category: Task
+  description: Minify XML resources (views, fragments, etc.).
+  github_path: packages/ui5-task-minify-xml
+  npm: ui5-task-minify-xml
+  bestofui5_indexed: true
+
+- name: ui5-task-pwa-enabler
+  category: Task
+  description: Turn a UI5 application into a Progressive Web App.
+  github_path: packages/ui5-task-pwa-enabler
+  npm: ui5-task-pwa-enabler
+  bestofui5_indexed: true
+
+- name: ui5-task-zipper
+  category: Task
+  description: Bundle the entire `webapp` into a zip archive.
+  github_path: packages/ui5-task-zipper
+  npm: ui5-task-zipper
+  bestofui5_indexed: true
+
+- name: ui5-tooling-less
+  category: Tooling
+  description: Build and serve LESS files in UI5 projects.
+  github_path: packages/ui5-tooling-less
+  npm: ui5-tooling-less
+  bestofui5_indexed: true
+
+- name: ui5-tooling-modules
+  category: Tooling
+  description: Consume NPM packages directly as UI5 AMD-like modules.
+  github_path: packages/ui5-tooling-modules
+  npm: ui5-tooling-modules
+  bestofui5_indexed: true
+
+- name: ui5-tooling-stringreplace
+  category: Tooling
+  description: Replace placeholder strings in UI5 sources at build time.
+  github_path: packages/ui5-tooling-stringreplace
+  npm: ui5-tooling-stringreplace
+  bestofui5_indexed: true
+
+- name: ui5-tooling-transpile
+  category: Tooling
+  description: Transpile UI5 resources (TypeScript / modern JS) using Babel.
+  github_path: packages/ui5-tooling-transpile
+  npm: ui5-tooling-transpile
+  bestofui5_indexed: true
+
+- name: ui5-utils-express
+  category: Utility
+  description: Helper utilities for express-based UI5 tooling.
+  github_path: packages/ui5-utils-express
+  npm: ui5-utils-express
+  bestofui5_indexed: false
