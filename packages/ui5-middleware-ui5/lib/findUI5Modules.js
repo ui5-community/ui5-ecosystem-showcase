@@ -67,7 +67,8 @@ module.exports = async function findUI5Modules({ cwd, config, log }) {
 			// extract the configuration
 			const ui5Config = ui5Configs?.[0];
 			const isApplication = ui5Config?.type === "application";
-			if (isApplication) {
+			const isComponent = ui5Config?.type === "component";
+			if (isApplication || isComponent) {
 				// determine the module path based on the location of the ui5.yaml
 				const modulePath = path.dirname(ui5YamlPath);
 
