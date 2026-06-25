@@ -59,6 +59,7 @@
     "changeset:auto": "node scripts/auto-changeset.mjs",
     "changeset:empty": "changeset --empty",
     "version-packages": "changeset version && pnpm install --lockfile-only",
+    "version-packages:retry": "node scripts/run-with-retry.mjs version-packages",
     "release-publish": "changeset publish",
     "lint": "pnpm --workspace-concurrency 1 -r lint",
     "lint:staged": "lint-staged",
