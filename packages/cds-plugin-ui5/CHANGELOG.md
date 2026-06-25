@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.17.4
+
+### Patch Changes
+
+- [#1394](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1394) [`0e7a9e2`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0e7a9e2f9bd7f440a690ba618349aeab88bb91f3) Thanks [@petermuessig](https://github.com/petermuessig)! - Recognize UI5 projects with `type: component` (introduced in UI5 CLI v5) alongside `type: application` when discovering UI5 modules in [findUI5Modules.js](packages/cds-plugin-ui5/lib/findUI5Modules.js). Fixes [#1392](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1392).
+
+- [#1393](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1393) [`ab3de64`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ab3de644d30ec64ce5f6320eec58daee48a94f75) Thanks [@marianfoo](https://github.com/marianfoo)! - Pass an explicit `liveReload` option when constructing `@ui5/server`'s `MiddlewareManager`, preventing a startup crash (`Cannot read properties of undefined (reading 'active')`) when running on `@ui5/server` v5. The v5 server supplies the `liveReload` default only via a function default parameter, which is bypassed by the explicit `options` object passed here. No effect on `@ui5/server` v4.
+
 ## 0.17.3
 
 ### Patch Changes
