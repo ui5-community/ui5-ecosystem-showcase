@@ -106,6 +106,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 			//sendSAPTargetCSP,
 			//serveCSPReports,
 			//simpleIndex: true
+			liveReload: { active: false, token: null },
 		},
 	});
 	await middlewareManager.applyMiddleware(router);
