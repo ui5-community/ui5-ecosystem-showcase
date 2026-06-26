@@ -411,25 +411,29 @@ class RegistryEntry {
 				}
 
 				// case 1b: complex type is enum, interface or class
-				let complexType = this.#parseComplexType(typeInfoRef, this);
-				if (!complexType && this.namespace !== typeInfoRef.package) {
-					// case 1c: check for cross package type reference
-					const refPackage = WebComponentRegistry.getPackage(typeInfoRef.package);
-					if (refPackage) {
-						complexType = this.#parseComplexType(typeInfoRef, refPackage);
-					} else {
-						logger.log(`Reference package '${typeInfoRef.package}' for complex type '${type}' not found`);
-					}
-				} else if (!complexType && typeInfoRef) {
-					// case 1d: not able to find the type but there is a reference ==> try to import original webc type from the importing module itself
-					const refClass = this.classes[typeCacheKey]; //typeInfoRef.module.match(/\/(.*).js$/)?.[1]
-					if (refClass) {
-						return {
-							dtsType: type,
-							ui5Type: "any",
-							packageName: refClass._ui5QualifiedNameSlashes,
-							globalImport: true,
-						};
+				let complexType;
+				if (typeInfoRef.module) {
+					// some types are not having a module
+					complexType = this.#parseComplexType(typeInfoRef, this);
+					if (!complexType && this.namespace !== typeInfoRef.package) {
+						// case 1c: check for cross package type reference
+						const refPackage = WebComponentRegistry.getPackage(typeInfoRef.package);
+						if (refPackage) {
+							complexType = this.#parseComplexType(typeInfoRef, refPackage);
+						} else {
+							logger.log(`Reference package '${typeInfoRef.package}' for complex type '${type}' not found`);
+						}
+					} else if (!complexType && typeInfoRef) {
+						// case 1d: not able to find the type but there is a reference ==> try to import original webc type from the importing module itself
+						const refClass = this.classes[typeCacheKey]; //typeInfoRef.module.match(/\/(.*).js$/)?.[1]
+						if (refClass) {
+							return {
+								dtsType: type,
+								ui5Type: "any",
+								packageName: refClass._ui5QualifiedNameSlashes,
+								globalImport: true,
+							};
+						}
 					}
 				}
 
