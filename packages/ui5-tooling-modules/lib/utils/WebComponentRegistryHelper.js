@@ -1,3 +1,7 @@
+const SimpleLogger = require("./SimpleLogger");
+
+const logger = SimpleLogger.create("🧬 WCR");
+
 const WebComponentRegistryHelper = {
 	// the class name of the base class of all control wrappers
 	// corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
@@ -27,6 +31,42 @@ const WebComponentRegistryHelper = {
 
 	isUI5Element(ui5Superclass) {
 		return ui5Superclass.namespace === this.UI5_ELEMENT_NAMESPACE && ui5Superclass.name === this.UI5_ELEMENT_CLASS_NAME;
+	},
+
+	/**
+	 * Checks whether the given class definition represents an actual custom Web Component.
+	 *
+	 * A class is considered a custom element when it carries the <code>customElement</code> flag from
+	 * the custom-elements manifest (and is not the <code>UI5Element</code> base class itself, which is
+	 * paradoxically also flagged as a custom element in the metadata but is a base class, not a usable
+	 * component), OR when any ancestor in its superclass chain is one.
+	 *
+	 * The inherited case is reported via a warning so the upstream <code>custom-elements.json</code> can
+	 * be fixed to flag the subclass directly.
+	 *
+	 * @param {object} classDef a class definition from a WebComponentRegistry entry
+	 * @returns {boolean} whether the class is (or inherits from) a custom Web Component
+	 */
+	isCustomElement(classDef) {
+		if (!classDef) {
+			return false;
+		}
+		// direct flag — the common case
+		if (classDef.customElement && !this.isUI5Element(classDef)) {
+			return true;
+		}
+		// inherited: walk the superclass chain, ignoring the UI5Element base class itself
+		let superclass = classDef.superclass;
+		while (superclass) {
+			if (superclass.customElement && !this.isUI5Element(superclass)) {
+				logger.warn(
+					`The class '${classDef.namespace ?? "?"}/${classDef.name}' is treated as a custom element because its ancestor '${superclass.namespace ?? "?"}/${superclass.name}' is flagged as one. Please mark '${classDef.name}' as 'customElement: true' in the custom-elements manifest.`,
+				);
+				return true;
+			}
+			superclass = superclass.superclass;
+		}
+		return false;
 	},
 
 	isWebComponent(ui5Superclass) {

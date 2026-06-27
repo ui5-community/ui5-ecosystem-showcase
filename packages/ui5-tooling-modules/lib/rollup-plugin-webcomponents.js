@@ -252,8 +252,9 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				modulePath = modulePath.replace(/\\/g, "/");
 				const moduleName = `${npmPackage}/${modulePath}`;
 				const clazz = WebComponentRegistry.getClassDefinition(moduleName);
-				// TODO: base classes must be ignored as UI5Element is flagged as custom element although it is a base class
-				if (clazz && clazz.customElement && npmPackage !== UI5_ELEMENT_NAMESPACE) {
+				// only treat real custom elements (or subclasses of one) as Web Components —
+				// base classes like UI5Element are intentionally excluded by isCustomElement
+				if (clazz && WebComponentRegistryHelper.isCustomElement(clazz) && npmPackage !== UI5_ELEMENT_NAMESPACE) {
 					return clazz;
 				}
 			}
