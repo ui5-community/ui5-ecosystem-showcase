@@ -80,6 +80,9 @@ npm install ui5-tooling-transpile --save-dev -rte
 - generateBabelConfig: `boolean|string` (*experimental feature*)
   this option allows to generate the babel config file for the current project when the babel config file doesn't exist - this option is useful when you are using babel generation within a different tooling (like a native babel execution inside e.g. jest) to use the same configuration like when running the task or middleware; if the value is a string the UI5 CLI extension will assume to generate a file with the provided name
 
+- aliasPatterns: `Map<string,string` (*experimental feature*)
+  allows to define alias patterns to convert a request urls into target urls, e.g. converting `/__alias/ui5.ecosystem.demo.tslib.util/capitalize.js` into `/resources/ui5/ecosystem/demo/tslib/util/capitalize.js`. This can be done by providing the following mapping: `^/__alias/([^.]+)\\.([^.]+)\\.([^.]+)\\.([^.]+)\\.([^.]+)/(.*)$": "/resources/$1/$2/$3/$4/$5/$6"` as an entry of this configuration option.
+
 The following configuration options will only be taken into account if no inline babel configuration is maintained in the `ui5.yaml` as `babelConfig` or no external babel configuration exists in any configuration file as described in [Babels configuration section](https://babeljs.io/docs/configuration):
 
 - targetBrowsers: `String` (default: [`"defaults"`](https://browsersl.ist/#q=defaults))

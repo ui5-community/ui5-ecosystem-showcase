@@ -10,6 +10,11 @@ customConfiguration:
   config-ui5-tooling-transpile: &cfgTranspile
     debug: true
     filePattern: .+(ts|tsx)
+    aliasPatterns:
+      "^/__alias/([^.]+)\\.([^.]+)/(.*)$": "/resources/$1/$2/$3"
+      "^/__alias/([^.]+)\\.([^.]+)\\.([^.]+)/(.*)$": "/resources/$1/$2/$3/$4"
+      "^/__alias/([^.]+)\\.([^.]+)\\.([^.]+)\\.([^.]+)/(.*)$": "/resources/$1/$2/$3/$4/$5"
+      "^/__alias/([^.]+)\\.([^.]+)\\.([^.]+)\\.([^.]+)\\.([^.]+)/(.*)$": "/resources/$1/$2/$3/$4/$5/$6"
     generateDts: true
     omitTSFromBuildResult: true
   config-ui5-tooling-modules: &cfgModules
