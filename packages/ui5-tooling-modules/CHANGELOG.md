@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.37.4
+
+### Patch Changes
+
+- [#1400](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1400) [`848bc70`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/848bc704701266eb2e41aae85752aac295d1294a) Thanks [@petermuessig](https://github.com/petermuessig)! - Detect custom Web Components via a new `WebComponentRegistryHelper.isCustomElement(classDef)` predicate that walks the full superclass chain (skipping the `UI5Element` base class itself, which is paradoxically flagged as a custom element in the metadata). Replaces an inlined check in `rollup-plugin-webcomponents.js` whose hand-rolled superclass walk only looked at the direct superclass and could loop on a `const`-bound class reference. When a class is recognized as a custom element only via inheritance, a warning is now logged so the upstream `custom-elements.json` can be fixed to flag the subclass directly.
+
+- [#1398](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1398) [`b4153fa`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b4153fa10cd263ea7453948756b84ed81da4bc83) Thanks [@petermuessig](https://github.com/petermuessig)! - Guard the complex-type lookup in [WebComponentRegistry#parseComplexType](packages/ui5-tooling-modules/lib/utils/WebComponentRegistry.js) against type references that have no `module`. `WebComponentRegistryHelper.deriveCacheKey` returns `undefined` for such references, which previously caused the cross-package lookup and "global import" fallback to misfire (e.g. logging `Reference package '…' for complex type '…' not found` and producing unusable cache entries). When `typeInfoRef.module` is missing, skip the complex-type resolution entirely and fall through to the `any` fallback.
+
 ## 3.37.3
 
 ### Patch Changes
