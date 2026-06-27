@@ -278,7 +278,7 @@ class RegistryEntry {
 				this.#connectSuperclass(superclassRef);
 				classDef.superclass = superclassRef;
 			}
-		} else if (classDef.customElement && !WebComponentRegistryHelper.isUI5Element(classDef)) {
+		} else if (WebComponentRegistryHelper.isCustomElement(classDef)) {
 			/*
 			logger.warn(
 				`⚠️ The class '${this.namespace}/${classDef.name}' is a custom element not extending '${WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE}/${WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME}!`,
