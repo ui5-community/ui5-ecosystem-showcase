@@ -1,0 +1,5 @@
+---
+"ui5-tooling-modules": patch
+---
+
+Restore emission of the replacement module for `"module"`-typed entry chunks in [rollup-plugin-webcomponents.js](packages/ui5-tooling-modules/lib/rollup-plugin-webcomponents.js). [c61afbd6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c61afbd6) introduced a re-export stub at the original module id so that consumers importing a Web Component module directly (rather than via its package) still resolve through the generated UI5 wrapper. [#1310](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1310) later added the `"module"` type to `resolveId`/`load` to prepend the `@ui5/webcomponents-base` import for such entries, but in doing so changed the `generateBundle` guard from `if (type)` to `if (type && type !== "module")` — silently dropping the replacement stub and breaking direct imports of Web Component modules again. The guard is restored and the `"module"` branch now emits the same `sap.ui.define([...])` re-export the other types do.
