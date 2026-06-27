@@ -657,9 +657,9 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					const chunkName = chunk.fileName.slice(0, extname(chunk.fileName).length * -1);
 					const moduleInfo = this.getModuleInfo(chunk.facadeModuleId);
 					let type = moduleInfo?.meta?.ui5?.type;
-					// all types except "module" need to be handled here to build the
-					// Web Component wrappers and packages
-					if (type && type !== "module") {
+					// Web Components, Packages and Modules require a replacement module
+					// to be emitted so we can generate the proper UI5 wrapper code
+					if (type) {
 						if (type === "webcomponent") {
 							const { sources, clazz } = moduleInfo.meta.ui5;
 							/*
@@ -674,6 +674,16 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 						} else if (type === "package") {
 							const { source, package } = moduleInfo.meta.ui5;
 							buildPackage({ source, package, chunkName }, this.emitFile);
+						} else if (type === "module") {
+							const { source } = moduleInfo.meta.ui5;
+							const relativeModulePath = posix.relative(dirname(source), chunkName);
+							// replacement module to load th proper chunk
+							this.emitFile({
+								type: "prebuilt-chunk",
+								id: source,
+								fileName: `${source}.js`,
+								code: `/*!\n * \${copyright}\n */\nsap.ui.define(["${relativeModulePath}"], function(mod) { return mod; });`,
+							});
 						}
 						// mark the chunk as not an entry to avoid it being moved to
 						// the proper namespace by the post-processing in utils.js
