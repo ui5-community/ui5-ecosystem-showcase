@@ -234,7 +234,7 @@ const JSDocSerializer = {
 				additionalTags: registryEntry.customJSDocTags.map((tag) => `@${tag}`).join("\n"),
 				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
 				// TODO: the override tag is not really correct, as the enum itself is not overridden but its values are. We might want to change this in the future.
-				override: `@ui5-module-override ${registryEntry.namespace} ${enumDef.name}`,
+				override: `@ui5-module-override ${registryEntry.namespace} ${enumDef._derivedUi5ClassName}`,
 			});
 			enumDef.values.forEach((value) => {
 				const description = value.description || value.name;
