@@ -241,7 +241,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/AvatarColorScheme
-     * @ui5-module-override @ui5/webcomponents AvatarColorScheme
+     * @ui5-module-override @ui5/webcomponents dist.types.AvatarColorScheme
      * @private
      */
     pkg["AvatarColorScheme"] = {
@@ -333,7 +333,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/AvatarGroupType
-     * @ui5-module-override @ui5/webcomponents AvatarGroupType
+     * @ui5-module-override @ui5/webcomponents dist.types.AvatarGroupType
      * @private
      */
     pkg["AvatarGroupType"] = {
@@ -359,7 +359,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/AvatarMode
-     * @ui5-module-override @ui5/webcomponents AvatarMode
+     * @ui5-module-override @ui5/webcomponents dist.types.AvatarMode
      * @private
      */
     pkg["AvatarMode"] = {
@@ -393,7 +393,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/AvatarShape
-     * @ui5-module-override @ui5/webcomponents AvatarShape
+     * @ui5-module-override @ui5/webcomponents dist.types.AvatarShape
      * @private
      */
     pkg["AvatarShape"] = {
@@ -419,7 +419,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/AvatarSize
-     * @ui5-module-override @ui5/webcomponents AvatarSize
+     * @ui5-module-override @ui5/webcomponents dist.types.AvatarSize
      * @private
      */
     pkg["AvatarSize"] = {
@@ -465,7 +465,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BackgroundDesign
-     * @ui5-module-override @ui5/webcomponents BackgroundDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.BackgroundDesign
      * @private
      */
     pkg["BackgroundDesign"] = {
@@ -497,7 +497,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BarAccessibleRole
-     * @ui5-module-override @ui5/webcomponents BarAccessibleRole
+     * @ui5-module-override @ui5/webcomponents dist.types.BarAccessibleRole
      * @private
      */
     pkg["BarAccessibleRole"] = {
@@ -523,7 +523,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BarDesign
-     * @ui5-module-override @ui5/webcomponents BarDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.BarDesign
      * @private
      */
     pkg["BarDesign"] = {
@@ -558,7 +558,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BorderDesign
-     * @ui5-module-override @ui5/webcomponents BorderDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.BorderDesign
      * @private
      */
     pkg["BorderDesign"] = {
@@ -584,7 +584,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BreadcrumbsDesign
-     * @ui5-module-override @ui5/webcomponents BreadcrumbsDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.BreadcrumbsDesign
      * @private
      */
     pkg["BreadcrumbsDesign"] = {
@@ -611,7 +611,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BreadcrumbsSeparator
-     * @ui5-module-override @ui5/webcomponents BreadcrumbsSeparator
+     * @ui5-module-override @ui5/webcomponents dist.types.BreadcrumbsSeparator
      * @private
      */
     pkg["BreadcrumbsSeparator"] = {
@@ -661,7 +661,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BusyIndicatorSize
-     * @ui5-module-override @ui5/webcomponents BusyIndicatorSize
+     * @ui5-module-override @ui5/webcomponents dist.types.BusyIndicatorSize
      * @private
      */
     pkg["BusyIndicatorSize"] = {
@@ -693,7 +693,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/BusyIndicatorTextPlacement
-     * @ui5-module-override @ui5/webcomponents BusyIndicatorTextPlacement
+     * @ui5-module-override @ui5/webcomponents dist.types.BusyIndicatorTextPlacement
      * @private
      */
     pkg["BusyIndicatorTextPlacement"] = {
@@ -719,7 +719,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ButtonAccessibleRole
-     * @ui5-module-override @ui5/webcomponents ButtonAccessibleRole
+     * @ui5-module-override @ui5/webcomponents dist.types.ButtonAccessibleRole
      * @private
      */
     pkg["ButtonAccessibleRole"] = {
@@ -745,7 +745,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ButtonBadgeDesign
-     * @ui5-module-override @ui5/webcomponents ButtonBadgeDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.ButtonBadgeDesign
      * @private
      */
     pkg["ButtonBadgeDesign"] = {
@@ -779,7 +779,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ButtonDesign
-     * @ui5-module-override @ui5/webcomponents ButtonDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.ButtonDesign
      * @private
      */
     pkg["ButtonDesign"] = {
@@ -829,7 +829,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ButtonType
-     * @ui5-module-override @ui5/webcomponents ButtonType
+     * @ui5-module-override @ui5/webcomponents dist.types.ButtonType
      * @private
      */
     pkg["ButtonType"] = {
@@ -858,7 +858,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/CalendarLegendItemType
-     * @ui5-module-override @ui5/webcomponents CalendarLegendItemType
+     * @ui5-module-override @ui5/webcomponents dist.types.CalendarLegendItemType
      * @private
      */
     pkg["CalendarLegendItemType"] = {
@@ -1010,7 +1010,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/CalendarSelectionMode
-     * @ui5-module-override @ui5/webcomponents CalendarSelectionMode
+     * @ui5-module-override @ui5/webcomponents dist.types.CalendarSelectionMode
      * @private
      */
     pkg["CalendarSelectionMode"] = {
@@ -1045,7 +1045,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/CalendarWeekNumbering
-     * @ui5-module-override @ui5/webcomponents CalendarWeekNumbering
+     * @ui5-module-override @ui5/webcomponents dist.types.CalendarWeekNumbering
      * @private
      */
     pkg["CalendarWeekNumbering"] = {
@@ -1091,7 +1091,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/CarouselArrowsPlacement
-     * @ui5-module-override @ui5/webcomponents CarouselArrowsPlacement
+     * @ui5-module-override @ui5/webcomponents dist.types.CarouselArrowsPlacement
      * @private
      */
     pkg["CarouselArrowsPlacement"] = {
@@ -1117,7 +1117,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/CarouselPageIndicatorType
-     * @ui5-module-override @ui5/webcomponents CarouselPageIndicatorType
+     * @ui5-module-override @ui5/webcomponents dist.types.CarouselPageIndicatorType
      * @private
      */
     pkg["CarouselPageIndicatorType"] = {
@@ -1144,7 +1144,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ComboBoxFilter
-     * @ui5-module-override @ui5/webcomponents ComboBoxFilter
+     * @ui5-module-override @ui5/webcomponents dist.types.ComboBoxFilter
      * @private
      */
     pkg["ComboBoxFilter"] = {
@@ -1182,7 +1182,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ExpandableTextOverflowMode
-     * @ui5-module-override @ui5/webcomponents ExpandableTextOverflowMode
+     * @ui5-module-override @ui5/webcomponents dist.types.ExpandableTextOverflowMode
      * @private
      */
     pkg["ExpandableTextOverflowMode"] = {
@@ -1215,7 +1215,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/FormAccessibleMode
-     * @ui5-module-override @ui5/webcomponents FormAccessibleMode
+     * @ui5-module-override @ui5/webcomponents dist.types.FormAccessibleMode
      * @private
      */
     pkg["FormAccessibleMode"] = {
@@ -1241,7 +1241,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/FormItemSpacing
-     * @ui5-module-override @ui5/webcomponents FormItemSpacing
+     * @ui5-module-override @ui5/webcomponents dist.types.FormItemSpacing
      * @private
      */
     pkg["FormItemSpacing"] = {
@@ -1267,7 +1267,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/Highlight
-     * @ui5-module-override @ui5/webcomponents Highlight
+     * @ui5-module-override @ui5/webcomponents dist.types.Highlight
      * @private
      */
     pkg["Highlight"] = {
@@ -1308,7 +1308,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/IconDesign
-     * @ui5-module-override @ui5/webcomponents IconDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.IconDesign
      * @private
      */
     pkg["IconDesign"] = {
@@ -1367,7 +1367,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/IconMode
-     * @ui5-module-override @ui5/webcomponents IconMode
+     * @ui5-module-override @ui5/webcomponents dist.types.IconMode
      * @private
      */
     pkg["IconMode"] = {
@@ -1401,7 +1401,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/InputSuggestionsFilter
-     * @ui5-module-override @ui5/webcomponents InputSuggestionsFilter
+     * @ui5-module-override @ui5/webcomponents dist.types.InputSuggestionsFilter
      * @private
      */
     pkg["InputSuggestionsFilter"] = {
@@ -1439,7 +1439,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/InputType
-     * @ui5-module-override @ui5/webcomponents InputType
+     * @ui5-module-override @ui5/webcomponents dist.types.InputType
      * @private
      */
     pkg["InputType"] = {
@@ -1492,7 +1492,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/InteractiveAreaSize
-     * @ui5-module-override @ui5/webcomponents InteractiveAreaSize
+     * @ui5-module-override @ui5/webcomponents dist.types.InteractiveAreaSize
      * @private
      */
     pkg["InteractiveAreaSize"] = {
@@ -1518,7 +1518,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/LinkAccessibleRole
-     * @ui5-module-override @ui5/webcomponents LinkAccessibleRole
+     * @ui5-module-override @ui5/webcomponents dist.types.LinkAccessibleRole
      * @private
      */
     pkg["LinkAccessibleRole"] = {
@@ -1544,7 +1544,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/LinkDesign
-     * @ui5-module-override @ui5/webcomponents LinkDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.LinkDesign
      * @private
      */
     pkg["LinkDesign"] = {
@@ -1573,7 +1573,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ListAccessibleRole
-     * @ui5-module-override @ui5/webcomponents ListAccessibleRole
+     * @ui5-module-override @ui5/webcomponents dist.types.ListAccessibleRole
      * @private
      */
     pkg["ListAccessibleRole"] = {
@@ -1611,7 +1611,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ListGrowingMode
-     * @ui5-module-override @ui5/webcomponents ListGrowingMode
+     * @ui5-module-override @ui5/webcomponents dist.types.ListGrowingMode
      * @private
      */
     pkg["ListGrowingMode"] = {
@@ -1644,7 +1644,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ListItemAccessibleRole
-     * @ui5-module-override @ui5/webcomponents ListItemAccessibleRole
+     * @ui5-module-override @ui5/webcomponents dist.types.ListItemAccessibleRole
      * @private
      */
     pkg["ListItemAccessibleRole"] = {
@@ -1688,7 +1688,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ListItemType
-     * @ui5-module-override @ui5/webcomponents ListItemType
+     * @ui5-module-override @ui5/webcomponents dist.types.ListItemType
      * @private
      */
     pkg["ListItemType"] = {
@@ -1726,7 +1726,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ListSelectionMode
-     * @ui5-module-override @ui5/webcomponents ListSelectionMode
+     * @ui5-module-override @ui5/webcomponents dist.types.ListSelectionMode
      * @private
      */
     pkg["ListSelectionMode"] = {
@@ -1784,7 +1784,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ListSeparator
-     * @ui5-module-override @ui5/webcomponents ListSeparator
+     * @ui5-module-override @ui5/webcomponents dist.types.ListSeparator
      * @private
      */
     pkg["ListSeparator"] = {
@@ -1817,7 +1817,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/MenuItemGroupCheckMode
-     * @ui5-module-override @ui5/webcomponents MenuItemGroupCheckMode
+     * @ui5-module-override @ui5/webcomponents dist.types.MenuItemGroupCheckMode
      * @private
      */
     pkg["MenuItemGroupCheckMode"] = {
@@ -1849,7 +1849,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/MessageStripDesign
-     * @ui5-module-override @ui5/webcomponents MessageStripDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.MessageStripDesign
      * @private
      */
     pkg["MessageStripDesign"] = {
@@ -1899,7 +1899,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/NotificationListGrowingMode
-     * @ui5-module-override @ui5/webcomponents NotificationListGrowingMode
+     * @ui5-module-override @ui5/webcomponents dist.types.NotificationListGrowingMode
      * @private
      */
     pkg["NotificationListGrowingMode"] = {
@@ -1926,7 +1926,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/OverflowMode
-     * @ui5-module-override @ui5/webcomponents OverflowMode
+     * @ui5-module-override @ui5/webcomponents dist.types.OverflowMode
      * @private
      */
     pkg["OverflowMode"] = {
@@ -1952,7 +1952,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/PanelAccessibleRole
-     * @ui5-module-override @ui5/webcomponents PanelAccessibleRole
+     * @ui5-module-override @ui5/webcomponents dist.types.PanelAccessibleRole
      * @private
      */
     pkg["PanelAccessibleRole"] = {
@@ -1987,7 +1987,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/PopoverHorizontalAlign
-     * @ui5-module-override @ui5/webcomponents PopoverHorizontalAlign
+     * @ui5-module-override @ui5/webcomponents dist.types.PopoverHorizontalAlign
      * @private
      */
     pkg["PopoverHorizontalAlign"] = {
@@ -2025,7 +2025,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/PopoverPlacement
-     * @ui5-module-override @ui5/webcomponents PopoverPlacement
+     * @ui5-module-override @ui5/webcomponents dist.types.PopoverPlacement
      * @private
      */
     pkg["PopoverPlacement"] = {
@@ -2063,7 +2063,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/PopoverVerticalAlign
-     * @ui5-module-override @ui5/webcomponents PopoverVerticalAlign
+     * @ui5-module-override @ui5/webcomponents dist.types.PopoverVerticalAlign
      * @private
      */
     pkg["PopoverVerticalAlign"] = {
@@ -2101,7 +2101,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/PopupAccessibleRole
-     * @ui5-module-override @ui5/webcomponents PopupAccessibleRole
+     * @ui5-module-override @ui5/webcomponents dist.types.PopupAccessibleRole
      * @private
      */
     pkg["PopupAccessibleRole"] = {
@@ -2133,7 +2133,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/Priority
-     * @ui5-module-override @ui5/webcomponents Priority
+     * @ui5-module-override @ui5/webcomponents dist.types.Priority
      * @private
      */
     pkg["Priority"] = {
@@ -2169,7 +2169,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/RatingIndicatorSize
-     * @ui5-module-override @ui5/webcomponents RatingIndicatorSize
+     * @ui5-module-override @ui5/webcomponents dist.types.RatingIndicatorSize
      * @private
      */
     pkg["RatingIndicatorSize"] = {
@@ -2202,7 +2202,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/SegmentedButtonSelectionMode
-     * @ui5-module-override @ui5/webcomponents SegmentedButtonSelectionMode
+     * @ui5-module-override @ui5/webcomponents dist.types.SegmentedButtonSelectionMode
      * @private
      */
     pkg["SegmentedButtonSelectionMode"] = {
@@ -2228,7 +2228,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/SelectTextSeparator
-     * @ui5-module-override @ui5/webcomponents SelectTextSeparator
+     * @ui5-module-override @ui5/webcomponents dist.types.SelectTextSeparator
      * @private
      */
     pkg["SelectTextSeparator"] = {
@@ -2260,7 +2260,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/SemanticColor
-     * @ui5-module-override @ui5/webcomponents SemanticColor
+     * @ui5-module-override @ui5/webcomponents dist.types.SemanticColor
      * @private
      */
     pkg["SemanticColor"] = {
@@ -2304,7 +2304,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/SwitchDesign
-     * @ui5-module-override @ui5/webcomponents SwitchDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.SwitchDesign
      * @private
      */
     pkg["SwitchDesign"] = {
@@ -2330,7 +2330,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TabLayout
-     * @ui5-module-override @ui5/webcomponents TabLayout
+     * @ui5-module-override @ui5/webcomponents dist.types.TabLayout
      * @private
      */
     pkg["TabLayout"] = {
@@ -2353,7 +2353,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TableCellHorizontalAlign
-     * @ui5-module-override @ui5/webcomponents TableCellHorizontalAlign
+     * @ui5-module-override @ui5/webcomponents dist.types.TableCellHorizontalAlign
      * @private
      */
     pkg["TableCellHorizontalAlign"] = {
@@ -2397,7 +2397,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TableGrowingMode
-     * @ui5-module-override @ui5/webcomponents TableGrowingMode
+     * @ui5-module-override @ui5/webcomponents dist.types.TableGrowingMode
      * @private
      */
     pkg["TableGrowingMode"] = {
@@ -2425,7 +2425,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TableOverflowMode
-     * @ui5-module-override @ui5/webcomponents TableOverflowMode
+     * @ui5-module-override @ui5/webcomponents dist.types.TableOverflowMode
      * @private
      */
     pkg["TableOverflowMode"] = {
@@ -2451,7 +2451,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TableSelectionBehavior
-     * @ui5-module-override @ui5/webcomponents TableSelectionBehavior
+     * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionBehavior
      * @private
      */
     pkg["TableSelectionBehavior"] = {
@@ -2479,7 +2479,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TableSelectionMode
-     * @ui5-module-override @ui5/webcomponents TableSelectionMode
+     * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionMode
      * @private
      */
     pkg["TableSelectionMode"] = {
@@ -2511,7 +2511,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TableSelectionMultiHeaderSelector
-     * @ui5-module-override @ui5/webcomponents TableSelectionMultiHeaderSelector
+     * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionMultiHeaderSelector
      * @private
      */
     pkg["TableSelectionMultiHeaderSelector"] = {
@@ -2537,7 +2537,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TagDesign
-     * @ui5-module-override @ui5/webcomponents TagDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.TagDesign
      * @private
      */
     pkg["TagDesign"] = {
@@ -2590,7 +2590,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TagSize
-     * @ui5-module-override @ui5/webcomponents TagSize
+     * @ui5-module-override @ui5/webcomponents dist.types.TagSize
      * @private
      */
     pkg["TagSize"] = {
@@ -2613,7 +2613,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TextEmptyIndicatorMode
-     * @ui5-module-override @ui5/webcomponents TextEmptyIndicatorMode
+     * @ui5-module-override @ui5/webcomponents dist.types.TextEmptyIndicatorMode
      * @private
      */
     pkg["TextEmptyIndicatorMode"] = {
@@ -2639,7 +2639,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/TitleLevel
-     * @ui5-module-override @ui5/webcomponents TitleLevel
+     * @ui5-module-override @ui5/webcomponents dist.types.TitleLevel
      * @private
      */
     pkg["TitleLevel"] = {
@@ -2686,7 +2686,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ToastPlacement
-     * @ui5-module-override @ui5/webcomponents ToastPlacement
+     * @ui5-module-override @ui5/webcomponents dist.types.ToastPlacement
      * @private
      */
     pkg["ToastPlacement"] = {
@@ -2755,7 +2755,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ToolbarAlign
-     * @ui5-module-override @ui5/webcomponents ToolbarAlign
+     * @ui5-module-override @ui5/webcomponents dist.types.ToolbarAlign
      * @private
      */
     pkg["ToolbarAlign"] = {
@@ -2781,7 +2781,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ToolbarDesign
-     * @ui5-module-override @ui5/webcomponents ToolbarDesign
+     * @ui5-module-override @ui5/webcomponents dist.types.ToolbarDesign
      * @private
      */
     pkg["ToolbarDesign"] = {
@@ -2807,7 +2807,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/ToolbarItemOverflowBehavior
-     * @ui5-module-override @ui5/webcomponents ToolbarItemOverflowBehavior
+     * @ui5-module-override @ui5/webcomponents dist.types.ToolbarItemOverflowBehavior
      * @private
      */
     pkg["ToolbarItemOverflowBehavior"] = {
@@ -2839,7 +2839,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents/dist/types/WrappingType
-     * @ui5-module-override @ui5/webcomponents WrappingType
+     * @ui5-module-override @ui5/webcomponents dist.types.WrappingType
      * @private
      */
     pkg["WrappingType"] = {

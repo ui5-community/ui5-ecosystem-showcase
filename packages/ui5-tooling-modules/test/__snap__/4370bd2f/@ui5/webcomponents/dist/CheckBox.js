@@ -22,12 +22,13 @@ sap.ui.define(
           properties: {
             accessibleName: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             checked: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false
+              defaultValue: "false"
             },
             enabled: {
               type: "boolean",
@@ -41,35 +42,37 @@ sap.ui.define(
             displayOnly: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false
+              defaultValue: "false"
             },
             indeterminate: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false
+              defaultValue: "false"
             },
             name: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             readonly: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false
+              defaultValue: "false"
             },
             required: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false
+              defaultValue: "false"
             },
             text: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             value: {
               type: "string",
               mapping: "property",
-              defaultValue: "on"
+              defaultValue: '"on"'
             },
             valueState: {
               type: "sap.ui.core.ValueState",
@@ -77,12 +80,12 @@ sap.ui.define(
                 formatter: "_mapValueState",
                 parser: "_parseValueState"
               },
-              defaultValue: "None"
+              defaultValue: '"None"'
             },
             wrappingType: {
               type: "@ui5.webcomponents.dist.types.WrappingType",
               mapping: "property",
-              defaultValue: "Normal"
+              defaultValue: '"Normal"'
             },
             width: {
               type: "sap.ui.core.CSSSize",
