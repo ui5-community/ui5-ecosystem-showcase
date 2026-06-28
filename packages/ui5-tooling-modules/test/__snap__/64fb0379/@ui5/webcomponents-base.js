@@ -40,7 +40,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/AnimationMode
-     * @ui5-module-override @ui5/webcomponents-base AnimationMode
+     * @ui5-module-override @ui5/webcomponents-base dist.types.AnimationMode
      * @private
      */
     pkg["AnimationMode"] = {
@@ -78,7 +78,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/CalendarType
-     * @ui5-module-override @ui5/webcomponents-base CalendarType
+     * @ui5-module-override @ui5/webcomponents-base dist.types.CalendarType
      * @private
      */
     pkg["CalendarType"] = {
@@ -122,7 +122,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/ItemNavigationBehavior
-     * @ui5-module-override @ui5/webcomponents-base ItemNavigationBehavior
+     * @ui5-module-override @ui5/webcomponents-base dist.types.ItemNavigationBehavior
      * @private
      */
     pkg["ItemNavigationBehavior"] = {
@@ -148,7 +148,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/MovePlacement
-     * @ui5-module-override @ui5/webcomponents-base MovePlacement
+     * @ui5-module-override @ui5/webcomponents-base dist.types.MovePlacement
      * @private
      */
     pkg["MovePlacement"] = {
@@ -180,7 +180,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/NavigationMode
-     * @ui5-module-override @ui5/webcomponents-base NavigationMode
+     * @ui5-module-override @ui5/webcomponents-base dist.types.NavigationMode
      * @private
      */
     pkg["NavigationMode"] = {
@@ -218,7 +218,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/SortOrder
-     * @ui5-module-override @ui5/webcomponents-base SortOrder
+     * @ui5-module-override @ui5/webcomponents-base dist.types.SortOrder
      * @private
      */
     pkg["SortOrder"] = {
@@ -250,7 +250,7 @@ sap.ui.define(
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents-base/dist/types/ValueState
-     * @ui5-module-override @ui5/webcomponents-base ValueState
+     * @ui5-module-override @ui5/webcomponents-base dist.types.ValueState
      * @private
      */
     pkg["ValueState"] = {

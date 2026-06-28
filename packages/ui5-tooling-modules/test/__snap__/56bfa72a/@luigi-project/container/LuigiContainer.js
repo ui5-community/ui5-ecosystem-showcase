@@ -17,95 +17,118 @@ sap.ui.define(
           properties: {
             activeFeatureToggleList: {
               type: "string[]",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             allowRules: {
               type: "string[]",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             anchor: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             authData: {
               type: "object",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             clientPermissions: {
               type: "object",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             context: {
               type: "any",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             deferInit: {
               type: "boolean",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             dirtyStatus: {
               type: "boolean",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             documentTitle: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             hasBack: {
               type: "boolean",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             label: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             locale: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             noShadow: {
               type: "boolean",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             nodeParams: {
               type: "object",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             pathParams: {
               type: "object",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             sandboxRules: {
               type: "string[]",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             searchParams: {
               type: "object",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             skipCookieCheck: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             skipInitCheck: {
               type: "boolean",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             theme: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             userSettings: {
               type: "object",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             viewurl: {
               type: "string",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             webcomponent: {
               type: "any",
-              mapping: "property"
+              mapping: "property",
+              defaultValue: "undefined"
             },
             text: {
               type: "string",
