@@ -1,5 +1,16 @@
 # Change Log
 
+## 3.37.6
+
+### Patch Changes
+
+- [#1404](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1404) [`f3244a2`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f3244a2c5c57b35e41004396000eddc8d01fd759) Thanks [@petermuessig](https://github.com/petermuessig)! - Fix JSDoc generation for enum types and `defaultValue` handling in the generated UI5 metadata.
+  - Use the derived UI5 class name (instead of the raw enum name) in the `@ui5-module-override` directive emitted by `JSDocSerializer`, so the override matches the generated module.
+  - Emit `moduleType: module:<slashed-qualified-name>` for enum-typed properties so the downstream JSDoc build/validation can resolve enum references.
+  - Track `_ui5QualifiedNameSlashes` and `_derivedUi5ClassName` on enum definitions when ingesting the custom-elements metadata.
+  - Drop the ad-hoc `defaultValue` cast and the string-escape stripping; pass the raw `propDef.default` through so numeric, boolean, and object defaults survive code generation.
+  - Special-case `defaultValue` in the Handlebars `json` helper to inject literal values without quoting, and to omit the property when the default is `"undefined"`.
+
 ## 3.37.5
 
 ### Patch Changes
