@@ -133,7 +133,9 @@ class RegistryEntry {
 				const enumDef = moduleContent.enums[enumName];
 				// enum definitions do not automatically track their module path in the custom-elements-metadata!
 				enumDef.module = module.path;
-				enumDef._ui5QualifiedName = this.#deriveUi5ClassNames(enumDef)._ui5QualifiedName;
+				const classNames = this.#deriveUi5ClassNames(enumDef);
+				enumDef._ui5QualifiedName = `${classNames._ui5QualifiedName}`;
+				enumDef._ui5QualifiedNameSlashes = `${classNames._ui5QualifiedNameSlashes}`;
 				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(enumDef);
 				this.enums[cacheKey] = enumDef;
 			}
@@ -342,12 +344,13 @@ class RegistryEntry {
 		if (packageRef.interfaces[cacheKey]) {
 			return {
 				...base,
-				ui5Type: ui5names._ui5QualifiedName + "." + typeInfo.name,
+				ui5Type: `${ui5names._ui5QualifiedName}.${typeInfo.name}`,
 				isInterface: true,
 			};
 		} else if (packageRef.enums[cacheKey]) {
 			return {
 				...base,
+				moduleType: `module:${ui5names._ui5QualifiedNameSlashes}`, //packageRef.prefixnsAsModule(type),
 				isEnum: true,
 			};
 		} else if (packageRef.classes[cacheKey]) {
@@ -555,28 +558,6 @@ class RegistryEntry {
 		return typeDef;
 	}
 
-	#castDefaultValue(defaultValue, ui5TypeInfo) {
-		if (defaultValue === "undefined" || !ui5TypeInfo) {
-			return undefined;
-		}
-
-		switch (ui5TypeInfo.ui5Type) {
-			case "float":
-				return parseFloat(defaultValue);
-			case "boolean":
-				return /true/.test(defaultValue);
-			case "object":
-				try {
-					return JSON.parse(defaultValue);
-				} catch {
-					logger.error(`Could not parse default value of type 'object', falling back to {} - ${defaultValue}`);
-					return {};
-				}
-			default:
-				return defaultValue;
-		}
-	}
-
 	/**
 	 * Checks the given property definition object for a special UI5 mapping.
 	 * The specific formatter are implemented in "sap.ui.core.webc.WebComponent".
@@ -717,15 +698,6 @@ class RegistryEntry {
 				if (typeDef.ui5TypeInfo?.isComplexType) {
 					logger.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 				}
-				let defaultValue = propDef.default;
-				if (defaultValue) {
-					// TODO: Why are the default value strings escaped?
-					if (typeof defaultValue === "string") {
-						defaultValue = defaultValue.replace(/"/g, "");
-					}
-
-					defaultValue = this.#castDefaultValue(defaultValue, typeDef.ui5TypeInfo);
-				}
 				let mapping = "property";
 				if (typeDef.ui5TypeInfo?.ui5Type === "sap.ui.core.ValueState") {
 					// the UI5 valueState needs the Core's enum typing and some special mapping to
@@ -746,7 +718,7 @@ class RegistryEntry {
 				ui5metadata.properties[propDef.name] = {
 					type: typeString,
 					mapping,
-					defaultValue: defaultValue,
+					defaultValue: propDef.default,
 				};
 				JSDocSerializer.writeDoc(classDef, "properties", {
 					name: propDef.name,
@@ -758,7 +730,7 @@ class RegistryEntry {
 					name: propDef.name,
 					description: propDef.description,
 					types: typeDef.types,
-					defaultValue: defaultValue,
+					defaultValue: propDef.default,
 				});
 			}
 		} else if (propDef.kind === "method") {
@@ -1288,6 +1260,7 @@ class RegistryEntry {
 				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
 				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
+				_derivedUi5ClassName: names._derivedUi5ClassName,
 				description: this.enums[enumCacheKey].description || "",
 				values: enumValues,
 			};

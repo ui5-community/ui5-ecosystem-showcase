@@ -13,6 +13,14 @@ const { readFileSync } = require("fs");
  * @returns {string} the JSON string
  */
 handlebars.registerHelper("json", function (context, space) {
+	// default values are special cased here to avoid the JSON.stringify() from escaping them, which would make them invalid in the generated code.
+	if (context.defaultValue && context.defaultValue !== "undefined") {
+		const sanitizedContext = { ...context, defaultValue: "" };
+		const json = JSON.stringify(sanitizedContext, null, space);
+		return json.replace(/"defaultValue":\s*""/g, `"defaultValue": ${context.defaultValue}`);
+	} else if (context.defaultValue === "undefined") {
+		return JSON.stringify({ ...context, defaultValue: undefined }, null, space);
+	}
 	return JSON.stringify(context, null, space);
 });
 
