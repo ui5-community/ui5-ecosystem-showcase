@@ -10,6 +10,9 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-tooling-transpile"
   },
+  "bin": {
+    "ui5-transpile": "./bin/ui5-transpile.js"
+  },
   "dependencies": {
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
@@ -34,7 +37,7 @@
   },
   "scripts": {
     "postinstall": "node ./lib/postinstall.js",
-    "lint": "eslint lib",
+    "lint": "eslint lib bin",
     "test": "ava --no-worker-threads"
   },
   "ava": {
