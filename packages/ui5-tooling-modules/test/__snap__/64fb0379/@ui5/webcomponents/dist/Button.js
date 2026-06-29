@@ -23,31 +23,29 @@ sap.ui.define(
             accessibilityAttributes: {
               type: "any",
               mapping: "property",
-              defaultValue: "{}"
+              defaultValue: {}
             },
             accessibleDescription: {
               type: "string",
-              mapping: "property",
-              defaultValue: "undefined"
+              mapping: "property"
             },
             accessibleName: {
               type: "string",
-              mapping: "property",
-              defaultValue: "undefined"
+              mapping: "property"
             },
             accessibleRole: {
               type: "@ui5.webcomponents.dist.types.ButtonAccessibleRole",
               mapping: "property",
-              defaultValue: '"Button"'
+              defaultValue: "Button"
             },
             design: {
               type: "@ui5.webcomponents.dist.types.ButtonDesign",
               mapping: "property",
-              defaultValue: '"Default"'
+              defaultValue: "Default"
             },
             enabled: {
               type: "boolean",
-              defaultValue: "true",
+              defaultValue: true,
               mapping: {
                 type: "property",
                 to: "disabled",
@@ -56,38 +54,35 @@ sap.ui.define(
             },
             endIcon: {
               type: "string",
-              mapping: "property",
-              defaultValue: "undefined"
+              mapping: "property"
             },
             form: {
               type: "string",
-              mapping: "property",
-              defaultValue: "undefined"
+              mapping: "property"
             },
             icon: {
               type: "string",
-              mapping: "property",
-              defaultValue: "undefined"
+              mapping: "property"
             },
             loading: {
               type: "boolean",
               mapping: "property",
-              defaultValue: "false"
+              defaultValue: false
             },
             loadingDelay: {
               type: "float",
               mapping: "property",
-              defaultValue: "1000"
+              defaultValue: 1000
             },
             submits: {
               type: "boolean",
               mapping: "property",
-              defaultValue: "false"
+              defaultValue: false
             },
             type: {
               type: "@ui5.webcomponents.dist.types.ButtonType",
               mapping: "property",
-              defaultValue: '"Button"'
+              defaultValue: "Button"
             },
             text: {
               type: "string",

@@ -14,6 +14,7 @@ const { readFileSync } = require("fs");
  */
 handlebars.registerHelper("json", function (context, space) {
 	// default values are special cased here to avoid the JSON.stringify() from escaping them, which would make them invalid in the generated code.
+	// !!! Note: This must be in sync with the default value handling in the rollup-plugin-webcomponents, otherwise the generated code will be different. !!!
 	if (context.defaultValue && context.defaultValue !== "undefined") {
 		const sanitizedContext = { ...context, defaultValue: "" };
 		const json = JSON.stringify(sanitizedContext, null, space);
