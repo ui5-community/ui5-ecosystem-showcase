@@ -21,43 +21,41 @@ sap.ui.define(
           properties: {
             accessibleName: {
               type: "string",
-              mapping: "property",
-              defaultValue: "undefined"
+              mapping: "property"
             },
             accessibleRole: {
               type: "@ui5.webcomponents.dist.types.PanelAccessibleRole",
               mapping: "property",
-              defaultValue: '"Form"'
+              defaultValue: "Form"
             },
             collapsed: {
               type: "boolean",
               mapping: "property",
-              defaultValue: "false"
+              defaultValue: false
             },
             fixed: {
               type: "boolean",
               mapping: "property",
-              defaultValue: "false"
+              defaultValue: false
             },
             headerLevel: {
               type: "@ui5.webcomponents.dist.types.TitleLevel",
               mapping: "property",
-              defaultValue: '"H2"'
+              defaultValue: "H2"
             },
             headerText: {
               type: "string",
-              mapping: "property",
-              defaultValue: "undefined"
+              mapping: "property"
             },
             noAnimation: {
               type: "boolean",
               mapping: "property",
-              defaultValue: "false"
+              defaultValue: false
             },
             stickyHeader: {
               type: "boolean",
               mapping: "property",
-              defaultValue: "false"
+              defaultValue: false
             },
             text: {
               type: "string",

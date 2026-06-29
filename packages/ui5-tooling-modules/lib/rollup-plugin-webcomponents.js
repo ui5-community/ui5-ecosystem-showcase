@@ -360,7 +360,35 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					tag: ui5Metadata.tag,
 					designtime: `${namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
-				metadata = JSON.stringify(metadataObject, undefined, 2);
+				// default values are special cased here to avoid the JSON.stringify() from escaping them, which would make them invalid in the generated code.
+				// !!! Note: This must be in sync with the default value handling in the HandlebarsHelper, otherwise the generated code will be different. !!!
+				metadata = JSON.stringify(
+					metadataObject,
+					function (key, value) {
+						if (key === "defaultValue") {
+							switch (value) {
+								case undefined:
+								case "undefined":
+									// drop the property entirely; emitted as the sentinel and removed below
+									return undefined;
+								case "":
+									// emit as empty string; will be replaced below with the original value (which is a valid JSON string)
+									return value;
+								default:
+									try {
+										return JSON.parse(value);
+									} catch {
+										// if the value is not a valid JSON string, we just remove the defaultValue property from the metadata, as it is not valid JSON.
+										// This can happen for example when the defaultValue is corrupt.
+										log.warn(`The defaultValue for ${clazz.name} is not a valid JSON string: ${value}. Removing the defaultValue property from the metadata.`);
+										return undefined;
+									}
+							}
+						}
+						return value;
+					},
+					2,
+				);
 			} else {
 				metadata = JSDocSerializer.serializeMetadata(clazz);
 			}
