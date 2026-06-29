@@ -31,7 +31,7 @@
     "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
-    "@ui5/project": "^3",
+    "@ui5/project": "^4",
     "@ui5/server": "^3",
     "ava": "^8.0.1",
     "get-port": "^7.2.0",
