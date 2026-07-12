@@ -1,7 +1,7 @@
 # ui5-tooling-modules
 
-**Package Version:** 3.36.0
-**Last Updated:** 2026-05-22
+**Package Version:** 3.37.7
+**Last Updated:** 2026-07-12
 
 ---
 
@@ -116,11 +116,15 @@ The cache key construction in [util.js](lib/util.js) was reworked end-to-end. Th
 
 | Commit | Description | Impact |
 |--------|-------------|--------|
-| `485131bc` | Allow deeper nested web component classes of the same name (#1318) | Improved Web Components class resolution |
-| `153841c2` | Update dependencies and bump OpenUI5 to 1.148.0 (#1349) | Dependency refresh |
-| `8a5cd402` | Robust parsing and handling of webc metadata (#1316) | Improved Web Components metadata handling |
-| `d7ab7a8e` | Properly lookup package.json for workspaces (#1314) | Fixed workspace/monorepo support |
-| `1ca62f1e` | Import base package for all entry modules (#1310) | Fixed Web Components base package imports |
+| `5d419442` | Sync `defaultValue` handling between rollup plugin and Handlebars helper | Web Component defaults emitted as proper JSON (booleans/numbers/objects), `undefined` dropped |
+| `9c4a3259` | Correct JSDoc generation for enums and `defaultValue` handling | Fixes downstream JSDoc build/validation for enum-typed properties |
+| `848bc704` | Centralize custom-element detection in `WebComponentRegistryHelper.isCustomElement()` | Single source of truth for "is this a real custom element?" (incl. inherited flags) |
+| `55f9a537` | Restore replacement chunk for direct webc module imports | Fixes direct import of a single Web Component module (native/non-UI5) losing its UI5 wrapper |
+| `b4153fa1` | Skip complex-type lookup when `typeInfoRef` has no module | Silences misleading warnings for ambient/library-internal manifest types |
+| `81eb56c5` | Align `@implements` JSDoc with `interfaces` declaration | Generated wrapper JSDoc and metadata now agree on interface module names |
+| `f96206fe` | Hold `ignore-walk` at `^8.0.0` | Keeps Node.js 20 support (see [DEPENDENCIES.md](DEPENDENCIES.md)) |
+| `485131bc` | Allow deeper nested web component classes of the same name (#1318); add `isUI5WebComponents` flag | Wrappers now generated for non-UI5 WC packages; improved class resolution |
+| `b8578cd9` | Rework bundle cache invalidation (#1365) | Layered SHA-256 cache key (see below) |
 
 ---
 
@@ -174,7 +178,7 @@ Two namespace strategies controlled by `addToNamespace`:
 
 The webcomponents plugin performs sophisticated transformations:
 
-1. **Custom Elements Manifest Parsing**: Reads metadata from package.json `customElements` field
+1. **Custom Elements Manifest Parsing**: Reads metadata from package.json `customElements` field (falling back to `dist/custom-elements.json` / `dist/custom-elements-internal.json`)
 2. **UI5 Control Wrapper Generation**: Creates UI5 controls that wrap Web Components
 3. **Scoping Support**: Handles UI5 Web Components scoping (multiple versions)
 4. **Asset Management**: Handles themes, i18n bundles, and dynamic imports
@@ -184,6 +188,16 @@ The webcomponents plugin performs sophisticated transformations:
 ```
 NPM Package → CEM Parsing → WebComponentRegistry → UI5 Wrapper Generation → AMD Bundle
 ```
+
+**Three handled cases** (detected automatically, see [rollup-plugin-webcomponents.js](lib/rollup-plugin-webcomponents.js)):
+
+The registry entry carries an `isUI5WebComponents` flag, set when the package *is* `@ui5/webcomponents-base` or lists it in its `dependencies` (see `loadNpmPackage`). Combined with `WebComponentRegistryHelper.isCustomElement()` and the component's superclass chain, this drives which of the following applies:
+
+1. **UI5 Web Components** (`isUI5WebComponents: true`, e.g. `@ui5/webcomponents`): full pipeline — an emitted package chunk, base-package (`@ui5/webcomponents-base`) import prepended before the component, scoping applied, and a UI5 control wrapper per custom element.
+
+2. **Non-UI5 Web Components with a package** (`isUI5WebComponents: false`, e.g. `@luigi-project/container`): UI5 control wrappers are still generated for every custom element, but the UI5-specific chunk emission, base-package import, and scoping are **skipped**. The package itself has no `_ui5metadata`; its wrapper classes are exposed as exports (`LuigiContainer`, `LuigiCompoundContainer`, ...).
+
+3. **Native Web Components** (`load` hook, marked `NATIVE_WEBC_SUPPORT`): a custom element whose class does **not** extend `UI5Element` (`clazz.superclass` is falsy) loads **only the component module itself** — neither the package nor `@ui5/webcomponents-base` is prepended, since it needs no scoping or package features. It simply registers itself via `customElements.define(...)` on evaluation. For direct imports of a single component module (entries typed `"module"` in `resolveId`/`load`), a `sap.ui.define` re-export **replacement chunk** is emitted in `generateBundle` so the import resolves through the generated UI5 wrapper (restored in `55f9a537` after `#1310` accidentally dropped it).
 
 ### 4. Caching Architecture
 

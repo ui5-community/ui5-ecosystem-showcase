@@ -351,11 +351,13 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			// Extend the superclass with the WebComponent class and export it
 			const ui5Metadata = clazz._ui5metadata;
 			const ui5ClassName = clazz._ui5QualifiedName;
+			const ui5Superclass = clazz.superclass;
 			const namespace = ui5Metadata.namespace;
 			//const qualifiedNamespace = ui5Metadata.qualifiedNamespace;
 
 			let metadata;
-			if (skipJSDoc) {
+			// NATIVE_WEBC_SUPPORT: we skip the usage of the JSDocSerializer for the superclass as the necessary metadata might be missing!
+			if (!ui5Superclass || skipJSDoc) {
 				const metadataObject = Object.assign({}, ui5Metadata, {
 					tag: ui5Metadata.tag,
 					designtime: `${namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
@@ -402,7 +404,6 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 
 			// Determine the superclass UI5 module name and import it
 			let webcBaseClass = "sap/ui/core/webc/WebComponent";
-			const ui5Superclass = clazz.superclass;
 			if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
 				const { module } = clazz.superclass;
 				const { namespace } = clazz.superclass._ui5metadata;
@@ -427,7 +428,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			const code = webcTmplFnUI5Control({
 				ui5ClassName: ui5ClassName,
 				jsDocClassHeader,
-				namespace: `${rootPath}${namespace}`,
+				namespace: ui5Superclass ? `${rootPath}${namespace}` : webcClass, // NATIVE_WEBC_SUPPORT: if the superclass is not a UI5Element, we need to import the WebComponent class from the package instead of the UI5Element class from the UI5 framework
 				metadata,
 				webcClass,
 				webcBaseClass: webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass,
@@ -613,7 +614,9 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				// prepend the import of the package to ensure that the package code is included
 				const { clazz, absModulePath } = ui5Meta;
 				const code = readFileSync(absModulePath, "utf-8");
-				return `import "${clazz.package}";\n${code}`;
+				// NATIVE_WEBC_SUPPORT: we don't need to import the package for Web Components that are not extending UI5Element
+				//                      as they don't require any scoping or other features from the package code
+				return clazz.superclass ? `import "${clazz.package}";\n${code}` : code;
 			} else if (ui5Meta?.type === "package") {
 				// generate the web component package code for the UI5 Web Components
 				const { namespace, customElements } = ui5Meta.package;

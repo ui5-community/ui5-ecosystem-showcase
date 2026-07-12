@@ -6,6 +6,7 @@
   xmlns:mvc="sap.ui.core.mvc"
   xmlns:lib="ui5.ecosystem.demo.tslib"
   xmlns:luigi="@luigi-project/container"
+  xmlns:webc="webc-package"
   core:require="{
         theming: 'sap/ui/core/Theming'
   }"
@@ -30,6 +31,7 @@
           context='\{"label": "Luigi"}'
           theme="{= theming.getTheme() }"
         />
+        <webc:CustomAlertButton id="alertBox" text="Click Me!" message="This is a custom alert box implemented as a web component." />
       </VBox>
     </content>
   </Page>

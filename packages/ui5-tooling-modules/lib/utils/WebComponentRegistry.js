@@ -268,7 +268,7 @@ class RegistryEntry {
 
 			// Note: This sanitization is needed for some module where the metadata is not consistent
 			//       e.g. "media-chrome" references the module names sometimes with a leading slash.
-			const superclassLookupNameFallback = superclassLookupName.startsWith("/") ? superclassLookupName.substring(1).replace(".js", ".ts") : superclassLookupName;
+			const superclassLookupNameFallback = superclassLookupName?.startsWith("/") ? superclassLookupName.substring(1).replace(".js", ".ts") : superclassLookupName;
 
 			let superclassRef = refPackage.classes[superclassLookupName] || refPackage.classes[superclassLookupNameFallback];
 			if (!superclassRef) {

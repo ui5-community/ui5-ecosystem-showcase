@@ -34,6 +34,7 @@
     "moment": "^2.30.1",
     "ui5-tslib": "workspace:^",
     "ui5-tsmodule": "workspace:^",
+    "webc-package": "workspace:^",
     "@e965/xlsx": "0.20.3"
   },
   "devDependencies": {

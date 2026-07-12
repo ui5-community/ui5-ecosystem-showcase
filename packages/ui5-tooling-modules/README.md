@@ -289,6 +289,32 @@ The custom middleware is listening to incoming requests and checks those request
 
 The custom task is scanning all AMD dependencies of all modules and tries to resolve the module names. If a module has been found a custom bundle will be created in the proper namespace of the module, e.g. `@apollo/client/core` will create a custom bundle at `dist/resources/@apollo/client/core.js`.
 
+## Web Components support
+
+Besides plain NPM packages, the `ui5-tooling-modules` also has dedicated support for [Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) a.k.a. *Seamless Web Components* support. A package is recognized as a Web Components package when it ships a [Custom Elements Manifest](https://custom-elements-manifest.open-wc.org/) — either referenced via the `customElements` field in its `package.json`, or found at the conventional `dist/custom-elements.json` (or `dist/custom-elements-internal.json`) location. Based on that manifest, the tooling generates the glue code so the Web Components can be consumed like regular UI5 controls.
+
+There are three different cases which are handled automatically depending on the nature of the package and its components:
+
+### 1. UI5 Web Components
+
+Packages whose components extend `UI5Element` from `@ui5/webcomponents-base` (detected because the package *is* `@ui5/webcomponents-base` or lists it in its `dependencies`), e.g. [`@ui5/webcomponents`](https://www.npmjs.com/package/@ui5/webcomponents). For these, the tooling runs the full pipeline:
+
+- a **package module** is generated (in the `gen` namespace by default, see `pluginOptions.webcomponents.namespace`) which registers the library, applies the [Custom Elements Scoping](https://ui5.github.io/webcomponents/docs/advanced/scoping/), and pulls in the base package
+- a **UI5 control wrapper** is generated per custom element so it can be used like a native UI5 control (incl. properties, aggregations, events, and — when enabled — JSDoc and `*.d.ts` files)
+- the base package (`@ui5/webcomponents-base`) is imported ahead of the component so scoping and shared features are initialized before any component is defined
+
+### 2. Non-UI5 Web Components (with a package)
+
+Packages that ship a Custom Elements Manifest but whose components do **not** extend `UI5Element`, e.g. [`@luigi-project/container`](https://www.npmjs.com/package/@luigi-project/container). UI5 control wrappers are still generated for every custom element so they can be used as UI5 controls, but the UI5-specific package-chunk emission, scoping, and base-package import are skipped — those components neither need nor understand the `@ui5/webcomponents-base` runtime. Importing the package (e.g. `@luigi-project/container`) exposes the generated wrapper classes, and importing an individual component module (e.g. `@luigi-project/container/LuigiContainer`) resolves through its UI5 wrapper.
+
+### 3. Native Web Components (load the component itself, no package)
+
+This is the case where a Web Component module is imported **directly** and there is no package glue to load — the module simply *is* the Web Component and it only needs to register itself. This covers custom elements that do not extend `UI5Element` and that are imported as standalone modules rather than through their package entry point.
+
+For such native Web Components the tooling neither prepends an `import` of the package nor of `@ui5/webcomponents-base` — the generated entry point loads **only the Web Component module itself**. Since the component does not rely on scoping or any other feature provided by a UI5 Web Components package, there is nothing else to bundle: the component defines its own custom element (`customElements.define(...)`) when its module is evaluated. A `sap.ui.define` re-export stub is still emitted for the imported module so that a direct import (e.g. an application importing a single component module from a Web Components package) resolves through the generated UI5 wrapper.
+
+> :bulb: All three cases are detected automatically from the package metadata and the component's superclass chain — no additional configuration is required. Use the `pluginOptions.webcomponents.*` options (see [above](#configuration-options-in-yourappui5yaml)) to fine-tune the behavior (e.g. `skip`, `scoping`, `namespace`, `includeAssets`), and `pluginOptions.webcomponents.force: true` to enable the transformation when the framework version cannot be derived from the `ui5.yaml`.
+
 ## How to obtain support
 
 Please use the GitHub bug tracking system to post questions, bug reports or to create pull requests.

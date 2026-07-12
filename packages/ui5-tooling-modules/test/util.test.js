@@ -936,3 +936,31 @@ test.serial("Verify generation of fetch-mock", async (t) => {
 		t.is(fetchMock.code, readSnapFile(fetchMock.name, t.context.snapDir));
 	}
 });
+
+test.serial("Verify generation of webc-package/CustomAlertButton Wrapper UI5 Control", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(
+		["webc-package/CustomAlertButton"],
+		Object.assign({}, webcomponentsContext, {
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: webcContextModules,
+		}),
+		{
+			pluginOptions: {
+				webcomponents: {
+					scoping: false,
+					removeScopePrefix: true,
+					moduleBasePath: path.posix.join("ui5/ecosystem/demo/app", "thirdparty"),
+				},
+			},
+		},
+	);
+	const module = await env.getModule("webc-package/CustomAlertButton");
+	t.deepEqual(module.retVal.name, "webc-package.CustomAlertButton");
+	t.deepEqual(module.retVal.def.metadata.tag, "custom-alert-button");
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
