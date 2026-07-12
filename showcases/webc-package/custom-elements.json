@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "CustomAlertButton.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CustomAlertButton",
+          "members": [
+            {
+              "kind": "method",
+              "name": "render"
+            },
+            {
+              "kind": "field",
+              "name": "text",
+              "type": {
+                "text": "string"
+              },
+              "description": "Sets the button's text.",
+              "default": "\"Show Alert\"",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "message",
+              "type": {
+                "text": "string"
+              },
+              "description": "Sets the alert message.",
+              "default": "\"\"",
+              "privacy": "public"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "text"
+            },
+            {
+              "name": "message"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "custom-alert-button",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CustomAlertButton",
+          "declaration": {
+            "name": "CustomAlertButton",
+            "module": "CustomAlertButton.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "custom-alert-button",
+          "declaration": {
+            "name": "CustomAlertButton",
+            "module": "CustomAlertButton.js"
+          }
+        }
+      ]
+    }
+  ]
+}

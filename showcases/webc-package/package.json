@@ -1,0 +1,24 @@
+{
+  "name": "webc-package",
+  "version": "0.1.0",
+  "description": "Web Components package",
+  "private": true,
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "showcases/webc-package"
+  },
+  "scripts": {
+    "build": "custom-elements-manifest analyze",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@eslint/js": "^9.40.0",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0"
+  },
+  "customElements": "custom-elements.json"
+}
