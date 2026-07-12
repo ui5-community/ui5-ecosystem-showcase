@@ -1297,6 +1297,12 @@ importers:
       '@custom-elements-manifest/analyzer':
         specifier: ^0.11.0
         version: 0.11.0
+      eslint:
+        specifier: ^10.4.1
+        version: 10.4.1(jiti@2.7.0)
+      globals:
+        specifier: ^17.6.0
+        version: 17.6.0
 
 packages:
 
