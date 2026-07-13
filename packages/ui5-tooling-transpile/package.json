@@ -25,10 +25,18 @@
     "ava": "^8.0.1"
   },
   "peerDependencies": {
-    "@ui5/ts-interface-generator": ">=0.8.0"
+    "@babel/plugin-transform-react-jsx": "^7.0.0",
+    "@ui5/ts-interface-generator": ">=0.8.0",
+    "babel-plugin-istanbul": ">=6.0.0"
   },
   "peerDependenciesMeta": {
+    "@babel/plugin-transform-react-jsx": {
+      "optional": true
+    },
     "@ui5/ts-interface-generator": {
+      "optional": true
+    },
+    "babel-plugin-istanbul": {
       "optional": true
     }
   },

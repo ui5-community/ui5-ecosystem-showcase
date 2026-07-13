@@ -97,6 +97,12 @@ The following configuration options will only be taken into account if no inline
 - removeConsoleStatements: `boolean`  
   includes the [babel-plugin-transform-remove-console](https://babeljs.io/docs/en/babel-plugin-transform-remove-console) which removes the console statement from the transpiled code
 
+- transformJSX: `boolean|Object`
+  includes the [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/babel-plugin-transform-react-jsx) into Babels plugin configuration to transform JSX/TSX syntax into JavaScript; this requires the optional peer dependency `@babel/plugin-transform-react-jsx` to be installed (if missing, a warning is logged and JSX/TSX will not be transformed); if the value is type of `Object` the configuration option is considered to be `true` and the configuration object will be used for the plugin (e.g. `{ "runtime": "automatic", "importSource": "..." }`); when enabled and no explicit `filePattern` is configured, the default `filePattern` is extended to also handle `jsx`/`tsx` files (`.+(js|jsx)` or `.+(ts|tsx)`)
+
+- coverage: `boolean|Object`
+  includes the [`babel-plugin-istanbul`](https://www.npmjs.com/package/babel-plugin-istanbul) into Babels plugin configuration to instrument the code for coverage collection; this requires the optional peer dependency `babel-plugin-istanbul` to be installed (if missing, a warning is logged and the code will not be instrumented); if the value is type of `Object` the configuration option is considered to be `true` and the configuration object will be used for the plugin; the plugin is added last so that it instruments the already transformed source
+
 > :warning: When using `builder` > `settings` > `includeDependency` to add references to other projects (libraries, modules, ...) which also require a Babel transformation, the Babel configuration lookup or the `tsconfig.json` lookup will take place relative to the current working directory. If you want to ensure to use project local configurations in this case, inline the Babel configuration `babelConfig` and the `transformTypeScript` (with `true`=TS or `false`=JS) switch explicitly in the `ui5.yaml`.
 
 ## Usage
