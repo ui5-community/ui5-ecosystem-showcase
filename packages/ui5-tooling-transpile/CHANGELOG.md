@@ -1,5 +1,14 @@
 # Change Log
 
+## 3.12.0
+
+### Minor Changes
+
+- [#1414](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1414) [`2e64891`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2e6489192ccf8ddc7b9366e392dfb1545ee51be1) Thanks [@petermuessig](https://github.com/petermuessig)! - Add native JSX/TSX transformation and coverage instrumentation support.
+    - New `transformJSX` configuration option (`boolean|Object`) enables the optional peer dependency [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/babel-plugin-transform-react-jsx) to transform JSX/TSX syntax. When the value is an object, it is passed through as the plugin's options (e.g. `runtime`, `importSource`). When enabled and no explicit `filePattern` is set, the default file pattern is extended to also handle `jsx`/`tsx` files (`.+(js|jsx)` or `.+(ts|tsx)`).
+    - New `coverage` configuration option (`boolean|Object`) enables the optional peer dependency [`babel-plugin-istanbul`](https://www.npmjs.com/package/babel-plugin-istanbul) to instrument the transpiled code for coverage collection. When the value is an object, it is passed through as the plugin's options.
+    - Both plugins are only added when the respective configuration option is present/truthy AND the optional dependency can be resolved; otherwise a warning is logged and transpilation continues without the plugin. Both are declared as optional `peerDependencies`.
+
 ## 3.11.3
 
 ### Patch Changes
