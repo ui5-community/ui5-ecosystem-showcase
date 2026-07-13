@@ -327,10 +327,17 @@ module.exports = function (log) {
 			const defaultExcludes = [".png", ".jpeg", ".jpg"]; // still needed?
 			const excludes = defaultExcludes.concat(config.excludes || config.excludePatterns || []);
 
+			// derive whether JSX/TSX should be transformed or not
+			const transformJSX = config.transformJSX;
+
 			// determine the file pattern from config or based on TypeScript project
 			let filePattern = config.filePattern; // .+(ts|tsx)
 			if (filePattern === undefined) {
-				filePattern = transformTypeScript ? ".ts" : ".js";
+				if (transformJSX) {
+					filePattern = transformTypeScript ? ".+(ts|tsx)" : ".+(js|jsx)";
+				} else {
+					filePattern = transformTypeScript ? ".ts" : ".js";
+				}
 			}
 
 			// derive transformation parameters
@@ -357,6 +364,8 @@ module.exports = function (log) {
 				tsConfigFile,
 				transformModulesToUI5,
 				transformAsyncToPromise,
+				transformJSX,
+				coverage: config.coverage,
 				targetBrowsers: config.targetBrowsers,
 				removeConsoleStatements: config.removeConsoleStatements,
 				skipBabelPresetPluginResolve: config.skipBabelPresetPluginResolve
@@ -394,7 +403,9 @@ module.exports = function (log) {
 					"transpileAsync",
 					"transformModulesToUI5",
 					"transformAsyncToPromise",
-					"removeConsoleStatements"
+					"removeConsoleStatements",
+					"transformJSX",
+					"coverage"
 				].forEach((config) => {
 					if (configuration?.[config] !== undefined) {
 						log.warn(`Ignoring configuration option "${config}" due to external configuration!`);
@@ -535,6 +546,30 @@ module.exports = function (log) {
 				}
 			}
 
+			// add the plugin to transform JSX/TSX to JavaScript
+			// the plugin is only added when the configuration option
+			// transformJSX is present/truthy and the optional dependency
+			// "@babel/plugin-transform-react-jsx" can be resolved
+			if (configuration?.transformJSX) {
+				if (resolveNodeModule("@babel/plugin-transform-react-jsx", cwd)) {
+					// if the configuration option transformJSX is an object
+					// it contains the configuration options for the plugin
+					// (e.g. { runtime: "automatic", importSource: "..." })
+					if (typeof configuration.transformJSX === "object") {
+						babelConfigOptions.plugins.push([
+							"@babel/plugin-transform-react-jsx",
+							configuration.transformJSX
+						]);
+					} else {
+						babelConfigOptions.plugins.push("@babel/plugin-transform-react-jsx");
+					}
+				} else {
+					log.warn(
+						`Missing dependency "@babel/plugin-transform-react-jsx"! JSX/TSX will not be transformed until dependency has been added...`
+					);
+				}
+			}
+
 			// add plugin to remove console statements
 			if (configuration?.removeConsoleStatements) {
 				babelConfigOptions.plugins.push("transform-remove-console");
@@ -552,6 +587,27 @@ module.exports = function (log) {
 						inlineHelpers: true
 					}
 				]);
+			}
+
+			// add plugin to instrument the code for coverage collection
+			// the plugin is only added when the configuration option
+			// coverage is present/truthy and the optional dependency
+			// "babel-plugin-istanbul" can be resolved - it is added last
+			// so that it wraps the already transformed source
+			if (configuration?.coverage) {
+				if (resolveNodeModule("babel-plugin-istanbul", cwd)) {
+					// if the configuration option coverage is an object
+					// it contains the configuration options for the plugin
+					if (typeof configuration.coverage === "object") {
+						babelConfigOptions.plugins.push(["babel-plugin-istanbul", configuration.coverage]);
+					} else {
+						babelConfigOptions.plugins.push("babel-plugin-istanbul");
+					}
+				} else {
+					log.warn(
+						`Missing dependency "babel-plugin-istanbul"! Code will not be instrumented until dependency has been added...`
+					);
+				}
 			}
 
 			// include the source maps
