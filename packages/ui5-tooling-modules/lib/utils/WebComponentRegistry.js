@@ -124,7 +124,7 @@ class RegistryEntry {
 					const cacheKey = WebComponentRegistryHelper.deriveCacheKey(classDef);
 					this.classes[cacheKey] = classDef;
 				} else {
-					logger.warn(`class without module: ${classDef}`);
+					// validated upfront: WCV023 (class declared but never exported)
 				}
 			}
 
@@ -209,7 +209,7 @@ class RegistryEntry {
 				moduleContent.interfaces[declarationDef.name] = declarationDef;
 				break;
 			default:
-				logger.error("unknown declaration kind:", declarationDef.kind);
+			// validated upfront: WCV020 (unknown declaration kind)
 		}
 	}
 
@@ -252,7 +252,7 @@ class RegistryEntry {
 				package: npmPackage,
 				file: `dist/${nameParts.join("/")}.js`,
 			};
-			logger.warn(`The class '${this.namespace}/${classDef.name}' detected superclass '${classDef.superclass.package}/${classDef.superclass.name}' from string '${superclassName}'!`);
+			// validated upfront: WCV031 (superclass as dotted string)
 		}
 		if (classDef.superclass) {
 			// determine superclass package (can be cross-package reference)
@@ -652,12 +652,7 @@ class RegistryEntry {
 				return;
 			}
 
-			// DEBUG
-			if (typeDef.isUnclear) {
-				logger.warn(
-					`🤔 unclear type - ${classDef.name} - ${isAssociation ? "association" : "property"} '${propDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
-				);
-			}
+			// unclear-type for fields validated upfront: WCV042
 
 			// If any property of a class is a form relevant property, the UI5 control class must implement the "sap.ui.core.IFormContent" interface
 			classDef._ui5implementsFormContent ??= propDef._ui5formProperty;
@@ -786,12 +781,7 @@ class RegistryEntry {
 				isUnclear: true,
 			};
 		}
-		// DEBUG
-		if (typeDef.isUnclear) {
-			logger.warn(
-				`🤔 unclear type - ${classDef._ui5QualifiedName} - aggregation '${slotDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
-			);
-		}
+		// unclear-type for slots validated upfront: WCV051
 
 		// The "default" slot will most likely be transformed into the "content" in UI5
 		if (aggregationName === "default") {
@@ -918,7 +908,11 @@ class RegistryEntry {
 				} else {
 					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
 					unknowInterfaces.add(interfaceDef.name);
-					logger.warn(`🤔 unknown interface - interface ${interfaceDef.name} is not part of the metadata`);
+					// same-package case is validated upfront (WCV090); only warn for
+					// cross-package references that the upfront pass cannot resolve.
+					if (interfaceDef.package && interfaceDef.package !== this.namespace) {
+						logger.warn(`🤔 unknown interface - interface ${interfaceDef.name} is not part of the metadata`);
+					}
 				}
 			});
 		}
@@ -1174,11 +1168,7 @@ class RegistryEntry {
 					},
 				);
 			} else {
-				// this is an interesting inconsistency that does not occur in the UI5 web components
-				// we report it here for custom web component development
-				logger.warn(
-					`The class '${classDef._ui5QualifiedName}' defines a slot called 'valueStateMessage', but does not provide a corresponding 'valueState' property! A UI5 control expects both to be present for correct 'valueState' handling.`,
-				);
+				// validated upfront: WCV052 (valueStateMessage slot without valueState property)
 			}
 		}
 	}
