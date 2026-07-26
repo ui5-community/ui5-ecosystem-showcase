@@ -135,6 +135,41 @@ server:
 
 That's it. Now you can transpile your sources with the help of Babel.
 
+## CLI
+
+In addition to the task and middleware, the package ships a small `ui5-transpile` command for transpiling individual files or globs without running a full `ui5 build`. The CLI reuses the same Babel configuration logic as the task/middleware and honors an existing `ui5.yaml` in the working directory (it picks up the configuration of `ui5-tooling-transpile-task`, falling back to `ui5-tooling-transpile-middleware`).
+
+```bash
+# Print transpiled JS to stdout (source map is inlined)
+npx ui5-transpile webapp/Foo.ts
+
+# Write the transpiled file (and a .js.map next to it)
+npx ui5-transpile webapp/Foo.ts -o dist/Foo.js
+
+# Transpile a glob into a mirrored directory layout
+npx ui5-transpile "webapp/**/*.ts" -o dist/
+
+# Watch mode: re-transpile on every change (requires -o)
+npx ui5-transpile "webapp/**/*.ts" -o dist/ --watch
+
+# Read source from stdin and write to stdout
+echo 'const x: number = 1' | npx ui5-transpile --ts -
+```
+
+Available flags:
+
+| Flag | Description |
+|------|-------------|
+| `-o, --out <file\|dir>` | Output target — file for a single input, directory (required) for multiple inputs; omit for stdout (1 input only) |
+| `--cwd <dir>` | Working directory used for `ui5.yaml` / `tsconfig.json` lookup (defaults to `process.cwd()`) |
+| `--ui5-yaml <path>` | Explicit `ui5.yaml` to read the configuration from |
+| `--ts` / `--no-ts` | Force the `transformTypeScript` option on or off |
+| `--no-sourcemaps` | Disable source maps |
+| `--inline-sourcemaps` | Force inline source maps |
+| `-w, --watch` | Re-transpile on file change; keeps the process alive (requires `-o`) |
+| `--debug` | Verbose logging to stderr |
+| `-h, --help`, `-v, --version` | Show help / print version |
+
 ### Advanced Options
 
 Configuration options are added in the configuration section. For JavaScript projects, ensure that no `tsconfig.json` is present in the project root. This would turn the UI5 CLI extension into the TypeScript mode.
