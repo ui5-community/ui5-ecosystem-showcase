@@ -397,10 +397,32 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 
 			const webcClass = chunkName && posix.relative(dirname(resolvedSource), chunkName);
 
-			// UI5 specific features
-			const needsLabelEnablement = clazz._ui5specifics.needsLabelEnablement;
+			// UI5 specific features.
+			//
+			// MessageMixin and LabelEnablement both install method wrappers (destroy / setLabelFor
+			// / exit / setRequired ...) by capturing the previous method into a SHARED prototype
+			// slot (this.fnDestroy, n.__orig_setLabelFor, ...) that the wrapper resolves via `this`
+			// at call time. Applying either a second time in the SAME prototype chain captures the
+			// ancestor's already-wrapped method, so the wrapper ends up calling itself — infinite
+			// recursion / stack overflow the first time that method runs (e.g. destroy() on
+			// DateRangePicker extends DatePicker, or MultiInput extends Input). We therefore emit
+			// each such mixin only on the TOPMOST ancestor that introduces it; subclasses inherit
+			// the already-wrapped methods.
+			//
+			// EnabledPropagator is intentionally NOT gated: it captures the previous method into a
+			// per-wrapper CLOSURE variable (var i = this.getEnabled; ... i.apply(this)), so nested
+			// wrappers chain safely and double application is harmless — gating it would be wrong.
+			const superChainHas = (c, flag) => {
+				for (let s = c?.superclass; s?._ui5specifics; s = s.superclass) {
+					if (s._ui5specifics[flag]) {
+						return true;
+					}
+				}
+				return false;
+			};
+			const needsLabelEnablement = clazz._ui5specifics.needsLabelEnablement && !superChainHas(clazz, "needsLabelEnablement");
 			const needsEnabledPropagator = clazz._ui5specifics.needsEnabledPropagator;
-			const needsMessageMixin = clazz._ui5specifics.needsMessageMixin;
+			const needsMessageMixin = clazz._ui5specifics.needsMessageMixin && !superChainHas(clazz, "needsMessageMixin");
 
 			// Determine the superclass UI5 module name and import it
 			let webcBaseClass = "sap/ui/core/webc/WebComponent";
