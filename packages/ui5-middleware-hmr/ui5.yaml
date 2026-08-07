@@ -1,0 +1,8 @@
+# https://ui5.github.io/cli/pages/extensibility/CustomServerMiddleware/
+specVersion: "3.0"
+metadata:
+  name: ui5-middleware-hmr
+kind: extension
+type: server-middleware
+middleware:
+  path: lib/middleware.js

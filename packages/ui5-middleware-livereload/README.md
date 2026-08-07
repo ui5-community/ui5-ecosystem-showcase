@@ -35,6 +35,17 @@ npm install ui5-middleware-livereload --save-dev
 - includeAppDeps: true|false, default: `false`
   Includes the application dependencies into the `watchPath`
 - host: `string`, default: `localhost`
+- force: true|false, default: *unset*
+  force-enable (`true`) or force-disable (`false`) the middleware, overriding the automatic UI5 Tooling V5+ auto-disable (see [UI5 Tooling V5](#ui5-tooling-v5) below)
+
+## UI5 Tooling V5
+
+UI5 Tooling **V5** provides a **built-in Live Reload**. Per the official docs, combining a custom live-reload middleware with the built-in feature can make the page "refresh more often than necessary." To avoid that, this middleware **automatically disables itself when running under UI5 Tooling V5 or higher** (detected via the `@ui5/server` major version).
+
+- To keep using this middleware under V5, set `configuration.force: true` **and** disable the built-in Live Reload via the `--no-live-reload` CLI flag or the `server.settings.liveReload` configuration option (otherwise both run and the page double-reloads).
+- To disable this middleware on **any** tooling version, set `configuration.force: false`.
+
+See the [UI5 CLI v5 migration guide](https://ui5.github.io/cli/v5/updates/migrate-v5) for details on the built-in Live Reload and other V5 changes.
 
 ## Usage
 

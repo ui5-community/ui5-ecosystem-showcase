@@ -40,7 +40,7 @@ server:
         query:
           "sap-ui-config-showall": true
     # Last middleware (for the same afterMiddleware) comes first!
-    - name: ui5-middleware-livereload
+    - name: ui5-middleware-hmr
       afterMiddleware: compression
       configuration:
         debug: true

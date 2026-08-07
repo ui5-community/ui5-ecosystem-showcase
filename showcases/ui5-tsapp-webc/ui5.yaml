@@ -62,7 +62,7 @@ server:
             skipDtsGeneration: false
             includeAssets: true
             forceAllAssets: true
-    - name: ui5-middleware-livereload
+    - name: ui5-middleware-hmr
       afterMiddleware: compression
       configuration:
         debug: true

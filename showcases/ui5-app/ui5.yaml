@@ -235,7 +235,14 @@ server:
       afterMiddleware: compression
       mountPath: /wsecho/
     # Last middleware (for the same afterMiddleware) comes first!
-    - name: ui5-middleware-livereload
+    #- name: ui5-middleware-livereload
+    #  afterMiddleware: compression
+    #  configuration:
+    #    debug: true
+    #    exclusions:
+    #      - "lib/nolivereload/"
+    # EXPERIMENTAL: hot module replacement prototype (see packages/ui5-middleware-hmr)
+    - name: ui5-middleware-hmr
       afterMiddleware: compression
       configuration:
         debug: true

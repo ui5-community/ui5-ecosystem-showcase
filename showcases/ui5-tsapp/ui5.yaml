@@ -76,7 +76,7 @@ server:
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
         <<: *cfgModules
-    - name: ui5-middleware-livereload
+    - name: ui5-middleware-hmr
       afterMiddleware: compression
       configuration:
         debug: true

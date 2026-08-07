@@ -7,6 +7,48 @@ const os = require("os");
 const portfinder = require("portfinder");
 
 /**
+ * Determines the major version of the `@ui5/server` actually running the UI5 CLI.
+ *
+ * The middleware runs under `@ui5/server` and its major tracks the UI5 CLI/Tooling major
+ * (CLI 3 → server 3, … CLI 5 → server 5). `middlewareUtil`/`getProject()` expose no tooling
+ * version, so we read the exported `@ui5/server/package.json` version. This middleware does
+ * not declare `@ui5/server` as a dependency, so we resolve it against both the project
+ * (`cwd`) and the CLI bin directory (`process.argv[1]`), which reaches the running server.
+ *
+ * @param {string} cwd project root path
+ * @returns {number|undefined} the `@ui5/server` major version, or `undefined` if unknown
+ */
+const getUI5ServerMajor = (cwd) => {
+	try {
+		const anchors = [cwd, path.dirname(process.argv[1] || "")].filter(Boolean);
+		// "./package.json" is an exported subpath of @ui5/server (safe under exports enforcement)
+		const pkgPath = require.resolve("@ui5/server/package.json", { paths: anchors });
+		const version = require(pkgPath).version; // e.g. "5.0.0-alpha.6"
+		const major = parseInt(String(version).split(".")[0], 10);
+		return Number.isFinite(major) ? major : undefined;
+	} catch (err) {
+		return undefined; // unknown => caller must fail open (do NOT disable)
+	}
+};
+
+/**
+ * Decides whether the middleware should disable itself (become a no-op pass-through).
+ *
+ * `force` wins if set; otherwise the middleware auto-disables only when it positively
+ * detects UI5 Tooling V5+ (which provides a built-in live reload). Unknown version fails
+ * open (does not disable).
+ *
+ * @param {number|undefined} serverMajor the detected `@ui5/server` major version
+ * @param {boolean|undefined} force explicit `configuration.force` (true=on, false=off)
+ * @returns {boolean} whether to disable
+ */
+const shouldDisable = (serverMajor, force) => {
+	if (force === true) return false; // forced on
+	if (force === false) return true; // forced off (any version)
+	return typeof serverMajor === "number" && serverMajor >= 5; // auto-disable on V5+, else fail open
+};
+
+/**
  * @typedef {object} [configuration] configuration
  * @property {string|yo<input|xml,json,properties>} extraExts - file extensions other than `js`, `html` and `css` to monitor for changes
  * @property {string|yo<input|35729>} [port] - an open port choosen the live reload server is started on
@@ -79,6 +121,30 @@ const determineSourcePaths = (collection, skipFwkDeps) => {
  */
 module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
+
+	// UI5 Tooling V5+ provides a built-in live reload; auto-disable this middleware there
+	// (unless forced) to avoid double reloads. `configuration.force` overrides in both
+	// directions. This must run before any side effects (port, livereload server, watcher).
+	const force = typeof options?.configuration?.force === "boolean" ? options.configuration.force : undefined;
+	const serverMajor = getUI5ServerMajor(cwd);
+	if (shouldDisable(serverMajor, force)) {
+		if (force === false) {
+			log.info("ui5-middleware-livereload: disabled via 'configuration.force: false'.");
+		} else {
+			log.info(
+				`ui5-middleware-livereload: detected UI5 Tooling v${serverMajor} which provides built-in live reload — disabling this middleware. Set 'configuration.force: true' to keep it enabled (and disable the built-in one via --no-live-reload or server.settings.liveReload).`,
+			);
+		}
+		return async function noopLivereload(req, res, next) {
+			next();
+		};
+	}
+	if (force === true && typeof serverMajor === "number" && serverMajor >= 5) {
+		log.info(
+			`ui5-middleware-livereload: UI5 Tooling v${serverMajor} detected but kept active via 'force' — this may conflict with the built-in live reload; disable it via --no-live-reload or server.settings.liveReload.`,
+		);
+	}
+
 	let port = await getPortForLivereload(options, 35729);
 
 	// due to compatibility reasons we keep the path as watchPath (watchPath has higher precedence than path)
