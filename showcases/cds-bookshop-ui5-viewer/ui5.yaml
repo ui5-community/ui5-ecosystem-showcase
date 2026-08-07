@@ -22,15 +22,17 @@ builder:
 # https://ui5.github.io/cli/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
-    - name: ui5-middleware-ui5
-      afterMiddleware: compression
-      configuration:
-        #serveFromNamespace: false
-        #modules:
-        #  ui5-app-simple: # by default available via: http://localhost:8080/resources/ui5/ecosystem/demo/simpleapp/
-        #    mountPath: "/bookshop"
+    # TODO: there is a side effect when using the ui5-middleware-ui5 which
+    #       triggers a reload of the whole cds server when starting to use it
+    #- name: ui5-middleware-ui5
+    #  afterMiddleware: compression
+    #  configuration:
+    #    #serveFromNamespace: false
+    #    #modules:
+    #    #  ui5-app-simple: # by default available via: http://localhost:8080/resources/ui5/ecosystem/demo/simpleapp/
+    #    #    mountPath: "/bookshop"
     # Last middleware (for the same afterMiddleware) comes first!
-    - name: ui5-middleware-livereload
+    - name: ui5-middleware-hmr
       afterMiddleware: compression
       configuration:
         debug: true

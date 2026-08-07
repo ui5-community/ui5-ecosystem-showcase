@@ -45,7 +45,13 @@ server:
       configuration:
         debug: true
     # Last middleware (for the same afterMiddleware) comes first!
-    - name: ui5-middleware-livereload
+    # Disabled while trying the HMR prototype — livereload would full-reload and mask HMR
+    #- name: ui5-middleware-livereload
+    #  afterMiddleware: compression
+    #  configuration:
+    #    debug: true
+    # EXPERIMENTAL: hot module replacement prototype (see packages/ui5-middleware-hmr)
+    - name: ui5-middleware-hmr
       afterMiddleware: compression
       configuration:
         debug: true

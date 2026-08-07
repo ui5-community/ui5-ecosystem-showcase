@@ -28,7 +28,7 @@
     "globals": "^17.6.0",
     "rimraf": "^6.1.3",
     "ui5-middleware-cap": "workspace:^",
-    "ui5-middleware-livereload": "workspace:^",
+    "ui5-middleware-hmr": "workspace:^",
     "ui5-middleware-ui5": "workspace:^",
     "ui5-task-zipper": "workspace:^"
   }

@@ -89,3 +89,6 @@ TODO.md
 
 # UI5 preload resources
 .ui5-middleware-serveframework
+
+# MCP server tmp files
+.playwright-mcp

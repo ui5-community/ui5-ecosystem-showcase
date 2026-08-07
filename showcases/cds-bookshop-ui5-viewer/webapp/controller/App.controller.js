@@ -1,53 +1,9 @@
 sap.ui.define(
 	["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel", "sap/ui/model/Filter", "sap/ui/model/FilterType", "sap/ui/model/FilterOperator", "sap/m/MessageToast"],
-	function (Controller, JSONModel, Filter, FilterType, FilterOperator, MessageToast) {
+	function (Controller, JSONModel, Filter, FilterType, FilterOperator) {
 		"use strict";
 
 		return Controller.extend("ui5.bookshopviewer.controller.App", {
-			onInit: function () {
-				this.getView().setModel(
-					new JSONModel({
-						quantity: 1,
-						status: "",
-					}),
-					"order"
-				);
-			},
-			onSelect: function (oEvent) {
-				const selectedBook = this.byId("selectedBook"),
-					oModel = this.getView().getModel("order");
-				selectedBook.bindContext(oEvent ? oEvent.getSource().getBindingContextPath() : "");
-				// reset the order information
-				oModel.setProperty("/quantity", 1);
-				oModel.setProperty("/selectedItemData", oEvent?.getSource().getBindingContext().getValue());
-			},
-			onSubmitOrder: async function () {
-				const view = this.getView(),
-					orderModel = view.getModel("order"),
-					i18nModel = view.getModel("i18n");
-				// /!\ - fetch API may not work properly for:
-				//   - SAML re-auth (in older versions of UI5)
-				//   - in Cloud Portal scenarios (not intercepted by doorway mapping)
-				fetch("/bookshop/submitOrder", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						book: orderModel.getProperty("/selectedItemData/ID"),
-						quantity: orderModel.getProperty("/quantity"),
-					}),
-				})
-					.then(() => {
-						MessageToast.show(i18nModel.getProperty("orderSuccessful"));
-					})
-					.catch(() => {
-						MessageToast.show(i18nModel.getProperty("error"));
-					})
-					.finally(() => {
-						this.getView().getModel().refresh();
-					});
-			},
 			onSearch: function (oEvent) {
 				const sValue = oEvent.getParameter("newValue"),
 					oFilter = new Filter("title", FilterOperator.Contains, sValue);
@@ -55,5 +11,5 @@ sap.ui.define(
 				this.onSelect(); // reset the selection
 			},
 		});
-	}
+	},
 );

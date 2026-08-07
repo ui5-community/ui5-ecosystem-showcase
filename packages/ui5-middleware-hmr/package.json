@@ -1,0 +1,22 @@
+{
+  "name": "ui5-middleware-hmr",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Experimental UI5 middleware for hot module replacement (HMR) instead of full-page live reload",
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-middleware-hmr#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-middleware-hmr"
+  },
+  "scripts": {
+    "lint": "eslint lib"
+  },
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "ws": "^8.21.0",
+    "portfinder": "^1.0.38"
+  }
+}
