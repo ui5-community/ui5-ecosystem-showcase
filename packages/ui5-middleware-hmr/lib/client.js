@@ -105,6 +105,12 @@
 	function isComponent(moduleName) {
 		return /(^|\/)Component$/.test(moduleName);
 	}
+	// A JS view (TypedView or classic JSView): its module name ends in ".view", e.g.
+	// "ui5/app/view/Main.view". Distinct from a plain leaf module so we re-instantiate the
+	// live view (not just re-require the module, which would be a silent no-op).
+	function isView(moduleName) {
+		return /\.view$/.test(moduleName);
+	}
 
 	function reRequireLeaf(moduleName) {
 		unload(moduleName);
@@ -409,11 +415,34 @@
 		requestAnimationFrame(apply);
 	}
 
-	// Re-instantiate a list of live XMLView instances in place: each new view is created
-	// with the same id and dropped into the same parent aggregation slot. XMLView.create
-	// re-reads the template fresh, so this picks up .view.xml changes; models on the
-	// parent/component survive (only the view's transient UI state is lost).
-	function reinstantiateViews(views, XMLView) {
+	// Create a fresh view of the SAME kind as `oldView`, preserving id + name. Returns a
+	// promise. This is the one place that knows how each view type is (re)created:
+	//   - XMLView   -> View.create({type:"XML"})   (template re-read from server)
+	//   - JSView    -> View.create({type:"JS"})    (classic JS view, deprecated)
+	//   - TypedView -> View.create({viewName:"module:<path>"})  (the view IS a JS module)
+	// For a typed view the "view name" is its defining module; UI5 addresses it with the
+	// "module:" prefix in slash notation. getViewName() on a typed instance returns that
+	// module name (with or without the prefix depending on version), so we normalize it.
+	function createViewLike(oldView, opts) {
+		var View = sap.ui.require("sap/ui/core/mvc/View");
+		var id = opts.id;
+		var viewName = opts.viewName;
+		if (oldView.isA && oldView.isA("sap.ui.core.mvc.XMLView")) {
+			return View.create({ id: id, viewName: viewName, type: "XML" });
+		}
+		if (oldView.isA && oldView.isA("sap.ui.core.mvc.JSView")) {
+			return View.create({ id: id, viewName: viewName, type: "JS" });
+		}
+		// TypedView (or any other View subclass created from a module): address by module name.
+		var mod = viewName.indexOf("module:") === 0 ? viewName : "module:" + viewName.replace(/\./g, "/");
+		return View.create({ id: id, viewName: mod });
+	}
+
+	// Re-instantiate a list of live View instances in place: each new view is created
+	// with the same id and dropped into the same parent aggregation slot. The template/module
+	// is re-read fresh, so this picks up view changes; models on the parent/component survive
+	// (only the view's transient UI state is lost). Works for XML and JS views alike.
+	function reinstantiateViews(views) {
 		views.forEach(function (oldView) {
 			var id = oldView.getId();
 			// serialize swaps per view id: if one is already running, just mark pending so a
@@ -423,13 +452,13 @@
 				return;
 			}
 			swapInFlight[id] = true;
-			swapOne(oldView, XMLView);
+			swapOne(oldView);
 		});
 	}
 
 	// Perform one view swap. On completion, if further edits arrived while in flight, re-run
 	// once against the current live instance of the same view name.
-	function swapOne(oldView, XMLView) {
+	function swapOne(oldView) {
 		var id = oldView.getId();
 		var viewName = oldView.getViewName();
 		var done = function () {
@@ -441,14 +470,14 @@
 				var current = null;
 				if (Element && Element.registry) {
 					Element.registry.forEach(function (el) {
-						if (el.isA && el.isA("sap.ui.core.mvc.XMLView") && el.getViewName && el.getViewName() === viewName) {
+						if (el.isA && el.isA("sap.ui.core.mvc.View") && el.getViewName && el.getViewName() === viewName) {
 							current = el;
 						}
 					});
 				}
 				if (current) {
 					swapInFlight[current.getId()] = true;
-					swapOne(current, XMLView);
+					swapOne(current);
 				}
 			}
 		};
@@ -529,7 +558,7 @@
 		var owner = comp && comp.getOwnerComponentFor ? comp.getOwnerComponentFor(oldView) || comp.getOwnerComponentFor(parent) : null;
 		// preserve the original view id so stable IDs / bindings keep working
 		var create = function () {
-			return XMLView.create({ id: id, viewName: viewName });
+			return createViewLike(oldView, { id: id, viewName: viewName });
 		};
 		var runCreate = owner ? owner.runAsOwner.bind(owner, create) : create;
 		// snapshot scroll offsets before the old DOM is torn down, restore after the new render
@@ -614,19 +643,19 @@
 		}
 	}
 
-	// Re-instantiate every XMLView whose controller module changed. Models (app state)
+	// Re-instantiate every view whose controller module changed. Models (app state)
 	// survive because they live on the parent/owner component, not the view instance.
 	function swapViewsForController(moduleName, alreadyUnloaded) {
 		var wanted = controllerClassName(moduleName);
 		withCore(function () {
-			sap.ui.require(["sap/ui/core/mvc/XMLView", "sap/ui/core/Element"], function (XMLView, Element) {
+			sap.ui.require(["sap/ui/core/Element"], function (Element) {
 				var registry = Element.registry || (sap.ui.core.Element && sap.ui.core.Element.registry);
 				if (!registry) {
 					return fullReload("no Element registry to locate views");
 				}
 				var affected = [];
 				registry.forEach(function (el) {
-					if (el.isA && el.isA("sap.ui.core.mvc.XMLView")) {
+					if (el.isA && el.isA("sap.ui.core.mvc.View")) {
 						// match on the view's controller class, not the view name — views and
 						// controllers live under different paths (view/ vs controller/)
 						var ctrl = el.getController && el.getController();
@@ -644,12 +673,61 @@
 					unload(moduleName);
 				}
 				// Explicitly re-require the controller module to a fresh, executed class BEFORE
-				// creating any view. XMLView.create resolves the controller by name; if we let
+				// creating any view. View.create resolves the controller by name; if we let
 				// it trigger the (re)load implicitly, it can race the unload and instantiate a
 				// stale class. Priming here guarantees the fresh class (with current deps) is in
 				// the registry when create() resolves it.
 				sap.ui.require([moduleName], function () {
-					reinstantiateViews(affected, XMLView);
+					reinstantiateViews(affected);
+				});
+			});
+		});
+	}
+
+	// Re-instantiate every live view whose defining MODULE changed (a TypedView/JSView JS
+	// view — the file IS the view). Matches by module name against each live view's name.
+	// The module has already been unloaded by the caller; re-require it fresh, then swap.
+	function swapJsView(moduleName, alreadyUnloaded) {
+		// Match the changed module against each live view's getViewName(). The two JS view
+		// flavours report their name DIFFERENTLY:
+		//   - TypedView -> the module id incl. the ".view" segment, e.g.
+		//                  "module:ui5/app/view/Main.view" (dotted, possibly "module:"-prefixed)
+		//   - JSView    -> the registered view name WITHOUT ".view", e.g. "ui5.app.view.Main"
+		// So we accept a live view whose slash-normalized name equals the module name either
+		// WITH or WITHOUT its trailing ".view" segment.
+		var wantedSlash = moduleName.replace(/\./g, "/"); // ".../Main/view" (TypedView form)
+		var wantedSlashNoView = moduleName.replace(/\.view$/, "").replace(/\./g, "/"); // ".../Main" (JSView form)
+		withCore(function () {
+			sap.ui.require(["sap/ui/core/Element"], function (Element) {
+				var registry = Element.registry || (sap.ui.core.Element && sap.ui.core.Element.registry);
+				if (!registry) {
+					return fullReload("no Element registry to locate views");
+				}
+				var affected = [];
+				registry.forEach(function (el) {
+					if (el.isA && el.isA("sap.ui.core.mvc.View")) {
+						var name = el.getViewName && el.getViewName();
+						if (!name) {
+							return;
+						}
+						var nameSlash = String(name)
+							.replace(/^module:/, "")
+							.replace(/\./g, "/");
+						if (nameSlash === wantedSlash || nameSlash === wantedSlashNoView) {
+							affected.push(el);
+						}
+					}
+				});
+				if (!affected.length) {
+					log("JS view changed but no live instance found, re-requiring only:", moduleName);
+					return alreadyUnloaded ? primeModule(moduleName) : reRequireLeaf(moduleName);
+				}
+				if (!alreadyUnloaded) {
+					unload(moduleName);
+				}
+				// re-require the fresh view module before recreating, mirroring the controller path
+				sap.ui.require([moduleName], function () {
+					reinstantiateViews(affected);
 				});
 			});
 		});
@@ -665,7 +743,7 @@
 			wanted[String(n).replace(/\./g, "/")] = true;
 		});
 		withCore(function () {
-			sap.ui.require(["sap/ui/core/mvc/XMLView", "sap/ui/core/Element"], function (XMLView, Element) {
+			sap.ui.require(["sap/ui/core/Element"], function (Element) {
 				var registry = Element.registry || (sap.ui.core.Element && sap.ui.core.Element.registry);
 				if (!registry) {
 					return fullReload("no Element registry to locate views");
@@ -682,7 +760,7 @@
 				if (!affected.length) {
 					return fullReload("view(s) changed but no live instance found: " + (viewNames || []).join(", "));
 				}
-				reinstantiateViews(affected, XMLView);
+				reinstantiateViews(affected);
 			});
 		});
 	}
@@ -700,26 +778,30 @@
 		var all = [moduleName].concat(dependents);
 		var components = all.filter(isComponent);
 		var controllers = all.filter(isController);
+		var jsViews = all.filter(isView);
 		var leaves = all.filter(function (m) {
-			return !isController(m) && !isComponent(m);
+			return !isController(m) && !isComponent(m) && !isView(m);
 		});
 
 		// Fine-grained overlap rule: a Component rebuild recreates the component's whole control
 		// tree (its rootView, routed views and their controllers) from the fresh manifest, so a
-		// controller OWNED by a component we're about to rebuild would be swapped twice. Drop those
-		// controllers here (a controller belongs to a component when its module sits under the
-		// component's namespace, i.e. the component module minus the trailing "/Component").
+		// controller OR JS view OWNED by a component we're about to rebuild would be swapped twice.
+		// Drop those here (a module belongs to a component when it sits under the component's
+		// namespace, i.e. the component module minus the trailing "/Component").
 		var rebuiltNamespaces = components.map(function (c) {
 			return c.replace(/\/Component$/, "/");
 		});
-		var ownedByRebuilt = function (ctrl) {
+		var ownedByRebuilt = function (mod) {
 			return rebuiltNamespaces.some(function (ns) {
-				return ctrl.indexOf(ns) === 0;
+				return mod.indexOf(ns) === 0;
 			});
 		};
 		if (rebuiltNamespaces.length) {
 			controllers = controllers.filter(function (c) {
 				return !ownedByRebuilt(c);
+			});
+			jsViews = jsViews.filter(function (v) {
+				return !ownedByRebuilt(v);
 			});
 		}
 
@@ -731,6 +813,8 @@
 		//   2. Prime the Component module(s) themselves (fresh class for Component.create).
 		//   3. Rebuild each affected Component in place (recreates its rootView + routed views).
 		//   4. Re-instantiate views for any controllers NOT owned by a rebuilt component.
+		//   5. Re-instantiate any changed JS views (TypedView/JSView) NOT owned by a rebuilt
+		//      component — the module was re-executed, now the live instance must be recreated.
 		primeLeaves(leaves, function () {
 			primeLeaves(components, function () {
 				if (components.length) {
@@ -751,8 +835,15 @@
 						unload(c); // fresh controller code; view create will re-require it
 						swapViewsForController(c, /*alreadyUnloaded*/ true);
 					});
-				} else if (!components.length && dependents.length) {
+				} else if (!components.length && !jsViews.length && dependents.length) {
 					log("hot-swap leaf + " + dependents.length + " dependent(s): " + moduleName);
+				}
+				if (jsViews.length) {
+					log("hot-swap: " + jsViews.length + " JS view(s)");
+					jsViews.forEach(function (v) {
+						unload(v); // fresh view code; View.create will re-require it
+						swapJsView(v, /*alreadyUnloaded*/ true);
+					});
 				}
 			});
 		});
@@ -1046,9 +1137,15 @@
 				if (!refreshed) {
 					return fullReload("i18n change but no ResourceModel found");
 				}
-				Promise.all(pending).then(function () {
-					log("i18n hot-refreshed " + refreshed + " ResourceModel(s)");
-				});
+				Promise.all(pending).then(
+					function () {
+						log("i18n hot-refreshed " + refreshed + " ResourceModel(s)");
+					},
+					function (e) {
+						// a bundle failed to (re)load — don't leave the rejection unhandled
+						fullReload("i18n refresh failed: " + String(e));
+					},
+				);
 			});
 		});
 	}
@@ -1078,7 +1175,11 @@
 						try {
 							// cache-bust so the browser HTTP cache doesn't serve stale JSON
 							var sep = uri.indexOf("?") >= 0 ? "&" : "?";
-							model.loadData(uri + sep + "_hmr=" + Date.now());
+							model.loadData(uri + sep + "_hmr=" + Date.now()).then(undefined, function (e) {
+								// loadData is async; observe its rejection so a failed fetch
+								// falls back to a reload instead of an unhandled rejection
+								fullReload("json model reload failed for '" + name + "': " + String(e));
+							});
 							refreshed++;
 						} catch (e) {
 							log("json model reload failed for '" + name + "':", String(e));
@@ -1117,6 +1218,10 @@
 	}
 
 	// ---- connect -------------------------------------------------------------
+	// Track whether we have ever been connected, so a RE-connect after a dev-server
+	// restart can reload the page once (to pick up code that changed while the socket
+	// was down). The very first successful connect must NOT reload.
+	var wasConnected = false;
 	function connect() {
 		var proto = location.protocol === "https:" ? "wss" : "ws";
 		var url = proto + "://" + location.hostname + ":" + PORT;
@@ -1128,6 +1233,13 @@
 			return;
 		}
 		ws.onopen = function () {
+			if (wasConnected) {
+				// reconnected after the server came back — the page may be running stale
+				// code; reload once to resync. (fullReload navigates away, so nothing below runs.)
+				fullReload("dev server reconnected");
+				return;
+			}
+			wasConnected = true;
 			log("connected on port " + PORT + (canUnload() ? "" : " (unloadResources unavailable — module changes will full-reload)"));
 		};
 		ws.onmessage = function (ev) {
@@ -1144,7 +1256,7 @@
 			}
 		};
 		ws.onclose = function () {
-			// dev server restart — try to reconnect, then reload once back
+			// dev server restart — try to reconnect; onopen will reload once we're back
 			setTimeout(connect, 1000);
 		};
 		ws.onerror = function () {
