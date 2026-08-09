@@ -1,0 +1,12 @@
+<mvc:View controllerName="ui5.ecosystem.demo.app.controller.Hmr" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+  <Page title="XML View" showNavButton="true" navButtonPress="onNavBack">
+    <content>
+      <VBox alignItems="Center" justifyContent="Center" height="100%">
+        <Title level="H1" text="👋 Hello from an XML View" />
+        <!-- edit this text and save to see HMR re-instantiate the view -->
+        <Text text="Edit me in view/Hmr.view.xml and hit save — HMR swaps me in place." />
+        <Button text="Back to Main" icon="sap-icon://nav-back" press="onNavBack" />
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

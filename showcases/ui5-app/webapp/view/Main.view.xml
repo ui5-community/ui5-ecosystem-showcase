@@ -12,6 +12,11 @@
           <Button icon="sap-icon://forward" text="{i18n>startPage.odatav4Button.text}" press="navTo('RouteODataV4')" />
           <Button icon="sap-icon://forward" text="{i18n>startPage.odatav2Button.text}" press="navTo('RouteODataV2')" />
         </HBox>
+        <HBox>
+          <Button icon="sap-icon://forward" text="{i18n>startPage.typedButton.text}" press="navTo('RouteTyped')" />
+          <Button icon="sap-icon://forward" text="{i18n>startPage.classicButton.text}" press="navTo('RouteClassic')" />
+          <Button icon="sap-icon://forward" text="{i18n>startPage.hmrButton.text}" press="navTo('RouteHmr')" />
+        </HBox>
         <Button text="IA Sync" press="onPress" />
         <Panel expandable="true">
           <headerToolbar>
