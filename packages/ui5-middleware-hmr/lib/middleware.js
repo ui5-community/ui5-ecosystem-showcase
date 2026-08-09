@@ -112,7 +112,9 @@ const classify = (relFromWebapp, namespace) => {
 			return { kind: "json", module: toModule(), path: relFromWebapp };
 		case ".js":
 		case ".ts":
-			// controllers/components need special handling; the client decides based on the name
+			// controllers/components/JS views need special handling; the client decides based on
+			// the name. The module name keeps its role suffix (e.g. ".controller"/".view") so the
+			// client can recognize it — a ".view.js" TypedView/JSView yields "<ns>/view/Main.view".
 			return { kind: "module", module: toModule(), path: relFromWebapp };
 		case ".xml":
 			// XMLView.create re-reads the template (and any declaratively embedded fragment)
@@ -212,6 +214,9 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 
 	// standalone ws server (kept separate from the UI5 http server for prototype simplicity)
 	const wss = new WebSocketServer({ port });
+	// Without this, an 'error' event (e.g. EADDRINUSE on a forced port) is unhandled and
+	// crashes the dev server. Mirrors the watcher error handler below.
+	wss.on("error", (err) => log.error(`ui5-middleware-hmr: websocket server error: ${err}`));
 	log.info(`ui5-middleware-hmr: websocket server listening on port ${port}`);
 
 	const broadcast = (msg) => {
@@ -226,11 +231,20 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 
 	// exclusions: one or many `regex` (as strings), aligned with ui5-middleware-livereload.
 	// VCS metadata dirs and node_modules are always excluded; user exclusions add to them.
+	// A malformed pattern is skipped with a warning rather than crashing server startup.
+	const compileExclusion = (exclusion) => {
+		try {
+			return new RegExp(exclusion);
+		} catch (err) {
+			log.warn(`ui5-middleware-hmr: ignoring invalid exclusion pattern ${JSON.stringify(exclusion)}: ${err.message}`);
+			return undefined;
+		}
+	};
 	let exclusions = config.exclusions;
 	if (Array.isArray(exclusions)) {
-		exclusions = exclusions.map((exclusion) => new RegExp(exclusion));
+		exclusions = exclusions.map(compileExclusion).filter(Boolean);
 	} else if (exclusions) {
-		exclusions = [new RegExp(exclusions)];
+		exclusions = [compileExclusion(exclusions)].filter(Boolean);
 	} else {
 		exclusions = [];
 	}
@@ -306,6 +320,32 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		broadcast(change);
 	});
 	watcher.on("error", (err) => log.error(`ui5-middleware-hmr: watcher error: ${err}`));
+
+	// The UI5 middleware contract has no dispose hook, so we tie resource cleanup to the
+	// Node process lifecycle. Without this, the file watcher and the ws server (its port)
+	// leak when the dev server stops/restarts within the same process. cleanup() is
+	// idempotent and does NOT force-exit — we only release our own resources and let the
+	// server keep its normal shutdown semantics.
+	let cleanedUp = false;
+	const cleanup = () => {
+		if (cleanedUp) {
+			return;
+		}
+		cleanedUp = true;
+		try {
+			watcher.close();
+		} catch {
+			/* best-effort */
+		}
+		try {
+			wss.close();
+		} catch {
+			/* best-effort */
+		}
+	};
+	process.once("exit", cleanup);
+	process.once("SIGINT", cleanup);
+	process.once("SIGTERM", cleanup);
 
 	// the client runtime, parameterized with the ws port
 	const clientSource = fs.readFileSync(path.join(__dirname, "client.js"), "utf-8").replace("__HMR_PORT__", String(port));
