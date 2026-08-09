@@ -1,5 +1,26 @@
 # Change Log
 
+## 3.4.0
+
+### Minor Changes
+
+- [#1422](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1422) [`288001e`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/288001e4eccf22977677531440cb0c7acf36c5c4) Thanks [@petermuessig](https://github.com/petermuessig)! - feat(ui5-middleware-livereload): auto-disable under UI5 Tooling V5+ with a `force` override
+
+  UI5 Tooling **V5** ships a built-in Live Reload; running this middleware alongside
+  it makes the page reload more often than necessary. The middleware now **detects
+  UI5 Tooling V5 or higher** (via the running `@ui5/server` major version) and
+  **auto-disables itself** there to avoid double reloads.
+
+  A new `configuration.force` option overrides the automatic behavior in both
+  directions:
+  - `force: true` keeps the middleware active under V5+ (disable the built-in Live
+    Reload via `--no-live-reload` or `server.settings.liveReload` to avoid a
+    double reload)
+  - `force: false` disables the middleware on any tooling version
+
+  When the tooling version cannot be detected, the middleware fails open (stays
+  enabled) so existing setups keep working.
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
@@ -7,140 +28,76 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package ui5-middleware-livereload
 
-
-
-
-
 # [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.2.1...ui5-middleware-livereload@3.3.0) (2026-03-29)
-
 
 ### Features
 
-* add host configuration option ([#1331](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1331)) ([d585c98](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d585c98ca338f41fe44078ac26d2423d7a04562e))
-
-
-
-
+- add host configuration option ([#1331](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1331)) ([d585c98](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d585c98ca338f41fe44078ac26d2423d7a04562e))
 
 ## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.2.0...ui5-middleware-livereload@3.2.1) (2026-01-15)
 
 **Note:** Version bump only for package ui5-middleware-livereload
 
-
-
-
-
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.1.4...ui5-middleware-livereload@3.2.0) (2025-12-02)
-
 
 ### Features
 
-* update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
-
-
-
-
+- update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
 
 ## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.1.3...ui5-middleware-livereload@3.1.4) (2025-09-17)
 
 **Note:** Version bump only for package ui5-middleware-livereload
 
-
-
-
-
 ## [3.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.1.2...ui5-middleware-livereload@3.1.3) (2025-09-15)
 
 **Note:** Version bump only for package ui5-middleware-livereload
 
-
-
-
-
 ## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.1.1...ui5-middleware-livereload@3.1.2) (2025-07-06)
-
 
 ### Bug Fixes
 
-* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
-
-
-
-
+- update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
 
 ## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.1.0...ui5-middleware-livereload@3.1.1) (2025-03-19)
 
 **Note:** Version bump only for package ui5-middleware-livereload
 
-
-
-
-
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.0.3...ui5-middleware-livereload@3.1.0) (2024-09-06)
-
 
 ### Features
 
-* enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
-
-
-
-
+- enhanced v4 compat + update dependencies ([#1070](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1070)) ([2d7ed16](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2d7ed1623249febd32ecabdd2b47698f1cd968d5))
 
 ## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.0.2...ui5-middleware-livereload@3.0.3) (2024-02-18)
 
 **Note:** Version bump only for package ui5-middleware-livereload
 
-
-
-
-
 ## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.0.1...ui5-middleware-livereload@3.0.2) (2023-10-14)
 
 **Note:** Version bump only for package ui5-middleware-livereload
 
-
-
-
-
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.0.0...ui5-middleware-livereload@3.0.1) (2023-10-01)
-
 
 ### Bug Fixes
 
-* **ui5-middleware-livereload:** include UI5 app dependencies ([#859](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/859)) ([2a1650c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2a1650c4f800b9c3ea8c25cbb6695dbb32483ee6))
-
-
-
-
+- **ui5-middleware-livereload:** include UI5 app dependencies ([#859](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/859)) ([2a1650c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2a1650c4f800b9c3ea8c25cbb6695dbb32483ee6))
 
 # [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.8.4...ui5-middleware-livereload@3.0.0) (2023-07-31)
 
-
 ### Features
 
-* migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
-* prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
-
+- migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
+- prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
 
 ### BREAKING CHANGES
 
-* The support for UI5 Tooling V2 has been removed
-
-
-
-
+- The support for UI5 Tooling V2 has been removed
 
 ## [0.8.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.8.3...ui5-middleware-livereload@0.8.4) (2023-07-03)
 
-
 ### Bug Fixes
 
-* **ui5-middleware-livereload:** by default ignore framework dependencies ([#761](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/761)) ([bd0c1de](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bd0c1de9155c44bf27c9cb44d2a21c3dac3d1287))
-
-
-
-
+- **ui5-middleware-livereload:** by default ignore framework dependencies ([#761](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/761)) ([bd0c1de](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bd0c1de9155c44bf27c9cb44d2a21c3dac3d1287))
 
 ## [0.8.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.8.2...ui5-middleware-livereload@0.8.3) (2023-06-03)
 
