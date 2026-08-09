@@ -149,6 +149,21 @@
           "name": "RouteES5",
           "pattern": "sapes5",
           "target": ["TargetES5"]
+        },
+        {
+          "name": "RouteTyped",
+          "pattern": "typed",
+          "target": ["TargetTyped"]
+        },
+        {
+          "name": "RouteClassic",
+          "pattern": "classic",
+          "target": ["TargetClassic"]
+        },
+        {
+          "name": "RouteHmr",
+          "pattern": "hmr",
+          "target": ["TargetHmr"]
         }
       ],
       "targets": {
@@ -193,6 +208,26 @@
           "clearControlAggregation": false,
           "viewId": "ModelView",
           "viewName": "ModelView"
+        },
+        "TargetTyped": {
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "Typed",
+          "viewName": "module:ui5/ecosystem/demo/app/view/Typed.view"
+        },
+        "TargetClassic": {
+          "viewType": "JS",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "Classic",
+          "viewName": "Classic"
+        },
+        "TargetHmr": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "Hmr",
+          "viewName": "Hmr"
         }
       }
     },
