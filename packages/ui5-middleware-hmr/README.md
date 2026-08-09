@@ -13,11 +13,12 @@ What gets hot-swapped vs. reloaded:
 | `*.css` | stylesheet re-injected, no reload |
 | `*.js` / `*.ts` leaf module (formatter, model, helper) | module unloaded + re-required |
 | `*.js` / `*.ts` leaf with dependents | changed module **and its transitive dependents** unloaded + re-required (server computes the dependency graph) |
-| `*.controller.js` | owning `XMLView`(s) re-instantiated in place; models preserved |
+| `*.controller.js` | owning view(s) re-instantiated in place; models preserved |
 | `*.properties` (i18n) | `ResourceModel` recreated with a cache-busted bundle + swapped onto the component; bound texts refresh, no reload |
 | `*.json` | matching `JSONModel` reloaded via `loadData` (cache-busted) |
 | `*.view.xml` (non-routed) | owning `XMLView`(s) re-instantiated in place (template re-read fresh); models preserved |
 | `*.view.xml` (routed target) | router re-matches the current route and rebuilds the view through its own lifecycle; models preserved |
+| `*.view.js` / `*.view.ts` (TypedView or classic JSView) | changed view module re-required + owning view(s) re-instantiated in place; models preserved |
 | `*.view.xml` (root view / `sap.ui5/rootView`) | owning **Component** rebuilt in place (see `Component.js`) |
 | `*.fragment.xml` (embedded in a view) | embedding view(s) re-instantiated (server resolves fragment → views); models preserved |
 | `Component.js` / `Component.ts` | **Component rebuilt in place** through its `ComponentContainer`; current route preserved; runtime model state lost |
@@ -221,7 +222,7 @@ Legend: 🟢 hot-swap (no reload) · 🟡 partial (in-place rebuild, some transi
 | `*.controller.js`/`.ts` own-code change | 🟡 owning view(s) re-instantiated in place | 🔴 reload | UI5 has **no** API to rebind a fresh controller onto a live view. So the client re-requires the controller to a fresh class **first**, then re-creates the owning `XMLView` with the same id in the same aggregation slot. Component/parent **models survive**; the view's transient UI state (scroll, selection, unsaved input) is lost. |
 | Controller change where a routed view owns it | 🟡 router re-matches + rebuilds the view | 🔴 reload | Same as above, but routed views are rebuilt through the router (see routed views below) so navigation state stays consistent. |
 
-### Views (`*.view.xml`)
+### Views (`*.view.xml`, `*.view.js`, `*.view.ts`)
 
 | Scenario | HMR | Live reload | Why |
 | --- | --- | --- | --- |
@@ -229,6 +230,7 @@ Legend: 🟢 hot-swap (no reload) · 🟡 partial (in-place rebuild, some transi
 | **Routed** view that is currently displayed | 🟡 router re-match rebuilds it in place | 🔴 reload | The router owns routed views' whole lifecycle (view cache, `NavContainer` current-page, nav history). The client evicts the router's view cache, destroys the old instance, and calls `router.parse(currentHash)` so the **router** rebuilds and re-navigates — with the transition forced to instant `show`, so the edited view reappears with no root flash / slide. |
 | **Routed** view in a subfolder (e.g. `view/fiori/DynamicPage.view.xml`, target `viewName: "fiori.DynamicPage"`) | 🟢 fixed — router re-match | 🔴 reload | *This used to misbehave* (see below). The target's `viewName` is relative to `viewPath` and contains a dot (`fiori.DynamicPage`); the fix matches it against **both** the qualified and the `viewPath`-relative form, so subfolder targets are recognized and refreshed through the router instead of falling back. |
 | **Routed** view that is **not** the current page | 🟡 evicted, rebuilt on next navigation | 🔴 reload | Re-parsing the hash would spuriously re-navigate to the *current* route. Instead the client just evicts the router cache entry; the next real `navTo` rebuilds it cleanly via a cache miss. |
+| **JS view** — TypedView (`*.view.js`/`.ts`, `View.extend` + `createContent`) or classic JSView (`sap.ui.jsview`) | 🟡 module re-required + view re-instantiated in place | 🔴 reload | A JS view *is* a module, so a change is both a code change and a view change. The client unloads + re-requires the module to a fresh class, then re-instantiates the live view(s) through the same path as XML views (aggregation-slot swap or router re-match). The two flavours report `getViewName()` differently — TypedView keeps the `.view` module segment, JSView drops it — so the live instance is matched against the changed module **with or without** its trailing `.view`. Models on the parent/component survive; transient view UI state is lost. |
 | Root view (the manifest `sap.ui5/rootView`, e.g. `App.view.xml`) | 🟡 owning Component rebuilt in place | 🔴 reload | The root view's parent is the `UIComponent` itself (no aggregation slot to swap into), so it's refreshed by rebuilding the Component (see below). Route is preserved. |
 
 ### Components
@@ -258,7 +260,7 @@ Legend: 🟢 hot-swap (no reload) · 🟡 partial (in-place rebuild, some transi
 
 | Scenario | HMR | Live reload | Why |
 | --- | --- | --- | --- |
-| Other `*.xml` / unknown file types | 🔴 full reload | 🔴 reload | No safe in-place strategy; degrade to reload. |
+| Other `*.xml`, `*.view.json`, `*.view.html` / unknown file types | 🔴 full reload | 🔴 reload | No safe in-place strategy. JSON/HTML views are not covered (only XML and JS views are); everything unrecognized degrades to reload. |
 | Private loader API (`unloadResources`) unavailable (removed in a future UI5) | 🔴 full reload | 🔴 reload | Feature-detected at connect time; if missing, **all** module/view/component changes fall back to reload, so HMR degrades to live-reload behavior rather than breaking. |
 | Nested app / running behind a path-prefixing proxy | 🟢 client script still loads | n/a | The injected client `<script src>` is **relative to the served HTML** (not server-root-absolute), so it resolves back to this server's root at any nesting depth. |
 
@@ -293,6 +295,17 @@ back to the first page" symptom:
   controller class. Verified for controller-own-code changes, leaf-dependency propagation,
   and repeated consecutive edits. The view's transient UI state (scroll, selection) is lost;
   models on the component/parent survive.
+- **JS view (`*.view.js`/`.ts`) hot-swap** covers both a modern **TypedView**
+  (`sap.ui.core.mvc.View.extend()` with `createContent`) and a classic **JSView**
+  (`sap.ui.jsview(...)`, deprecated). Because a JS view is itself a module, the change is both
+  a code change and a view change: the client unloads + re-requires the module to a fresh class,
+  then re-instantiates the live view(s) through the same machinery as XML views (in-place
+  aggregation swap for embedded views, router re-match for routed targets). A JSView is created
+  with `View.create({type:"JS"})` and a TypedView with `View.create({viewName:"module:…"})`; the
+  live instance is matched against the changed module **with or without** its trailing `.view`
+  segment, since the two flavours report `getViewName()` differently. Transient view UI state is
+  lost; component/parent models survive. **JSON views (`*.view.json`) and HTML views
+  (`*.view.html`) are not covered** and fall back to a full reload.
 - **XML view (`*.view.xml`) hot-swap** re-instantiates the matching live `XMLView`(s):
   `XMLView.create` re-reads the template from the server (no XML cache to bust), so the new
   markup renders in place with the original view id preserved. For **routed** views, the
