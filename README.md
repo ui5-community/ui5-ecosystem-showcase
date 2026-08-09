@@ -7,14 +7,14 @@
 
 > 📖 **The full, browsable docs live at [ui5-community.github.io/ui5-ecosystem-showcase](https://ui5-community.github.io/ui5-ecosystem-showcase/)** — extension catalog, picker, contribution guide, and more.
 
-This monorepo ships **27 community-maintained UI5 CLI extensions** — tasks, middlewares, and full UI5 CLI extensions — plus a set of showcase apps that demonstrate them in practice. It's the reference for what the [UI5 CLI](https://ui5.github.io/cli/) extensibility (custom [tasks](https://ui5.github.io/cli/pages/extensibility/CustomTasks/) and [middlewares](https://ui5.github.io/cli/pages/extensibility/CustomServerMiddleware/)) is capable of.
+This monorepo ships **28 community-maintained UI5 CLI extensions** — tasks, middlewares, and full UI5 CLI extensions — plus a set of showcase apps that demonstrate them in practice. It's the reference for what the [UI5 CLI](https://ui5.github.io/cli/) extensibility (custom [tasks](https://ui5.github.io/cli/pages/extensibility/CustomTasks/) and [middlewares](https://ui5.github.io/cli/pages/extensibility/CustomServerMiddleware/)) is capable of.
 
 > :wave: This is a **community project** — no official SAP support. Use it, file issues, contribute, help others.
 
 ## Quick links
 
 - 🚀 [**Get started**](#getting-started) (clone & run locally)
-- 📦 [**Browse the 27 extensions**](https://ui5-community.github.io/ui5-ecosystem-showcase/extensions/)
+- 📦 [**Browse the 28 extensions**](https://ui5-community.github.io/ui5-ecosystem-showcase/extensions/)
 - 🧭 [**Pick the right tool for your problem**](https://ui5-community.github.io/ui5-ecosystem-showcase/selecting/)
 - 🔌 [**Backend connectivity comparison**](https://ui5-community.github.io/ui5-ecosystem-showcase/backend-connectivity/)
 - 🤝 [**Contribute**](#contributing)
@@ -22,7 +22,7 @@ This monorepo ships **27 community-maintained UI5 CLI extensions** — tasks, mi
 
 ## Highlights
 
-- **27 published packages** — middlewares, tasks, and tooling for daily UI5 development.
+- **28 published packages** — middlewares, tasks, and tooling for daily UI5 development.
 - **Several with millions of monthly NPM downloads** — `ui5-tooling-transpile`, `ui5-tooling-modules`, `ui5-task-zipper`, `ui5-middleware-livereload`, `ui5-middleware-simpleproxy`.
 - **Automated releases** via [Changesets](https://github.com/changesets/changesets) + GitHub Actions, OIDC trusted publishing to NPM.
 - **Spec V3** — built for [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) and [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30).
@@ -39,6 +39,7 @@ packages
 ├── ui5-middleware-approuter        // proxy SAP CF / XSA destinations during dev
 ├── ui5-middleware-cap              // embed CAP CDS server middlewares in the UI5 dev server
 ├── ui5-middleware-iasync           // sync UI interactions across browsers (alpha!)
+├── ui5-middleware-hmr              // hot module replacement of webapp sources (experimental!)
 ├── ui5-middleware-index            // serve a generated welcome / start page at /
 ├── ui5-middleware-livereload       // live-reload webapp sources on change
 ├── ui5-middleware-onelogin         // generic login support

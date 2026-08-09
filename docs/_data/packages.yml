@@ -43,6 +43,13 @@
   npm: ui5-middleware-iasync
   bestofui5_indexed: true
 
+- name: ui5-middleware-hmr
+  category: Middleware
+  description: "Experimental: hot module replacement of `webapp` sources on change instead of a full-page live reload."
+  github_path: packages/ui5-middleware-hmr
+  npm: ui5-middleware-hmr
+  bestofui5_indexed: false
+
 - name: ui5-middleware-index
   category: Middleware
   description: Serve a generated welcome / start page for the UI5 dev server root.
