@@ -3,13 +3,13 @@ title: Extensions
 layout: default
 nav_order: 2
 permalink: /extensions/
-description: "Full catalog of the 27 UI5 CLI extensions published from this monorepo."
+description: "Full catalog of the 28 UI5 CLI extensions published from this monorepo."
 ---
 
 # Extensions catalog
 {: .no_toc }
 
-The 27 packages below are all maintained in this monorepo and published to NPM under the [`ui5-community`](https://github.com/ui5-community) ownership. Picking the right one? See [Selecting an extension](../selecting/).
+The 28 packages below are all maintained in this monorepo and published to NPM under the [`ui5-community`](https://github.com/ui5-community) ownership. Picking the right one? See [Selecting an extension](../selecting/).
 {: .fs-5 .fw-300 }
 
 > **Looking beyond this repo?** [Best of UI5](https://bestofui5.org/) indexes a much wider set of community packages — tasks, middlewares, libraries, controls, generators, and more. It's the recommended starting point for *finding* a UI5 extension. Most (but [not all](#packages-not-yet-on-best-of-ui5)) of the packages on this page are also indexed there.
