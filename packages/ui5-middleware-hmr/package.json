@@ -1,7 +1,6 @@
 {
   "name": "ui5-middleware-hmr",
   "version": "0.0.0",
-  "private": true,
   "description": "Experimental UI5 middleware for hot module replacement (HMR) instead of full-page live reload",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
