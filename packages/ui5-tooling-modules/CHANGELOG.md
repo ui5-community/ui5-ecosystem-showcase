@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.38.0
+
+### Minor Changes
+
+- [#1424](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1424) [`a8a1113`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a8a111338edd78d7aa5b4fa7de77259e90d5dced) Thanks [@Thodd](https://github.com/Thodd)! - feat(ui5-tooling-modules): add `create-webc-controls` CLI to generate UI5 control wrappers from a custom-elements.json
+
+  Adds a standalone, dependency-invocable CLI (`create-webc-controls`) and a programmatic `generateControls()` API that process a custom elements manifest via the `WebComponentRegistry` and serialize the UI5 package glue plus one control wrapper per described class into an output folder. The generated UI5 namespace can be remapped independently from the npm package name (`ui5Namespace`) and a leading module path segment can be stripped (`stripModulePrefix`, e.g. `dist`), which enables generating wrappers for native HTML element packages such as `@ui5/html` under a target namespace like `sap.ui.core.html.elements`.
+
 ## 3.37.9
 
 ### Patch Changes
