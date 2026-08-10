@@ -1,13 +1,13 @@
 /*!
  * ${copyright}
  */
-sap.ui.define([
-  "{{webcPackage}}",{{#if isBaseLib}}
+sap.ui.define([{{#if webcPackage}}
+  "{{webcPackage}}",{{/if}}{{#if isBaseLib}}
   "sap/ui/core/webc/WebComponent",{{/if}}{{#if hasEnums}}
   "sap/ui/base/DataType",{{/if}}{{#each dependencies}}
   "{{this}}",{{/each}}
-], function(
-  WebCPackage,{{#if isBaseLib}}
+], function({{#if webcPackage}}
+  WebCPackage,{{/if}}{{#if isBaseLib}}
   WebComponent,{{/if}}{{#if hasEnums}}
   DataType,{{/if}}
 ) {
@@ -17,7 +17,7 @@ sap.ui.define([
   {{/if}}
 
 	// re-export package object
-  const pkg = Object.assign({}, WebCPackage);
+  const pkg = {{#if webcPackage}}Object.assign({}, WebCPackage){{else}}{}{{/if}};
 
 	// export the UI5 metadata along with the package
 	pkg["_ui5metadata"] = {{{metadata}}};

@@ -53,12 +53,33 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags, frameworkVersion, isOpenUI5OrSAPUI5Lib, isUI5WebComponents }) {
+	constructor({
+		customElementsMetadata,
+		namespace,
+		ui5Namespace,
+		stripModulePrefix,
+		scopeSuffix,
+		npmPackagePath,
+		version,
+		customJSDocTags,
+		frameworkVersion,
+		isOpenUI5OrSAPUI5Lib,
+		isUI5WebComponents,
+	}) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
-		this.qualifiedNamespace = slash2dot(this.namespace);
+		// The npm package name (this.namespace) stays the physical identity used for module
+		// resolution, class aliases and cross-package superclass lookup. The UI5 namespace used
+		// for the generated artifacts (class names, module paths, imports) can be remapped
+		// independently, e.g. "@ui5/html" -> "sap/ui/core/html/elements". It is normalized to the
+		// slash notation; defaults to the npm namespace so existing generation stays unchanged.
+		this.ui5Namespace = (ui5Namespace || this.namespace).replace(/\./g, "/");
+		// optional leading module path segment (e.g. the build output "dist") that is stripped
+		// from module paths so it does not leak into the generated UI5 names
+		this.stripModulePrefix = stripModulePrefix;
+		this.qualifiedNamespace = slash2dot(this.ui5Namespace);
 		//this.moduleBasePath = moduleBasePath;
 		//this.qualifiedNamespace = `${moduleBasePath ? slash2dot(this.moduleBasePath) + "." : ""}${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
 		// TODO: The following conversion of "-" to "_" is a workaround for testing the UI5 JSDoc build.
@@ -90,7 +111,16 @@ class RegistryEntry {
 	#deriveUi5ClassNames(classDef) {
 		// Calculate fully qualified class name based on the module name from the custom elements manifest
 		// e.g. dist/Avatar.js -> dist.Avatar
-		let convertedClassName = classDef.module.replace(/\//g, ".");
+		let modulePath = classDef.module;
+		// optionally strip a leading module base path (e.g. the build output "dist/") so it does
+		// not leak into the generated UI5 names, e.g. dist/enums/Boolean.js -> enums/Boolean.js
+		if (this.stripModulePrefix) {
+			const prefix = this.stripModulePrefix.replace(/^\/+|\/+$/g, "");
+			if (prefix) {
+				modulePath = modulePath.replace(new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/`), "");
+			}
+		}
+		let convertedClassName = modulePath.replace(/\//g, ".");
 		const _derivedUi5ClassName = convertedClassName.replace(/\.(js|ts)$/, "");
 
 		const _ui5QualifiedName = `${this.qualifiedNamespace}.${_derivedUi5ClassName}`;
@@ -272,10 +302,21 @@ class RegistryEntry {
 
 			let superclassRef = refPackage.classes[superclassLookupName] || refPackage.classes[superclassLookupNameFallback];
 			if (!superclassRef) {
-				logger.error(`The class '${classDef._ui5QualifiedName}' has an unknown superclass '${superclassLookupName}' using default '@ui5/webcomponents-base/UI5Element'!`);
-				const refPackage = WebComponentRegistry.getPackage(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE);
-				superclassRef = (refPackage || this).classes[WebComponentRegistryHelper.UI5_ELEMENT_CACHE_KEY];
-				classDef.superclass = superclassRef;
+				// a missing superclass is ok as long as it's part of the HTML project
+				if (classDef.namespace === "@ui5/html") {
+					classDef.superclass = {
+						name: "HTMLElement",
+						package: "sap.ui.core",
+						namespace: "sap.ui.core.html",
+						module: "sap/ui/core/html/HTMLElement.js",
+					};
+				} else {
+					// General error case
+					logger.error(`The class '${classDef._ui5QualifiedName}' has an unknown superclass '${superclassLookupName}' using default '@ui5/webcomponents-base/UI5Element'!`);
+					const refPackage = WebComponentRegistry.getPackage(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE);
+					superclassRef = (refPackage || this).classes[WebComponentRegistryHelper.UI5_ELEMENT_CACHE_KEY];
+					classDef.superclass = superclassRef;
+				}
 			} else {
 				this.#connectSuperclass(superclassRef);
 				classDef.superclass = superclassRef;
@@ -1191,7 +1232,7 @@ class RegistryEntry {
 	 */
 	#initClass(classDef) {
 		classDef._ui5metadata = {
-			namespace: this.namespace,
+			namespace: this.ui5Namespace,
 			qualifiedNamespace: this.qualifiedNamespace,
 			tag: classDef.scopedTagName || classDef.tagName,
 			interfaces: [],
@@ -1313,6 +1354,8 @@ const WebComponentRegistry = {
 	 * @param {object} options the options object
 	 * @param {object} options.customElementsMetadata the custom elements metadata object
 	 * @param {string} options.namespace the namespace of the web component package
+	 * @param {string} [options.ui5Namespace] the UI5 namespace used for the generated artifacts (dot or slash notation); defaults to the npm namespace
+	 * @param {string} [options.stripModulePrefix] leading module path segment to strip from the generated names (e.g. "dist")
 	 * @param {string} options.library the library of the web component package
 	 * @param {string} options.frameworkVersion the UI5 framework version used
 	 * @param {boolean} options.isUI5WebComponents whether it is a package based on UI5 Web Components or not
@@ -1328,6 +1371,8 @@ const WebComponentRegistry = {
 	register({
 		customElementsMetadata,
 		namespace,
+		ui5Namespace,
+		stripModulePrefix,
 		library,
 		frameworkVersion,
 		isUI5WebComponents,
@@ -1349,6 +1394,8 @@ const WebComponentRegistry = {
 			entry = _registry[namespace] = new RegistryEntry({
 				customElementsMetadata,
 				namespace,
+				ui5Namespace,
+				stripModulePrefix,
 				scopeSuffix,
 				npmPackagePath,
 				version,
