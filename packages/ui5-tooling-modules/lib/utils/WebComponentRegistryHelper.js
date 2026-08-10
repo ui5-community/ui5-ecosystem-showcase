@@ -10,6 +10,27 @@ const WebComponentRegistryHelper = {
 	UI5_ELEMENT_MODULE: "dist/UI5Element.js",
 
 	/**
+	 * Helper function to check whether the given class inherits from the provided class name.
+	 *
+	 * @param {object} classDef a class definition from a WebComponentRegistry entry
+	 * @param {string} namespace the class namespace
+	 * @param {string} className the class name
+	 * @returns {boolean} whether the class inherits from the provided class name
+	 */
+	isSubclassOf(classDef, namespace, className) {
+		let superclass = classDef.superclass,
+			isSubclass = false;
+		while (superclass) {
+			if (superclass?.namespace === namespace && superclass?.name === className) {
+				isSubclass = true;
+				break;
+			}
+			superclass = superclass.superclass;
+		}
+		return isSubclass;
+	},
+
+	/**
 	 * Helper function to check whether the given class inherits from UI5Element, the base class for all
 	 * UI5 web components.
 	 *
@@ -17,20 +38,18 @@ const WebComponentRegistryHelper = {
 	 * @returns {boolean} whether the class inherits from UI5Element
 	 */
 	isUI5ElementSubclass(classDef) {
-		let superclass = classDef.superclass,
-			isUI5ElementSubclass = false;
-		while (superclass) {
-			if (superclass?.namespace === this.UI5_ELEMENT_NAMESPACE && superclass?.name === this.UI5_ELEMENT_CLASS_NAME) {
-				isUI5ElementSubclass = true;
-				break;
-			}
-			superclass = superclass.superclass;
-		}
-		return isUI5ElementSubclass;
+		return this.isSubclassOf(classDef, this.UI5_ELEMENT_NAMESPACE, this.UI5_ELEMENT_CLASS_NAME);
 	},
 
 	isUI5Element(ui5Superclass) {
 		return ui5Superclass.namespace === this.UI5_ELEMENT_NAMESPACE && ui5Superclass.name === this.UI5_ELEMENT_CLASS_NAME;
+	},
+
+	/**
+	 * Checks whether the class def is a core HTML element.
+	 */
+	isUi5CoreHTMLElement(ui5Superclass) {
+		return ui5Superclass?.namespace === "sap.ui.core.html" && ui5Superclass?.name === "HTMLElement";
 	},
 
 	/**
