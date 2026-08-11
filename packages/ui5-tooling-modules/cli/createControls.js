@@ -38,8 +38,11 @@ const { UI5_ELEMENT_NAMESPACE } = WebComponentRegistryHelper;
 
 const TEMPLATES_DIR = join(__dirname, "..", "lib", "templates");
 
-// prettier options for the generated sources (kept in sync with the rollup plugin)
-const PRETTIER_OPTIONS = { semi: true, trailingComma: "none", parser: "babel" };
+// prettier options for the generated sources (kept in sync with the rollup plugin).
+// quoteProps "preserve" keeps the quotes that JSON.stringify puts on every metadata key, so
+// property names that are reserved words (e.g. HTML's "class") stay quoted instead of being
+// unquoted by prettier's default "as-needed".
+const PRETTIER_OPTIONS = { semi: true, trailingComma: "none", parser: "babel", quoteProps: "preserve" };
 
 // -------------------------------------------------------------------------
 // argument parsing
