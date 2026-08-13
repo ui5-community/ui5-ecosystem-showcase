@@ -28,7 +28,7 @@ sap.ui.define([{{#if webcPackage}}
   pkg["{{this.name}}"] = {
   {{#each this.values}}
     {{this._jsDoc}}
-    "{{this.name}}": "{{this.name}}",
+    "{{this.name}}": "{{this.value}}",
   {{/each}}
   };
   registerEnum("{{this._ui5QualifiedName}}", pkg["{{this.name}}"]);

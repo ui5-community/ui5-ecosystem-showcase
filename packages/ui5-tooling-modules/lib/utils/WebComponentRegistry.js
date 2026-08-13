@@ -1287,8 +1287,11 @@ class RegistryEntry {
 
 			const enumMembers = this.enums[enumCacheKey].members;
 			enumMembers?.forEach((member) => {
-				// Key<>Value must be identical!
-				enumValues.push({ name: member.name, description: member.description || "" });
+				// By default key and value are identical. When the CEM carries an explicit
+				// "value" overlay (e.g. @ui5/html uses identifier "Num1" but HTML value "1"),
+				// honour that divergence so the generated JS object maps Num1 -> "1".
+				const value = member.value !== undefined && member.value !== member.name ? member.value : member.name;
+				enumValues.push({ name: member.name, value, description: member.description || "" });
 			});
 
 			// derive correct names
