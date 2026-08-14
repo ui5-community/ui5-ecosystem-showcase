@@ -1,0 +1,29 @@
+/*!
+ * ${copyright}
+ */
+sap.ui.define([
+  "sap/ui/core/Lib",{{#if hasEnums}}
+  "sap/ui/base/DataType",{{/if}}{{#each dependencies}}
+  "{{this}}",{{/each}}
+], function(Library,{{#if hasEnums}} DataType,{{/if}}) {
+  "use strict";
+  {{#if hasEnums}}
+  const { registerEnum } = DataType;
+  {{/if}}
+
+  var thisLib = Library.init({{{metadata}}});
+
+  // Enums
+  {{#each enums}}
+  {{{this._jsDoc}}}
+  thisLib["{{this.name}}"] = {
+  {{#each this.values}}
+    {{this._jsDoc}}
+    "{{this.name}}": "{{this.value}}",
+  {{/each}}
+  };
+  registerEnum("{{this._ui5QualifiedName}}", thisLib["{{this.name}}"]);
+  {{/each}}
+
+  return thisLib;
+});
