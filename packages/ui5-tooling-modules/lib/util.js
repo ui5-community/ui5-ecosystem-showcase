@@ -1749,6 +1749,41 @@ module.exports = function (log, projectInfo) {
 							return code.replace(new RegExp(`((?:require|define|toUrl)(?:\\s*)(?:\\([^)]*(["'])))${importName}(\\2[^)]*\\))`, "g"), `$1${replacement}$3`);
 						};
 
+						// helper to strip the file extension (.js/.mjs/.cjs) from the module
+						// specifiers inside a "sap.ui.define([...])" / "(sap.ui.)require([...])"
+						// dependency array. Rollup emits the AMD dependencies verbatim, keeping
+						// the extension on bare npm specifiers (e.g. "@ui5/webcomponents-base/dist/
+						// Device.js"). Since the ui5loader appends ".js" itself, an unstripped
+						// specifier resolves to "...Device.js.js" (404), so it must be removed.
+						//
+						// BUT: the extension must NOT be stripped when it is actually part of the
+						// NPM package name (e.g. "chart.js", "easytimer.js"). Such a module is
+						// served as "<ns>/thirdparty/chart.js.js" and its module name is "chart.js",
+						// so the loader appending ".js" is exactly what resolves it. This mirrors the
+						// scan-time logic in moduleNameEqualsNpmPackageName / addUniqueModule.
+						//
+						// Only the dependency array of the loader call is touched - never arbitrary
+						// strings - so data strings, "tag: '...'" and JSDoc are left untouched.
+						const stripModuleExtensions = function (code) {
+							return code.replace(/((?:sap\.ui\.define|sap\.ui\.require|(?<![\w.])(?:define|require))\s*\(\s*)(\[[^\]]*\])/g, (full, head, deps) => {
+								// strip a single trailing extension immediately before the closing
+								// quote of each specifier (non-greedy so only the final extension is
+								// removed and infix dots like "parameters-bundle.css.js" are safe)
+								return (
+									head +
+									deps.replace(/(['"])([^'"]*?)\.(js|mjs|cjs)\1/g, (match, quote, moduleName, ext) => {
+										// keep the extension when it belongs to the NPM package name
+										// (the whole specifier is exactly the package name, e.g. "chart.js")
+										const specifier = `${moduleName}.${ext}`;
+										if (getNpmPackageName(specifier) === specifier) {
+											return match;
+										}
+										return `${quote}${moduleName}${quote}`;
+									})
+								);
+							});
+						};
+
 						// helper to replace params in the code
 						// exact = true only matches the bare name (not a "/"-separated subpath),
 						// used for package externals so that consumer-owned subpaths of a
@@ -1838,6 +1873,16 @@ module.exports = function (log, projectInfo) {
 								const relativePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
 								const modifiedCode = relativePath !== moduleBasePath ? replaceModules(module.code, relativePath, moduleBasePath) : module.code;
 								module.code = modifiedCode;
+							}
+
+							// middleware only: strip the file extension from the AMD dependency
+							// specifiers. In the build path this is handled implicitly when the
+							// dependencies are rewritten into the project namespace (see the
+							// "!isMiddleware && rewriteDep" block below and the task's rewriteDep),
+							// but the middleware serves the modules as-is, so the ".js" suffix that
+							// rollup keeps on bare npm specifiers would be doubled by the ui5loader.
+							if (isMiddleware) {
+								module.code = stripModuleExtensions(module.code);
 							}
 
 							// with the following code we modify all module names to be relative to the project namespace
