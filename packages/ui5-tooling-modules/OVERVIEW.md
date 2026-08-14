@@ -1,7 +1,7 @@
 # ui5-tooling-modules
 
-**Package Version:** 3.37.7
-**Last Updated:** 2026-07-12
+**Package Version:** 3.38.0
+**Last Updated:** 2026-08-14
 
 ---
 
@@ -88,6 +88,12 @@ Core plugins in the transformation pipeline:
 
 ## Recent Changes & Current State
 
+### Cascaded Builds
+
+An opt-in `cascadedBuild` capability lets multiple UI5 libraries/apps that each integrate the same npm package (notably `@ui5/webcomponents`) share a single bundle instead of re-bundling and re-registering it. Each library writes `<library-root>/.ui5-tooling-modules/externals-manifest.json` describing the modules and Web Components packages it bundled together with their target UI5 (`gen`) paths; dependents that also enable `cascadedBuild` read those manifests and treat the already-bundled modules/packages as Rollup externals, referencing the owner library's bundled path. Resolution is per-module (a package can be split across owning libraries), build order is guaranteed via `determineRequiredDependencies`, and XML views get per-element namespace aliases. See [CASCADED_BUILD.md](CASCADED_BUILD.md) for the full design and the `showcases/ui5-cascaded-*` runnable example.
+
+**Middleware `.js`-suffix handling:** unlike the build task, the middleware serves the generated modules without rewriting dependency paths into the project namespace, so rollup's verbatim AMD specifiers kept their file extension on bare npm modules (e.g. `@ui5/webcomponents-base/dist/Device.js`). As the ui5loader appends `.js` itself, those requested `…/Device.js.js` (404) and failed with "Cannot use import statement outside a module". A middleware-only pass in `getBundleInfo` now strips a trailing `.js`/`.mjs`/`.cjs` from loader dependency arrays, while keeping the extension when it is part of the package name itself (e.g. `chart.js`) via `getNpmPackageName(specifier) === specifier`. Gated on `isMiddleware`, so build output is unchanged.
+
 ### Bundle Cache Invalidation Rework
 
 The cache key construction in [util.js](lib/util.js) was reworked end-to-end. The previous key only mixed `mtime(util.js)` + the max `mtime` of the entry modules, which silently reused stale bundles in several common scenarios. See [CACHE-INVALIDATION.md](CACHE-INVALIDATION.md) for the full design and gap analysis.
@@ -116,6 +122,8 @@ The cache key construction in [util.js](lib/util.js) was reworked end-to-end. Th
 
 | Commit | Description | Impact |
 |--------|-------------|--------|
+| `afe17260` | Strip module extension from AMD deps in middleware | Fixes `…/X.js.js` 404s / "Cannot use import statement outside a module" in dev; keeps package-name `.js` (e.g. `chart.js`) |
+| `dd810501` | Add cascaded builds to share Web Components across libraries (#1428) | Opt-in `cascadedBuild`: dependents reuse a dependency library's bundled modules/packages as externals (see [CASCADED_BUILD.md](CASCADED_BUILD.md)) |
 | `5d419442` | Sync `defaultValue` handling between rollup plugin and Handlebars helper | Web Component defaults emitted as proper JSON (booleans/numbers/objects), `undefined` dropped |
 | `9c4a3259` | Correct JSDoc generation for enums and `defaultValue` handling | Fixes downstream JSDoc build/validation for enum-typed properties |
 | `848bc704` | Centralize custom-element detection in `WebComponentRegistryHelper.isCustomElement()` | Single source of truth for "is this a real custom element?" (incl. inherited flags) |
@@ -286,6 +294,7 @@ Three types of path rewriting occur:
 | `providedDependencies` | string[] | [] | Excludes deps from bundling (runtime provided) |
 | `skipTransform` | boolean/string[] | false | Skips transformation for specific modules |
 | `keepDynamicImports` | boolean/string[] | true | Preserves dynamic imports (for ES modules) |
+| `cascadedBuild` | boolean | false | Reads dependency libraries' externals manifests and writes own; reuses already-bundled modules/packages as externals (see [CASCADED_BUILD.md](CASCADED_BUILD.md)) |
 
 ### Web Components Options
 
@@ -461,9 +470,13 @@ Bottlenecks to monitor:
 ## Critical Files Reference
 
 ### Core Logic
-- [lib/util.js](lib/util.js) - 1732 lines - Module resolution, bundling, caching
-- [lib/task.js](lib/task.js) - 570 lines - Build-time processing
-- [lib/middleware.js](lib/middleware.js) - 396 lines - Dev server
+- [lib/util.js](lib/util.js) - ~2100 lines - Module resolution, bundling, caching, cascaded externals
+- [lib/task.js](lib/task.js) - ~680 lines - Build-time processing, cascaded build orchestration
+- [lib/middleware.js](lib/middleware.js) - ~395 lines - Dev server
+
+### Design Docs
+- [CASCADED_BUILD.md](CASCADED_BUILD.md) - Cascaded build design (externals manifests, per-module resolution, middleware suffix handling)
+- [CACHE-INVALIDATION.md](CACHE-INVALIDATION.md) - Bundle cache key design
 
 ### Rollup Plugins
 - [lib/rollup-plugin-webcomponents.js](lib/rollup-plugin-webcomponents.js) - Web Components transformation
