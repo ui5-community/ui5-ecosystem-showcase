@@ -970,7 +970,7 @@ test.serial("Verify generation of webc-package/CustomAlertButton Wrapper UI5 Con
 // *****************************************************************************
 
 // eslint-disable-next-line jsdoc/require-jsdoc
-async function buildCascadedLibrary(entryModules, { name, namespace, rootPath, cwd, libraryDeps = [] }) {
+async function buildCascadedLibrary(entryModules, { name, namespace, rootPath, cwd, libraryDeps = [], loadedManifests = [] }) {
 	const baseInfo = await getProjectInfo(cwd);
 	const projectInfo = Object.assign({}, baseInfo, { name, namespace, rootPath });
 	const log = { logs: [] };
@@ -980,13 +980,14 @@ async function buildCascadedLibrary(entryModules, { name, namespace, rootPath, c
 	// simplified rewriteDep that mirrors the task's namespace prefixing for Web Components (gen namespace)
 	const rewriteDep = (dep) => `${namespace}/gen/${dep.replace(/^@/, "")}`;
 	const util = require("../lib/util")(log, projectInfo);
-	const bundleInfo = await util.getBundleInfo(entryModules, { skipCache: true }, { cwd, rewriteDep, libraryDeps, writeExternalsManifest: true });
+	const bundleInfo = await util.getBundleInfo(entryModules, { skipCache: true }, { cwd, rewriteDep, libraryDeps, loadedManifests, writeExternalsManifest: true });
 	if (bundleInfo.error) {
 		throw new Error(bundleInfo.error);
 	}
-	const manifestPath = path.join(rootPath, ".ui5-tooling-modules", "externals-manifest.json");
-	const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, { encoding: "utf8" })) : undefined;
-	return { bundleInfo, manifest, manifestPath };
+	// the manifest is exposed on the BundleInfo (the task writes it into the UI5 workspace so it
+	// ships in dist/); util.js no longer writes it to the source root directly.
+	const manifest = bundleInfo.getExternalsManifest();
+	return { bundleInfo, manifest, log };
 }
 
 test.serial("Cascaded build: producer writes an externals manifest with modules and packages", async (t) => {
@@ -1013,6 +1014,11 @@ test.serial("Cascaded build: producer writes an externals manifest with modules 
 		for (const [pkg, target] of Object.entries(manifest.packages)) {
 			t.is(target, `producer/ns/gen/${pkg.replace(/^@/, "")}`, `package ${pkg} maps into the producer namespace`);
 		}
+		// the shared npm package versions are recorded so a dependent can verify it resolves the
+		// same version before reusing the bundled code
+		t.truthy(manifest.packageVersions, "manifest records the shared package versions");
+		t.truthy(manifest.packageVersions["@ui5/webcomponents"], "the used Web Components package version is recorded");
+		t.regex(manifest.packageVersions["@ui5/webcomponents"], /^\d+\.\d+\.\d+/, "the recorded version is a concrete semver");
 	} finally {
 		rmSync(producerRoot, { recursive: true, force: true });
 	}
@@ -1033,13 +1039,13 @@ test.serial("Cascaded build: consumer externalizes the dependency's already-bund
 		});
 
 		// 2) consumer bundles @ui5/webcomponents-fiori/Search (which reuses @ui5/webcomponents),
-		//    with the producer declared as a dependency library
+		//    with the producer's manifest provided as a loaded dependency manifest
 		const { bundleInfo } = await buildCascadedLibrary(["@ui5/webcomponents-fiori/Search"], {
 			name: "consumer",
 			namespace: "consumer/ns",
 			rootPath: consumerRoot,
 			cwd: buildCwd,
-			libraryDeps: [{ name: "producer", namespace: "producer/ns", rootPath: producerRoot }],
+			loadedManifests: [{ libraryName: "producer", manifest: producerManifest }],
 		});
 
 		const chunkNames = bundleInfo
@@ -1060,6 +1066,65 @@ test.serial("Cascaded build: consumer externalizes the dependency's already-bund
 		const producerRefs = new Set(bundleInfo.getBundledResources().flatMap((e) => (e.code || "").match(/producer\/ns\/gen\/[^"'\s)]+/g) || []));
 		const unknownRefs = [...producerRefs].filter((ref) => !advertised.has(ref));
 		t.deepEqual(unknownRefs, [], "consumer must only reference paths advertised by the producer manifest");
+	} finally {
+		rmSync(producerRoot, { recursive: true, force: true });
+		rmSync(consumerRoot, { recursive: true, force: true });
+	}
+});
+
+test.serial("Cascaded build: version mismatch skips the dependency's externals (re-bundles locally)", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp-webc"));
+	const buildCwd = process.cwd();
+	const producerRoot = path.join(t.context.tmpDir, "producer");
+	const consumerRoot = path.join(t.context.tmpDir, "consumer");
+	try {
+		// producer bundles @ui5/webcomponents (via Button) and records its versions
+		const { manifest: producerManifest } = await buildCascadedLibrary(["@ui5/webcomponents/Button"], {
+			name: "producer",
+			namespace: "producer/ns",
+			rootPath: producerRoot,
+			cwd: buildCwd,
+		});
+
+		// simulate a version drift: the producer claims it bundled a DIFFERENT version than what
+		// the consumer resolves from node_modules
+		const tamperedManifest = JSON.parse(JSON.stringify(producerManifest));
+		for (const pkg of Object.keys(tamperedManifest.packageVersions)) {
+			tamperedManifest.packageVersions[pkg] = "0.0.1-mismatch";
+		}
+
+		const log = { logs: [] };
+		["silly", "verbose", "perf", "info", "warn", "error", "silent"].forEach((level) => {
+			log[level] = (...messages) => log.logs.push(`[${level}] ${messages}`);
+		});
+		const baseInfo = await getProjectInfo(buildCwd);
+		const projectInfo = Object.assign({}, baseInfo, { name: "consumer", namespace: "consumer/ns", rootPath: consumerRoot });
+		const rewriteDep = (dep) => `consumer/ns/gen/${dep.replace(/^@/, "")}`;
+		const util = require("../lib/util")(log, projectInfo);
+		const bundleInfo = await util.getBundleInfo(
+			["@ui5/webcomponents-fiori/Search"],
+			{ skipCache: true },
+			{ cwd: buildCwd, rewriteDep, loadedManifests: [{ libraryName: "producer", manifest: tamperedManifest }], writeExternalsManifest: true },
+		);
+		if (bundleInfo.error) {
+			throw new Error(bundleInfo.error);
+		}
+
+		// a warning is emitted about the version mismatch
+		t.true(
+			log.logs.some((l) => l.startsWith("[warn]") && /Cascaded build/.test(l) && /0\.0\.1-mismatch/.test(l)),
+			"a version-mismatch warning is logged",
+		);
+
+		// and the consumer re-bundles the @ui5/webcomponents package locally (NOT treated as external)
+		const chunkNames = bundleInfo
+			.getBundledResources()
+			.filter((e) => e.type === "chunk")
+			.map((e) => e.name);
+		t.true(chunkNames.includes("@ui5/webcomponents"), "on mismatch the consumer re-bundles the @ui5/webcomponents package locally");
+		// no references into the producer namespace should remain
+		const producerRefs = bundleInfo.getBundledResources().flatMap((e) => (e.code || "").match(/producer\/ns\/gen\/[^"'\s)]+/g) || []);
+		t.deepEqual(producerRefs, [], "on mismatch the consumer must not reference the producer's bundled paths");
 	} finally {
 		rmSync(producerRoot, { recursive: true, force: true });
 		rmSync(consumerRoot, { recursive: true, force: true });

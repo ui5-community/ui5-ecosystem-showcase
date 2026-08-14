@@ -95,8 +95,35 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					name: prj.getName(),
 					namespace: prj.getNamespace(),
 					rootPath: prj.getRootPath(),
+					// the reader exposes the dependency's built resources (dist/), so the manifest
+					// can be read even for built/npm-installed libraries where it ships inside
+					// /resources/<namespace>/library-externals-manifest.json
+					reader: typeof prj.getReader === "function" ? prj.getReader() : undefined,
 				}))
 		: [];
+
+	// For cascaded builds: pre-load the dependency libraries' externals manifests via their
+	// reader. The reader resolves both built/npm-installed libraries (manifest shipped in dist/)
+	// and, in a single-run build graph, the freshly built dependency output. The loaded manifests
+	// are passed to getBundleInfo which performs the version-consistency check and merges the
+	// externals.
+	const loadedManifests = [];
+	if (config.cascadedBuild) {
+		for (const libDep of libraryDeps) {
+			if (!libDep.reader || !libDep.namespace) {
+				continue;
+			}
+			try {
+				const manifestResource = await libDep.reader.byPath(`/resources/${libDep.namespace}/library-externals-manifest.json`);
+				if (manifestResource) {
+					const manifest = JSON.parse(await manifestResource.getString());
+					loadedManifests.push({ libraryName: libDep.name || manifest.libraryName, manifest });
+				}
+			} catch (e) {
+				log.verbose(`Cascaded build: could not read externals manifest of "${libDep.name}" via reader: ${e.message}`);
+			}
+		}
+	}
 
 	// derive the custom thirdparty namespace
 	let thirdpartyNamespace = "thirdparty";
@@ -498,11 +525,33 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
 	const bundleTime = Date.now();
-	const bundleInfo = await getBundleInfo(modules, config, { cwd, depPaths, rewriteDep, libraryDeps, writeExternalsManifest: config.cascadedBuild });
+	const bundleInfo = await getBundleInfo(modules, config, { cwd, depPaths, rewriteDep, libraryDeps, loadedManifests, writeExternalsManifest: config.cascadedBuild });
 	if (bundleInfo.error) {
 		log.error(bundleInfo.error);
 		process.exit(1);
 	}
+
+	// For cascaded builds: write the externals manifest into the UI5 workspace so it ships in
+	// dist/ (and thus in the published package) next to the library artifacts (library.js,
+	// .library, ...) as "library-externals-manifest.json". Dependent libraries/apps read it via
+	// the dependency reader - which, in a single-run build graph, also exposes the freshly built
+	// dependency output, so no on-disk source-root copy is needed. The manifest data (incl. the
+	// shared npm package versions) is produced in getBundleInfo and exposed on the BundleInfo.
+	// Only library projects advertise externals - nothing depends on an application, so apps
+	// consume manifests but never produce one (this also avoids the in-memory BundleInfoCache
+	// occasionally handing an app a dependency's cached BundleInfo/manifest).
+	if (config.cascadedBuild && projectInfo.type !== "application") {
+		const externalsManifest = bundleInfo.getExternalsManifest?.();
+		if (externalsManifest) {
+			const manifestResource = resourceFactory.createResource({
+				path: `/resources/${options.projectNamespace}/library-externals-manifest.json`,
+				string: JSON.stringify(externalsManifest, null, 2),
+			});
+			await workspace.write(manifestResource);
+			config.debug && log.info(`Cascaded build: wrote externals manifest for "${projectInfo.name}"`);
+		}
+	}
+
 	const ignoreResources = [];
 	await Promise.all(
 		bundleInfo.getEntries().map(async (entry) => {

@@ -25,12 +25,16 @@ When enabled, the task both **reads** the externals manifests of its dependency 
 
 ### Externals manifest
 
-Each library with `cascadedBuild: true` writes `<library-root>/.ui5-tooling-modules/externals-manifest.json`:
+Each library with `cascadedBuild: true` writes a `library-externals-manifest.json` into its library namespace (next to `library.js`, `.library`, …):
 
 ```json
 {
   "libraryName": "ui5.ecosystem.demo.cascaded.producer",
   "libraryNamespace": "ui5/ecosystem/demo/cascaded/producer",
+  "packageVersions": {
+    "@ui5/webcomponents": "2.23.1",
+    "@ui5/webcomponents-base": "2.23.1"
+  },
   "modules": {
     "@ui5/webcomponents/dist/Button": "ui5/ecosystem/demo/cascaded/producer/gen/@ui5/webcomponents/dist/Button"
   },
@@ -41,18 +45,21 @@ Each library with `cascadedBuild: true` writes `<library-root>/.ui5-tooling-modu
 }
 ```
 
+- **`packageVersions`** — the installed versions of the shared npm packages this library bundled. A dependent that reuses these externals references this library's *already-compiled* code, so it must resolve the exact same package version; the consumer verifies this before reusing (see [Version consistency](#version-consistency)).
 - **`modules`** — genuine, importable module entries this library bundled, mapped to their UI5 AMD (`gen`) paths. Internal rollup chunk names are intentionally not advertised (they are not valid import specifiers for dependents).
-- **`packages`** — Web Components packages (including their registration chunk) this library bundled, so a dependent can reuse the registration instead of re-registering the custom elements. `libraryName` / `libraryNamespace` are written for traceability but not read back.
+- **`packages`** — Web Components packages (including their registration chunk) this library bundled, so a dependent can reuse the registration instead of re-registering the custom elements. `libraryName` / `libraryNamespace` are written for traceability (`libraryName` is used in the version-mismatch warning).
 
-Manifests are written to the **library root**, not into `node_modules` — the root is stable and writable, follows the existing `.ui5-tooling-modules/` convention (as used by `BundleInfoCache`), and requires no `node_modules` mutation. The write is `await`ed so a dependent build never starts before the manifest is complete.
+**Where the manifest lives.** The manifest data is produced in `getBundleInfo` and exposed on the `BundleInfo` (`getExternalsManifest()`); the task writes it into the UI5 **workspace** at `/resources/<namespace>/library-externals-manifest.json`, alongside the other `library-*` artifacts. It therefore ships inside `dist/` and the published npm package. Dependents read it through the dependency's **reader** (`byPath`), which resolves both a **built / npm-installed** library and — in a single-run build graph (e.g. an application building its library dependencies) — the freshly built dependency output. No on-disk source-root copy is needed.
+
+Only **library** projects write a manifest — nothing depends on an application, so apps consume manifests but never produce one.
 
 ### Build order
 
 Cascaded builds require the dependency libraries to be built first (so their manifests exist). This is guaranteed by `determineRequiredDependencies` in [task.js](lib/task.js): when `cascadedBuild` is enabled it returns the available dependencies (otherwise an empty set), so UI5 CLI builds them ahead of the current project.
 
-### Dependency discovery
+### Dependency discovery & manifest loading
 
-`task.js` computes `libraryDeps` from `taskUtil.getDependencies()` — deliberately **including framework projects** (in OpenUI5, dependent libraries *are* framework projects), which the regular `depPaths` computation excludes. Each entry is `{ name, namespace, rootPath }`; the manifests are then read in `getBundleInfo` from each `rootPath`.
+`task.js` computes `libraryDeps` from `taskUtil.getDependencies()` — deliberately **including framework projects** (in OpenUI5, dependent libraries *are* framework projects), which the regular `depPaths` computation excludes. Each entry carries `{ name, namespace, rootPath, reader }`. The task then loads each dependency's manifest through the dependency **reader** (`/resources/<dep-namespace>/library-externals-manifest.json`). The loaded manifests are passed into `getBundleInfo`, which runs the version check and merges the externals.
 
 ### Externals detection is per-module, never per-package-blanket
 
@@ -77,6 +84,14 @@ For generated wrappers, `getBundleInfo` rewrites:
 
 A control the consumer bundles itself but whose *package* is external (e.g. `Input`) keeps its own local `gen` identity while the package registration import stays external.
 
+### Version consistency
+
+Because a dependent references the dependency's *already-compiled* code for a shared npm package, both sides must build against the **same version** of that package — otherwise the reused bundle is compiled against the wrong version. When loading a dependency's manifest, `getBundleInfo` compares each entry in `packageVersions` against the version this project resolves from its own `node_modules` (`getNpmPackageVersion` → `resolveModule("<pkg>/package.json")` → `getPackageJson().version`), using `semver.eq` for **exact** equality. On any mismatch it emits a `log.warn` (naming the dependency library, package, and expected vs. actual version) and **skips that manifest's externals entirely**, so the consumer re-bundles those modules locally instead of referencing an incompatible bundle. Manifests without `packageVersions` (older builds) skip the check and behave as before.
+
+### Cache isolation
+
+The same entry modules produce a *different* bundle depending on which modules/packages are externalized to a dependency. The `BundleInfoCache` key therefore includes a fingerprint of the loaded externals (`{ modules, packages }`) alongside the tool/config/lockfile/entry-graph fingerprints — without it, two projects bundling the same entries (e.g. an app and a library both handling `Search`/`Input`) would collide on the in-memory cache and wrongly reuse each other's output.
+
 ## Middleware (dev server) support
 
 The build path rewrites AMD dependency specifiers into the project namespace (which also removes the file extension). The **middleware** serves the generated modules as-is and does **not** run that rewrite, so rollup's verbatim dependency specifiers kept their extension on bare npm specifiers (e.g. `@ui5/webcomponents-base/dist/Device.js`). Since the ui5loader appends `.js` itself, those resolved to `…/Device.js.js` (404) and the raw ES module was served instead, failing with *"Cannot use import statement outside a module"*.
@@ -97,16 +112,17 @@ Build artifacts and manifests are gitignored.
 
 ## Verification
 
-1. Build the libraries (`npm run build` in producer, then consumer) and confirm each writes `.ui5-tooling-modules/externals-manifest.json` with the expected `modules` / `packages`.
-2. Build `ui5-cascaded-app`; confirm its output bundles no Web Components itself and references the libraries' `gen` paths, with all `define()` dependencies resolvable (no 404s).
-3. Dev/middleware mode: run `npm run dev` in `ui5-cascaded-app`; the Button/Input/Search render, with no `.js.js` requests and no raw ESM `import` statements in served modules.
-4. Regression: non-cascaded webc output (e.g. `ui5-tsapp-webc`) is unchanged; `ui5-tsapp` (which uses `chart.js`) still loads Chart.js in dev with its package-name suffix preserved.
-5. `cd packages/ui5-tooling-modules && npm test`.
+1. Build the libraries (`npm run build` in producer, then consumer) and confirm each ships `dist/resources/<namespace>/library-externals-manifest.json` (next to `library.js`), with the expected `packageVersions` / `modules` / `packages`. No manifest is written to the source root.
+2. Build `ui5-cascaded-app`; confirm its output bundles no Web Components itself (no `dist/thirdparty`) and references the libraries' `gen` paths, with all `define()` dependencies resolvable (no 404s). The app writes no manifest of its own.
+3. Version mismatch: inject a differing `packageVersions` entry (unit test `Cascaded build: version mismatch skips the dependency's externals`, or hand-edit a manifest) and confirm the `log.warn` fires and the modules are re-bundled locally instead of externalized.
+4. Dev/middleware mode: run `npm run dev` in `ui5-cascaded-app`; the Button/Input/Search render, with no `.js.js` requests and no raw ESM `import` statements in served modules.
+5. Regression: non-cascaded webc output (e.g. `ui5-tsapp-webc`) is unchanged; `ui5-tsapp` (which uses `chart.js`) still loads Chart.js in dev with its package-name suffix preserved.
+6. `cd packages/ui5-tooling-modules && npm test`.
 
 ## Key files
 
 | File | Role in cascaded build |
 | ---- | ---------------------- |
-| [lib/task.js](lib/task.js) | `cascadedBuild` config, `libraryDeps` discovery (incl. framework projects), `determineRequiredDependencies`, `rewriteDep`, `rewriteJSDeps`, `rewriteXMLDeps` |
-| [lib/util.js](lib/util.js) | `getBundleInfo` (load/write manifests, expose externals, rewrite wrapper code, middleware suffix strip), `createBundle` (`filterForExternalModules`), `BundleInfo` externals accessors |
+| [lib/task.js](lib/task.js) | `cascadedBuild` config, `libraryDeps` discovery (incl. framework projects + reader), manifest loading via the dependency reader, manifest write into the workspace as `library-externals-manifest.json` (libraries only), `determineRequiredDependencies`, `rewriteDep`, `rewriteJSDeps`, `rewriteXMLDeps` |
+| [lib/util.js](lib/util.js) | `getBundleInfo` (build manifest incl. `packageVersions` onto the `BundleInfo`, version-consistency check + skip-on-mismatch, externals in the cache key, rewrite wrapper code, middleware suffix strip), `createBundle` (`filterForExternalModules`), `getNpmPackageVersion`, `BundleInfo` externals/manifest accessors |
 | [lib/rollup-plugin-webcomponents.js](lib/rollup-plugin-webcomponents.js) | Honors `filterForExternalModules` (defaults to `() => false` outside cascaded context) |

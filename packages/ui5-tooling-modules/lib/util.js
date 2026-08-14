@@ -180,7 +180,7 @@ function getInputGraphFingerprint(paths) {
 
 const { runInContext, createContext } = require("vm");
 
-const { minVersion } = require("semver");
+const { minVersion, eq: semverEq } = require("semver");
 
 /**
  * checks if the given version is a valid semver version
@@ -472,12 +472,14 @@ class BundleInfo {
 	_inputFingerprint = null;
 	_externals = {};
 	_externalPackages = {};
+	_externalsManifest = null;
 	fromJSON(s) {
 		const parsed = JSON.parse(s);
 		this._entries = parsed._entries;
 		this._inputFingerprint = parsed._inputFingerprint ?? null;
 		this._externals = parsed._externals ?? {};
 		this._externalPackages = parsed._externalPackages ?? {};
+		this._externalsManifest = parsed._externalsManifest ?? null;
 		return this;
 	}
 	setExternals(externals, externalPackages) {
@@ -489,6 +491,12 @@ class BundleInfo {
 	}
 	getExternalPackages() {
 		return this._externalPackages;
+	}
+	setExternalsManifest(manifest) {
+		this._externalsManifest = manifest || null;
+	}
+	getExternalsManifest() {
+		return this._externalsManifest;
 	}
 	setInputFingerprint(fp) {
 		this._inputFingerprint = fp;
@@ -582,6 +590,21 @@ module.exports = function (log, projectInfo) {
 			}
 		}
 		return packageJsonCache[pkgJsonFile];
+	}
+
+	// resolve the installed version of an npm package (e.g. "@ui5/webcomponents") from
+	// node_modules via its package.json. Used to record the versions of the shared packages
+	// a library bundled (cascaded builds) and to verify a dependent resolves the same version.
+	function getNpmPackageVersion(npmPackage, { cwd = process.cwd(), depPaths = [] } = {}) {
+		try {
+			const pkgJsonFile = that.resolveModule(`${npmPackage}/package.json`, { cwd, depPaths });
+			if (pkgJsonFile) {
+				return getPackageJson(pkgJsonFile)?.version;
+			}
+		} catch {
+			// ignore - version simply cannot be determined
+		}
+		return undefined;
 	}
 
 	/**
@@ -1505,13 +1528,14 @@ module.exports = function (log, projectInfo) {
 		 * @param {Function} [options.rewriteDep] function to rewrite the dependency paths
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @param {Array<{name: string, namespace: string, rootPath: string}>} [options.libraryDeps] list of dependency library info objects for cascaded builds
+		 * @param {Array<{libraryName: string, manifest: object}>} [options.loadedManifests] externals manifests of dependency libraries pre-loaded by the caller (e.g. read via the dependency reader so they also work for built/npm-installed libraries); takes precedence over reading from libraryDeps rootPath
 		 * @param {boolean} [options.writeExternalsManifest] whether to write an externals manifest for cascaded builds
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
 			{ pluginOptions, skipCache, persistentCache, dynamicEntriesPath, skipTransform, keepDynamicImports, generatedCode, sourcemap, minify, inject } = {},
-			{ cwd = process.cwd(), depPaths = [], rewriteDep, isMiddleware, libraryDeps = [], writeExternalsManifest = false } = {},
+			{ cwd = process.cwd(), depPaths = [], rewriteDep, isMiddleware, libraryDeps = [], loadedManifests = [], writeExternalsManifest = false } = {},
 		) {
 			let bundling = false;
 			let bundleInfo = new BundleInfo();
@@ -1523,18 +1547,54 @@ module.exports = function (log, projectInfo) {
 			// => modules: individual module paths already bundled by a dependency library
 			// => packages: Web Components packages (incl. their registration chunk) already
 			//              bundled by a dependency library
+			// The caller (task) may pre-load the manifests via the dependency reader (so they
+			// also resolve for built/npm-installed libraries whose manifest ships in dist/);
+			// otherwise we fall back to reading each dependency's source-root manifest (works
+			// for source/workspace dependencies built in the same run).
 			const loadedExternals = { modules: {}, packages: {} };
-			for (const libDep of libraryDeps) {
-				const manifestPath = path.join(libDep.rootPath, ".ui5-tooling-modules", "externals-manifest.json");
-				if (existsSync(manifestPath)) {
-					try {
-						const manifest = JSON.parse(readFileSync(manifestPath, { encoding: "utf-8" }));
-						Object.assign(loadedExternals.modules, manifest.modules || {});
-						Object.assign(loadedExternals.packages, manifest.packages || {});
-					} catch (e) {
-						log.warn(`Failed to read externals manifest from ${manifestPath}: ${e.message}`);
+			const manifestEntries = [];
+			if (loadedManifests.length > 0) {
+				for (const entry of loadedManifests) {
+					if (entry?.manifest) {
+						manifestEntries.push({ libraryName: entry.libraryName || entry.manifest.libraryName, manifest: entry.manifest });
 					}
 				}
+			} else {
+				for (const libDep of libraryDeps) {
+					const manifestPath = path.join(libDep.rootPath, "library-externals-manifest.json");
+					if (existsSync(manifestPath)) {
+						try {
+							const manifest = JSON.parse(readFileSync(manifestPath, { encoding: "utf-8" }));
+							manifestEntries.push({ libraryName: libDep.name || manifest.libraryName, manifest });
+						} catch (e) {
+							log.warn(`Failed to read externals manifest from ${manifestPath}: ${e.message}`);
+						}
+					}
+				}
+			}
+			for (const { libraryName, manifest } of manifestEntries) {
+				// cascaded builds require the SAME version of a shared npm package on both sides:
+				// the consumer references the dependency's already-compiled code, so a version
+				// mismatch would reuse a bundle built against a different version. Verify the
+				// recorded package versions against what this project resolves; on any mismatch
+				// warn and SKIP this manifest's externals so the modules are re-bundled locally.
+				const packageVersions = manifest.packageVersions || {};
+				let versionMismatch = false;
+				for (const [npmPackage, expectedVersion] of Object.entries(packageVersions)) {
+					const actualVersion = getNpmPackageVersion(npmPackage, { cwd, depPaths });
+					if (actualVersion && expectedVersion && !semverEq(actualVersion, expectedVersion)) {
+						versionMismatch = true;
+						log.warn(
+							`Cascaded build: dependency library "${libraryName}" bundled "${npmPackage}@${expectedVersion}", but this project resolves "${npmPackage}@${actualVersion}". ` +
+								`Skipping the reuse of its bundled modules (they will be bundled locally instead). Align the "${npmPackage}" version to reuse the cascaded build.`,
+						);
+					}
+				}
+				if (versionMismatch) {
+					continue;
+				}
+				Object.assign(loadedExternals.modules, manifest.modules || {});
+				Object.assign(loadedExternals.packages, manifest.packages || {});
 			}
 
 			try {
@@ -1587,11 +1647,18 @@ module.exports = function (log, projectInfo) {
 				//   2) all bundle-affecting configuration options
 				//   3) project package.json + lockfile (catches dependency bumps)
 				//   4) entry modules: path + size + mtime
+				//   5) cascaded externals (the same entry modules produce a DIFFERENT bundle
+				//      depending on which modules/packages are externalized to a dependency
+				//      library; without this two projects bundling e.g. "Search"+"Input" would
+				//      collide on the in-memory BundleInfoCache and reuse each other's output)
 				// Transitive module graph is captured after the build and verified on
 				// persistent-cache load (see BundleInfoCache.get/store).
 				// See packages/ui5-tooling-modules/CACHE-INVALIDATION.md for the design.
 				const modules = bundleInfo.getModules();
 				const entryFp = getInputGraphFingerprint(modules.map((module) => module.path));
+				const externalsFp = createHash("sha256")
+					.update(JSON.stringify({ modules: loadedExternals.modules || {}, packages: loadedExternals.packages || {} }))
+					.digest("hex");
 				const cacheKey = createHash("sha256")
 					.update(
 						[
@@ -1608,6 +1675,7 @@ module.exports = function (log, projectInfo) {
 							}),
 							getLockfileFingerprint(cwd),
 							entryFp,
+							externalsFp,
 							modules
 								.map((module) => `${module.name}@${module.path}`)
 								.sort()
@@ -1974,10 +2042,13 @@ module.exports = function (log, projectInfo) {
 						// cache the output
 						BundleInfoCache.store(cacheKey, bundleInfo, bundleCacheOptions);
 
-						// write externals manifest for this library (for cascaded builds)
+						// build the externals manifest for this library (for cascaded builds)
 						// => allows dependent libraries to know which modules and Web Components
 						//    packages are already bundled here and should be treated as externals
-						//    in their own build (referencing this library's bundled paths instead)
+						//    in their own build (referencing this library's bundled paths instead).
+						// The manifest is NOT written here: it is exposed on the BundleInfo so the
+						// task can write it into the UI5 workspace (and thus ship it in dist/ /
+						// the published package). See lib/task.js.
 						if (writeExternalsManifest && typeof rewriteDep === "function") {
 							// only genuine, importable module entries are advertised as externals
 							// (internal rollup chunk names are not valid import specifiers for dependents)
@@ -1992,15 +2063,29 @@ module.exports = function (log, projectInfo) {
 							for (const packageSource of Object.keys(output.$metadata.packages || {})) {
 								manifestPackages[packageSource] = rewriteDep(packageSource, bundleInfo);
 							}
+							// record the installed versions of the shared npm packages this library
+							// bundled. A dependent that reuses these externals references THIS library's
+							// already-compiled code, so it must resolve the exact same package version;
+							// the consumer verifies this against its own installed versions (see the
+							// manifest-loading loop above) and skips the externals on a mismatch.
+							const manifestPackageVersions = {};
+							for (const name of [...Object.keys(manifestModules), ...Object.keys(manifestPackages)]) {
+								const npmPackage = getNpmPackageName(name);
+								if (npmPackage && !manifestPackageVersions[npmPackage]) {
+									const version = getNpmPackageVersion(npmPackage, { cwd, depPaths });
+									if (version) {
+										manifestPackageVersions[npmPackage] = version;
+									}
+								}
+							}
 							const manifest = {
 								libraryName: projectInfo.name,
 								libraryNamespace: projectInfo.namespace,
+								packageVersions: manifestPackageVersions,
 								modules: manifestModules,
 								packages: manifestPackages,
 							};
-							const manifestDir = path.join(projectInfo.rootPath, ".ui5-tooling-modules");
-							await mkdir(manifestDir, { recursive: true });
-							await writeFile(path.join(manifestDir, "externals-manifest.json"), JSON.stringify(manifest, null, 2), { encoding: "utf8" });
+							bundleInfo.setExternalsManifest(manifest);
 						}
 					} else {
 						// retrieve the cached output
