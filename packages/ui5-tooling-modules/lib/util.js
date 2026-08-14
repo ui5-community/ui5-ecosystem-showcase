@@ -27,7 +27,6 @@ const { XMLParser } = require("fast-xml-parser");
 const parseJS = require("./utils/parseJS");
 
 const { createHash } = require("crypto");
-const sanitize = require("sanitize-filename");
 
 // ============================================================================
 // Cache invalidation helpers — sha256 layered fingerprint (Option A)
@@ -471,11 +470,25 @@ class BundleInfoCache {
 class BundleInfo {
 	_entries = [];
 	_inputFingerprint = null;
+	_externals = {};
+	_externalPackages = {};
 	fromJSON(s) {
 		const parsed = JSON.parse(s);
 		this._entries = parsed._entries;
 		this._inputFingerprint = parsed._inputFingerprint ?? null;
+		this._externals = parsed._externals ?? {};
+		this._externalPackages = parsed._externalPackages ?? {};
 		return this;
+	}
+	setExternals(externals, externalPackages) {
+		this._externals = externals || {};
+		this._externalPackages = externalPackages || {};
+	}
+	getExternals() {
+		return this._externals;
+	}
+	getExternalPackages() {
+		return this._externalPackages;
 	}
 	setInputFingerprint(fp) {
 		this._inputFingerprint = fp;
@@ -485,6 +498,9 @@ class BundleInfo {
 	}
 	getEntry(name) {
 		return this._entries.find((entry) => entry.name === name);
+	}
+	removeEntry(name) {
+		this._entries = this._entries.filter((entry) => entry.name !== name);
 	}
 	getEntries() {
 		return this._entries;
@@ -540,6 +556,12 @@ module.exports = function (log, projectInfo) {
 
 	// local cache for package.json files
 	const packageJsonCache = {};
+
+	// derive the npm package name (incl. scope) from a module source (slash form)
+	const getNpmPackageName = (source) => {
+		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
+		return npmPackageScopeRegEx.exec(source)?.[1];
+	};
 
 	// local cache for dependencies list
 	const findDependenciesCache = {};
@@ -690,7 +712,7 @@ module.exports = function (log, projectInfo) {
 					if (sourcePath.endsWith(".d.ts")) {
 						return false;
 					} else if (ext !== ".js" && allJsSources.has(sourcePath.replace(new RegExp(`\\${ext}$`), ""))) {
-						log.info(`Removing source ${sourcePath} (as a parallel JS resource was found)`);
+						log.verbose(`Removing source ${sourcePath} (as a parallel JS resource was found)`);
 						return false;
 					}
 					return true;
@@ -1274,17 +1296,59 @@ module.exports = function (log, projectInfo) {
 		 * @param {rollup.InputPluginOption[]} [config.afterPlugins] rollup plugins to be executed after
 		 * @param {object} [config.pluginOptions] configuration options for the rollup plugins (e.g. webcomponents)
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
+		 * @param {object} [config.loadedExternals] externals loaded from dependency library manifests: `{ modules, packages }` maps of names to rewritten UI5 AMD paths (cascaded builds)
 		 * @param {string} [config.sourcemap] configures the generation of sourcemaps (default: false, possible values: true|false, "inline", "hidden")
 		 * @param {object} [config.inject] the inject configuration for @rollup/plugin-inject
 		 * @returns {rollup.RollupOutput} the build output of rollup
 		 */
-		createBundle: async function createBundle(moduleNames, { cwd = process.cwd(), depPaths = [], beforePlugins, afterPlugins, pluginOptions, generatedCode, sourcemap, inject } = {}) {
+		createBundle: async function createBundle(
+			moduleNames,
+			{ cwd = process.cwd(), depPaths = [], beforePlugins, afterPlugins, pluginOptions, generatedCode, loadedExternals = { modules: {}, packages: {} }, sourcemap, inject } = {},
+		) {
 			const { walk } = await import("estree-walker");
 			const $metadata = {};
+			const externals = {};
+			const externalPackages = {};
+
+			// Module-level externals: mark a module or Web Components package as external
+			// if it appears in the pre-loaded manifests from dependency libraries. The
+			// webcomponents plugin calls this with a package name (e.g. "@ui5/webcomponents"),
+			// while rollup and entry filtering call it with individual module names.
+			// A package match is tracked separately: it must only redirect the bare package
+			// import (its registration chunk), NOT arbitrary subpaths - a subpath like
+			// "@ui5/webcomponents/dist/Input" may well be bundled by THIS library even though
+			// the package itself is owned by a dependency library.
+			const filterForExternalModules = (name) => {
+				if (loadedExternals.modules?.[name]) {
+					externals[name] = loadedExternals.modules[name];
+					return true;
+				}
+				if (loadedExternals.packages?.[name]) {
+					externals[name] = loadedExternals.packages[name];
+					externalPackages[name] = loadedExternals.packages[name];
+					return true;
+				}
+				return false;
+			};
+
+			moduleNames = moduleNames.filter((moduleName) => !filterForExternalModules(moduleName, null, false));
+
+			// if all requested modules are externals (e.g. an application that only uses
+			// Web Components already bundled by its dependency libraries), there is nothing
+			// to bundle. Return an empty rollup-like output that still carries the collected
+			// externals metadata so the caller can rewrite the references accordingly.
+			if (moduleNames.length === 0) {
+				const emptyOutput = [];
+				emptyOutput.$metadata = $metadata;
+				$metadata.externals = externals;
+				$metadata.externalPackages = externalPackages;
+				return emptyOutput;
+			}
 			const bundle = await rollup.rollup({
 				input: moduleNames,
 				//context: "exports" /* this is normally converted to undefined, but should be exports in our case! */,
 				context: "this",
+				external: filterForExternalModules,
 				plugins: [
 					...(beforePlugins || []),
 					replace({
@@ -1332,6 +1396,7 @@ module.exports = function (log, projectInfo) {
 						getPackageJson, // use the cached package.json if possible
 						options: pluginOptions?.["webcomponents"],
 						$metadata,
+						filterForExternalModules,
 					}),
 					// once the node polyfills are injected, we can
 					// resolve the modules from node_modules
@@ -1410,6 +1475,8 @@ module.exports = function (log, projectInfo) {
 				sourcemap,
 			});
 
+			$metadata.externals = externals;
+			$metadata.externalPackages = externalPackages;
 			output.$metadata = $metadata;
 
 			return output;
@@ -1437,18 +1504,38 @@ module.exports = function (log, projectInfo) {
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @param {Function} [options.rewriteDep] function to rewrite the dependency paths
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
+		 * @param {Array<{name: string, namespace: string, rootPath: string}>} [options.libraryDeps] list of dependency library info objects for cascaded builds
+		 * @param {boolean} [options.writeExternalsManifest] whether to write an externals manifest for cascaded builds
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
 			{ pluginOptions, skipCache, persistentCache, dynamicEntriesPath, skipTransform, keepDynamicImports, generatedCode, sourcemap, minify, inject } = {},
-			{ cwd = process.cwd(), depPaths = [], rewriteDep, isMiddleware } = {},
+			{ cwd = process.cwd(), depPaths = [], rewriteDep, isMiddleware, libraryDeps = [], writeExternalsManifest = false } = {},
 		) {
 			let bundling = false;
 			let bundleInfo = new BundleInfo();
 			const bundleCacheOptions = {
 				persist: persistentCache,
 			};
+
+			// Load externals manifests from dependency libraries (for cascaded builds)
+			// => modules: individual module paths already bundled by a dependency library
+			// => packages: Web Components packages (incl. their registration chunk) already
+			//              bundled by a dependency library
+			const loadedExternals = { modules: {}, packages: {} };
+			for (const libDep of libraryDeps) {
+				const manifestPath = path.join(libDep.rootPath, ".ui5-tooling-modules", "externals-manifest.json");
+				if (existsSync(manifestPath)) {
+					try {
+						const manifest = JSON.parse(readFileSync(manifestPath, { encoding: "utf-8" }));
+						Object.assign(loadedExternals.modules, manifest.modules || {});
+						Object.assign(loadedExternals.packages, manifest.packages || {});
+					} catch (e) {
+						log.warn(`Failed to read externals manifest from ${manifestPath}: ${e.message}`);
+					}
+				}
+			}
 
 			try {
 				// convert the single module request to an array
@@ -1542,6 +1629,7 @@ module.exports = function (log, projectInfo) {
 							beforePlugins: [logger({ log })],
 							afterPlugins: [],
 							generatedCode,
+							loadedExternals,
 							minify,
 							inject,
 							sourcemap,
@@ -1571,6 +1659,18 @@ module.exports = function (log, projectInfo) {
 						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`); // PERF
 						//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`); // PERF
 						//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`)); // PERF
+
+						// remove external modules from the bundle info
+						output.$metadata = output.$metadata || {};
+						output.$metadata.externals = output.$metadata.externals || {};
+						output.$metadata.externalPackages = output.$metadata.externalPackages || {};
+						for (const module of Object.keys(output.$metadata.externals)) {
+							bundleInfo.removeEntry(module);
+						}
+						// expose the externals on the bundle info so consumers (e.g. the task's
+						// dependency/XML rewriting) can map externalized modules and packages to
+						// the owning dependency library's bundled paths
+						bundleInfo.setExternals(output.$metadata.externals, output.$metadata.externalPackages);
 
 						// parse the rollup build result
 						const shiftedEntries = {};
@@ -1650,25 +1750,36 @@ module.exports = function (log, projectInfo) {
 						};
 
 						// helper to replace params in the code
-						const replaceParam = function (code, search, replacement) {
+						// exact = true only matches the bare name (not a "/"-separated subpath),
+						// used for package externals so that consumer-owned subpaths of a
+						// dependency-owned package (e.g. "@ui5/webcomponents/dist/Input") are not rewritten
+						const replaceParam = function (code, search, replacement, exact) {
 							const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-							const regex = new RegExp(`(?<!tag:\\s)(["'])${escapedSearchString}(.*?)\\1`, "g"); // do not match tag: "..."
+							// the negative lookahead ensures we only match the exact module/package name
+							// or a "/"-separated subpath, but never a different package that merely shares
+							// the same prefix (e.g. "@ui5/webcomponents" must not match "@ui5/webcomponents-base")
+							const boundary = exact ? "(?![\\w\\-/.])" : "(?![\\w-])";
+							const regex = new RegExp(`(?<!tag:\\s)(["'])${escapedSearchString}${boundary}(.*?)\\1`, "g"); // do not match tag: "..."
 							return code.replace(regex, `$1${replacement}$2$1`);
 						};
 
 						// helper to replace params in the code
-						const replaceModules = function (code, search, replacement) {
+						const replaceModules = function (code, search, replacement, exact) {
 							if (code.indexOf(`pkg["_ui5metadata"] = {`) > -1) {
 								// in web components package modules all strings can be replaced (safe as generated by us)
-								code = replaceParam(code, search, replacement);
+								code = replaceParam(code, search, replacement, exact);
 							} else {
 								const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-								// covers the UI5 module loading functions
-								code = code.replace(new RegExp(`((?:require|requireSync|define|toUrl|isA)(?:\\s*)(?:\\([^)]*(["'])))${escapedSearchString}(.*?)\\2`, "mg"), `$1${replacement}$3$2`);
+								const boundary = exact ? "(?![\\w\\-/.])" : "(?![\\w-])";
+								// covers the UI5 module loading functions (see replaceParam for the lookahead rationale)
+								code = code.replace(
+									new RegExp(`((?:require|requireSync|define|toUrl|isA)(?:\\s*)(?:\\([^)]*(["'])))${escapedSearchString}${boundary}(.*?)\\2`, "mg"),
+									`$1${replacement}$3$2`,
+								);
 								// covers all strings in the extend({ ... }) calls
 								const extendRe = /extend\s*\(([\s\S]*?)\)\s*;/g;
 								code = code.replace(extendRe, (full, body) => {
-									const replacedBody = replaceParam(body, search, replacement);
+									const replacedBody = replaceParam(body, search, replacement, exact);
 									return full.replace(body, replacedBody);
 								});
 							}
@@ -1676,9 +1787,12 @@ module.exports = function (log, projectInfo) {
 						};
 
 						// helper to replace params in the code
-						const replaceJSDoc = function (code, search, replacement) {
+						const replaceJSDoc = function (code, search, replacement, exact) {
 							const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-							const regex = new RegExp(`(\\*\\s@(.*?)\\s+(?:module\\:)?)${escapedSearchString}`, "g");
+							// the negative lookahead prevents a package name from matching a different
+							// package that shares the same prefix (see replaceParam for details)
+							const boundary = exact ? "(?![\\w\\-/.])" : "(?![\\w-])";
+							const regex = new RegExp(`(\\*\\s@(.*?)\\s+(?:module\\:)?)${escapedSearchString}${boundary}`, "g");
 							return code.replace(regex, `$1${replacement}`);
 						};
 
@@ -1754,8 +1868,58 @@ module.exports = function (log, projectInfo) {
 											}
 											modifiedCode = replaceJSDoc(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
 										});
+									// cascaded builds: controls/substitutes this library bundles itself but whose Web
+									// Components PACKAGE is owned by a dependency library (external) still need their own
+									// identity (extend name / qualifiedNamespace) prefixed with THIS project's namespace;
+									// only the package registration import stays external. The package loop above misses
+									// these because the external package is not part of this build's $metadata.packages.
+									[...Object.values(output.$metadata.controls || {}), ...Object.values(output.$metadata.substitutes || {})]
+										.filter((ctrl) => ctrl?.name && output.$metadata.externalPackages?.[getNpmPackageName(ctrl.name)])
+										.sort((a, b) => b.name.localeCompare(a.name))
+										.forEach((ctrl) => {
+											// the control's own identity uses THIS project's namespace ...
+											const localName = rewriteDep(ctrl.name, bundleInfo); // e.g. <proj>/gen/@ui5/webcomponents/dist/Input
+											const localNameDotted = rewriteDep(ctrl.name, bundleInfo, true);
+											if (ctrl.qualifiedName) {
+												modifiedCode = replaceModules(modifiedCode, ctrl.qualifiedName, localNameDotted);
+												modifiedCode = replaceJSDoc(modifiedCode, ctrl.qualifiedName, localNameDotted);
+											}
+											modifiedCode = replaceModules(modifiedCode, ctrl.name, localName);
+											modifiedCode = replaceJSDoc(modifiedCode, ctrl.name, localName);
+											// NOTE: the control's own identity (extend name / qualifiedName) is local,
+											// but everything the Web Components PACKAGE provides — the registration
+											// namespace, the package import AND the registered data-type enums (e.g.
+											// "@ui5.webcomponents.dist.types.InputType") — belongs to the dependency
+											// library that owns the package. Those dotted references are mapped to the
+											// external owner by the externals rewrite loop below (see externalPackages).
+										});
 									module.code = modifiedCode;
 								}
+								Object.keys(output.$metadata.externals || {})
+									.sort((a, b) => b.localeCompare(a))
+									.forEach((externalModuleName) => {
+										// package externals only redirect the bare package import (exact match)
+										// so consumer-owned subpaths of a dependency-owned package are preserved
+										const exact = !!output.$metadata.externalPackages?.[externalModuleName];
+										modifiedCode = replaceModules(modifiedCode, externalModuleName, output.$metadata.externals[externalModuleName], exact);
+										modifiedCode = replaceJSDoc(modifiedCode, externalModuleName, output.$metadata.externals[externalModuleName], exact);
+									});
+								// dotted references to an externalized Web Components package (e.g. the
+								// registered data-type enums "@ui5.webcomponents.dist.types.InputType" that a
+								// locally-bundled wrapper like Input refers to) must point to the owner that
+								// actually registers them (the dependency library). Rewrite the dotted package
+								// prefix to the dependency's dotted namespace, but never touch names already
+								// localized into this project (guarded by a "not preceded by a word char or dot"
+								// lookbehind so "<proj>.gen.@ui5.webcomponents..." is left untouched).
+								Object.keys(output.$metadata.externalPackages || {})
+									.sort((a, b) => b.localeCompare(a))
+									.forEach((pkgName) => {
+										const dotted = pkgName.replace(/\//g, ".");
+										const targetDotted = output.$metadata.externalPackages[pkgName].replace(/\//g, ".");
+										const escaped = dotted.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+										modifiedCode = modifiedCode.replace(new RegExp(`(?<![\\w.])${escaped}`, "g"), targetDotted);
+									});
+								module.code = modifiedCode;
 							}
 
 							// remove trailing whitespaces and correct line feeds (no windows line feeds!)
@@ -1764,6 +1928,35 @@ module.exports = function (log, projectInfo) {
 
 						// cache the output
 						BundleInfoCache.store(cacheKey, bundleInfo, bundleCacheOptions);
+
+						// write externals manifest for this library (for cascaded builds)
+						// => allows dependent libraries to know which modules and Web Components
+						//    packages are already bundled here and should be treated as externals
+						//    in their own build (referencing this library's bundled paths instead)
+						if (writeExternalsManifest && typeof rewriteDep === "function") {
+							// only genuine, importable module entries are advertised as externals
+							// (internal rollup chunk names are not valid import specifiers for dependents)
+							const manifestModules = {};
+							for (const entry of bundleInfo.getModules()) {
+								manifestModules[entry.name] = rewriteDep(entry.name, bundleInfo);
+							}
+							// Web Components packages (incl. their registration chunk) so that a
+							// dependent library can reuse this library's package registration instead
+							// of re-bundling and re-registering the custom elements
+							const manifestPackages = {};
+							for (const packageSource of Object.keys(output.$metadata.packages || {})) {
+								manifestPackages[packageSource] = rewriteDep(packageSource, bundleInfo);
+							}
+							const manifest = {
+								libraryName: projectInfo.name,
+								libraryNamespace: projectInfo.namespace,
+								modules: manifestModules,
+								packages: manifestPackages,
+							};
+							const manifestDir = path.join(projectInfo.rootPath, ".ui5-tooling-modules");
+							await mkdir(manifestDir, { recursive: true });
+							await writeFile(path.join(manifestDir, "externals-manifest.json"), JSON.stringify(manifest, null, 2), { encoding: "utf8" });
+						}
 					} else {
 						// retrieve the cached output
 						bundleInfo = BundleInfoCache.get(cacheKey, bundleCacheOptions);

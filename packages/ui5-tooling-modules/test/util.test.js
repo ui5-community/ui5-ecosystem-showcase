@@ -964,3 +964,104 @@ test.serial("Verify generation of webc-package/CustomAlertButton Wrapper UI5 Con
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}
 });
+
+// *****************************************************************************
+// CASCADED BUILDS
+// *****************************************************************************
+
+// eslint-disable-next-line jsdoc/require-jsdoc
+async function buildCascadedLibrary(entryModules, { name, namespace, rootPath, cwd, libraryDeps = [] }) {
+	const baseInfo = await getProjectInfo(cwd);
+	const projectInfo = Object.assign({}, baseInfo, { name, namespace, rootPath });
+	const log = { logs: [] };
+	["silly", "verbose", "perf", "info", "warn", "error", "silent"].forEach((level) => {
+		log[level] = (...messages) => log.logs.push(`[${level}] ${messages}`);
+	});
+	// simplified rewriteDep that mirrors the task's namespace prefixing for Web Components (gen namespace)
+	const rewriteDep = (dep) => `${namespace}/gen/${dep.replace(/^@/, "")}`;
+	const util = require("../lib/util")(log, projectInfo);
+	const bundleInfo = await util.getBundleInfo(entryModules, { skipCache: true }, { cwd, rewriteDep, libraryDeps, writeExternalsManifest: true });
+	if (bundleInfo.error) {
+		throw new Error(bundleInfo.error);
+	}
+	const manifestPath = path.join(rootPath, ".ui5-tooling-modules", "externals-manifest.json");
+	const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, { encoding: "utf8" })) : undefined;
+	return { bundleInfo, manifest, manifestPath };
+}
+
+test.serial("Cascaded build: producer writes an externals manifest with modules and packages", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp-webc"));
+	const producerRoot = path.join(t.context.tmpDir, "producer");
+	try {
+		const { manifest } = await buildCascadedLibrary(["@ui5/webcomponents/Button"], {
+			name: "producer",
+			namespace: "producer/ns",
+			rootPath: producerRoot,
+			cwd: process.cwd(),
+		});
+		t.truthy(manifest, "manifest should be written to the library root");
+		t.is(manifest.libraryName, "producer");
+		t.is(manifest.libraryNamespace, "producer/ns");
+		// only the genuine, importable module entry is advertised (no internal chunk names)
+		t.deepEqual(Object.keys(manifest.modules), ["@ui5/webcomponents/Button"]);
+		t.is(manifest.modules["@ui5/webcomponents/Button"], "producer/ns/gen/ui5/webcomponents/Button");
+		// the Web Components package (incl. its registration chunk) is advertised at package level.
+		// note: @ui5/webcomponents-base may or may not be split into its own package depending on
+		// what has already been bundled, so we only assert that the used package is present and
+		// that every advertised package maps into the producer's own "gen" namespace.
+		t.true(Object.keys(manifest.packages).includes("@ui5/webcomponents"), "the used Web Components package is advertised");
+		for (const [pkg, target] of Object.entries(manifest.packages)) {
+			t.is(target, `producer/ns/gen/${pkg.replace(/^@/, "")}`, `package ${pkg} maps into the producer namespace`);
+		}
+	} finally {
+		rmSync(producerRoot, { recursive: true, force: true });
+	}
+});
+
+test.serial("Cascaded build: consumer externalizes the dependency's already-bundled package", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp-webc"));
+	const buildCwd = process.cwd();
+	const producerRoot = path.join(t.context.tmpDir, "producer");
+	const consumerRoot = path.join(t.context.tmpDir, "consumer");
+	try {
+		// 1) producer bundles @ui5/webcomponents (via Button) and writes its manifest
+		const { manifest: producerManifest } = await buildCascadedLibrary(["@ui5/webcomponents/Button"], {
+			name: "producer",
+			namespace: "producer/ns",
+			rootPath: producerRoot,
+			cwd: buildCwd,
+		});
+
+		// 2) consumer bundles @ui5/webcomponents-fiori/Search (which reuses @ui5/webcomponents),
+		//    with the producer declared as a dependency library
+		const { bundleInfo } = await buildCascadedLibrary(["@ui5/webcomponents-fiori/Search"], {
+			name: "consumer",
+			namespace: "consumer/ns",
+			rootPath: consumerRoot,
+			cwd: buildCwd,
+			libraryDeps: [{ name: "producer", namespace: "producer/ns", rootPath: producerRoot }],
+		});
+
+		const chunkNames = bundleInfo
+			.getBundledResources()
+			.filter((e) => e.type === "chunk")
+			.map((e) => e.name);
+
+		// the consumer must NOT re-bundle the @ui5/webcomponents package chunk (owned by the producer)
+		t.false(chunkNames.includes("@ui5/webcomponents"), "consumer must not re-bundle the producer-owned @ui5/webcomponents package");
+		// but it must still bundle its own @ui5/webcomponents-fiori package
+		t.true(chunkNames.includes("@ui5/webcomponents-fiori"), "consumer still bundles its own @ui5/webcomponents-fiori package");
+
+		// correctness invariant: every reference the consumer makes into the producer's namespace
+		// must correspond to a path the producer actually advertised in its manifest. This guards
+		// against spurious prefix-collision rewrites (e.g. "@ui5/webcomponents" leaking into the
+		// different package "@ui5/webcomponents-base") producing dangling 404 references.
+		const advertised = new Set([...Object.values(producerManifest.modules), ...Object.values(producerManifest.packages)]);
+		const producerRefs = new Set(bundleInfo.getBundledResources().flatMap((e) => (e.code || "").match(/producer\/ns\/gen\/[^"'\s)]+/g) || []));
+		const unknownRefs = [...producerRefs].filter((ref) => !advertised.has(ref));
+		t.deepEqual(unknownRefs, [], "consumer must only reference paths advertised by the producer manifest");
+	} finally {
+		rmSync(producerRoot, { recursive: true, force: true });
+		rmSync(consumerRoot, { recursive: true, force: true });
+	}
+});

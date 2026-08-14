@@ -28,6 +28,7 @@ const sanitize = require("sanitize-filename");
  * @param {boolean|string} [parameters.options.configuration.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
  * @param {boolean|string} [parameters.options.configuration.sourcemap] configures the generation of sourcemaps (default: false, possible values: true|false, "inline", "hidden")
  * @param {string[]} [parameters.options.configuration.entryPoints] list of entry points to be included in the bundle (not determined by scanning)
+ * @param {boolean} [parameters.options.configuration.cascadedBuild] enables cascaded builds: read the externals manifests of dependency libraries to treat their already-bundled modules and Web Components packages as externals, and write an externals manifest for dependent libraries (defaults to false)
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
@@ -78,9 +79,24 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			skipTransform: false,
 			addToNamespace: true,
 			sourcemap: false,
+			cascadedBuild: false,
 		},
 		options.configuration,
 	);
+
+	// For cascaded builds: discover all dependency library roots (including framework projects)
+	// to load their externals manifests. Unlike depPaths, this does NOT exclude framework projects
+	// because in OpenUI5 builds, dependent libraries ARE framework projects.
+	const libraryDeps = config.cascadedBuild
+		? taskUtil
+				.getDependencies()
+				.map((dep) => taskUtil.getProject(dep))
+				.map((prj) => ({
+					name: prj.getName(),
+					namespace: prj.getNamespace(),
+					rootPath: prj.getRootPath(),
+				}))
+		: [];
 
 	// derive the custom thirdparty namespace
 	let thirdpartyNamespace = "thirdparty";
@@ -160,6 +176,23 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	function rewriteDep(dep, bundleInfo, useDottedNamespace) {
 		// remove the relative path and the project namespace
 		const aDep = stripRelativeSegments(dep.replaceAll(`${options.projectNamespace}/resources/`, ""));
+		// cascaded builds: if the dependency has been bundled by a dependency library it is
+		// an external and must be referenced at the owning library's bundled (wrapper) path
+		// instead of being rewritten into this project. Resolution is per-module so that
+		// modules of the same npm package that are owned by different libraries (e.g.
+		// Button from library A, Input from library B) each resolve to their correct owner.
+		const externals = (bundleInfo.getExternals && bundleInfo.getExternals()) || {};
+		const externalPackages = (bundleInfo.getExternalPackages && bundleInfo.getExternalPackages()) || {};
+		if (externals[aDep]) {
+			// module-level external: reference the exact bundled path in the owning library
+			return useDottedNamespace ? externals[aDep].replace(/\//g, ".") : externals[aDep];
+		}
+		const externalNpmPackage = getNpmPackageName(aDep);
+		if (externalPackages[externalNpmPackage] && aDep === externalNpmPackage) {
+			// package-level external for the bare package import (e.g. the registration chunk)
+			const target = externalPackages[externalNpmPackage];
+			return useDottedNamespace ? target.replace(/\//g, ".") : target;
+		}
 		const resource = config.addToNamespace && bundleInfo.getBundledResources().find(({ name }) => aDep === name);
 		if (config.addToNamespace && (resource || uniqueResources.has(aDep) || uniqueNS.has(aDep) || isAssetIncluded(aDep))) {
 			let d = aDep;
@@ -329,8 +362,15 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// utility to rewrite XML dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteXMLDeps(node, bundleInfo, ns = {}) {
+	function rewriteXMLDeps(node, bundleInfo, ns = {}, wcAliases = null) {
 		let changed = false;
+		// wcAliases collects per-element Web Components namespace aliases for cascaded
+		// builds: within one XMLView, elements under the same prefix (e.g. "webc") may
+		// resolve to DIFFERENT owning libraries (split package). A single xmlns can't
+		// express that, so each distinct resolved namespace gets its own alias which is
+		// injected on the root element after the tree has been processed.
+		const isRoot = !wcAliases;
+		wcAliases = wcAliases || {};
 		if (node) {
 			// parse the namespace
 			const localNs = Object.assign(
@@ -349,10 +389,14 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					if (nsParts) {
 						// namespace (default namespace => "")
 						const namespace = node[key].replace(/\./g, "/");
+						const externals = (bundleInfo.getExternals && bundleInfo.getExternals()) || {};
 						if (
 							bundleInfo.getBundledResources().some(({ name }) => {
 								return name.startsWith(namespace);
-							})
+							}) ||
+							// cascaded builds: the namespace may belong to an externalized
+							// Web Components package bundled by a dependency library
+							Object.keys(externals).some((name) => name === namespace || name.startsWith(`${namespace}/`))
 						) {
 							node[key] = rewriteDep(node[key], bundleInfo, true);
 							changed = true;
@@ -375,21 +419,66 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					}
 				});
 			// nodes
+			const externalsForXml = (bundleInfo.getExternals && bundleInfo.getExternals()) || {};
+			const cascaded = Object.keys(externalsForXml).length > 0;
 			Object.keys(node)
 				.filter((key) => !key.startsWith("@_"))
 				.forEach((key) => {
-					const children = Array.isArray(node[key]) ? node[key] : [node[key]];
-					children.forEach((child) => {
-						const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
-						if (nodeParts) {
-							// skip #text nodes
-							let module = nodeParts[2];
-							if (module !== "#text") {
-								changed = rewriteXMLDeps(child, bundleInfo, localNs) || changed;
+					const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
+					if (!nodeParts) {
+						return;
+					}
+					const prefix = nodeParts[1] || "";
+					const localName = nodeParts[2];
+					if (localName === "#text") {
+						return;
+					}
+					// cascaded builds: resolve THIS element's module individually so that
+					// elements sharing one prefix but owned by different libraries (split
+					// package, e.g. webc:Button from library A and webc:Input from library B)
+					// each resolve to their correct owner via a per-element namespace alias.
+					if (cascaded && localName && /^[A-Z]/.test(localName) && localNs[prefix]) {
+						const moduleSlash = `${localNs[prefix].replace(/\./g, "/")}/${localName}`;
+						const resolvedDotted = rewriteDep(moduleSlash, bundleInfo, true);
+						if (resolvedDotted && resolvedDotted !== moduleSlash.replace(/\//g, ".")) {
+							// derive the element's namespace (module path minus the local name)
+							const nsDotted = resolvedDotted.slice(0, -(localName.length + 1));
+							let alias = wcAliases[nsDotted];
+							if (!alias) {
+								alias = `wc${Object.keys(wcAliases).length}`;
+								wcAliases[nsDotted] = alias;
+							}
+							const newKey = `${alias}:${localName}`;
+							if (newKey !== key) {
+								node[newKey] = node[key];
+								delete node[key];
+								const children = Array.isArray(node[newKey]) ? node[newKey] : [node[newKey]];
+								children.forEach((child) => {
+									rewriteXMLDeps(child, bundleInfo, localNs, wcAliases);
+								});
+								changed = true;
+								return;
 							}
 						}
+					}
+					const children = Array.isArray(node[key]) ? node[key] : [node[key]];
+					children.forEach((child) => {
+						changed = rewriteXMLDeps(child, bundleInfo, localNs, wcAliases) || changed;
 					});
 				});
+			// inject the collected Web Components namespace aliases on the root element
+			if (isRoot && Object.keys(wcAliases).length > 0) {
+				// the parsed document is an array whose first element object carries the
+				// root tag and its ":@" attribute bag (where xmlns declarations live)
+				const rootEl = Array.isArray(node) ? node.find((n) => n && typeof n === "object" && Object.keys(n).some((k) => k !== ":@")) : node;
+				if (rootEl) {
+					rootEl[":@"] = rootEl[":@"] || {};
+					for (const [nsDotted, alias] of Object.entries(wcAliases)) {
+						rootEl[":@"][`@_xmlns:${alias}`] = nsDotted;
+					}
+					changed = true;
+				}
+			}
 		}
 		return changed;
 	}
@@ -409,7 +498,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
 	const bundleTime = Date.now();
-	const bundleInfo = await getBundleInfo(modules, config, { cwd, depPaths, rewriteDep });
+	const bundleInfo = await getBundleInfo(modules, config, { cwd, depPaths, rewriteDep, libraryDeps, writeExternalsManifest: config.cascadedBuild });
 	if (bundleInfo.error) {
 		log.error(bundleInfo.error);
 		process.exit(1);
@@ -447,13 +536,17 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				log.verbose(`Trying to process resource: ${resourceName}`);
 				if (existsResource(resourceName, { cwd, depPaths, onlyFiles: true })) {
 					const resource = getResource(resourceName, { cwd, depPaths });
-					config.debug && log.info(`Processing resource: ${resourceName}`);
-					const newResource = resourceFactory.createResource({
-						path: resourcePath,
-						stream: resource.path ? createReadStream(resource.path) : undefined,
-						string: !resource.path && resource.code ? resource.code : undefined,
-					});
-					await workspace.write(newResource);
+					if (resource) {
+						config.debug && log.info(`Processing resource: ${resourceName}`);
+						const newResource = resourceFactory.createResource({
+							path: resourcePath,
+							stream: resource.path ? createReadStream(resource.path) : undefined,
+							string: !resource.path && resource.code ? resource.code : undefined,
+						});
+						await workspace.write(newResource);
+					} else {
+						log.warn(`Resource "${resourceName}" could not be found! Skipping...`);
+					}
 				}
 			} else {
 				log.verbose(`Skipping copy of existing resource: ${resourceName}`);
@@ -566,12 +659,22 @@ ${content}`;
 /**
  * Callback function to define the list of required dependencies
  *
+ * @param {object} parameters Parameters
+ * @param {Set} parameters.availableDependencies Set of all dependencies that could be required
+ * @param {object} [parameters.options] Options
+ * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<Set>}
  *      Promise resolving with a Set containing all dependencies
  *      that should be made available to the task.
  *      UI5 CLI will ensure that those dependencies have been
  *      built before executing the task.
  */
-module.exports.determineRequiredDependencies = async function () {
+module.exports.determineRequiredDependencies = async function ({ availableDependencies, options } = {}) {
+	// For cascaded builds we must ensure that the dependency libraries are built
+	// before this task runs, so that their externals manifests are available to
+	// be read (see the cascadedBuild handling in lib/task.js and lib/util.js).
+	if (options?.configuration?.cascadedBuild) {
+		return availableDependencies;
+	}
 	return new Set(); // dependency resolution uses Nodes' require APIs
 };

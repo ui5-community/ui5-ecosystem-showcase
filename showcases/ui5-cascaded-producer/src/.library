@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd">
+	<name>ui5.ecosystem.demo.cascaded.producer</name>
+	<vendor>Peter Muessig</vendor>
+	<version>${version}</version>
+	<copyright>${copyright}</copyright>
+	<title>Cascaded build producer library</title>
+	<documentation>Producer library that bundles @ui5/webcomponents and advertises them via an externals manifest for cascaded builds</documentation>
+	<dependencies>
+		<dependency>
+			<libraryName>sap.ui.core</libraryName>
+		</dependency>
+	</dependencies>
+</library>

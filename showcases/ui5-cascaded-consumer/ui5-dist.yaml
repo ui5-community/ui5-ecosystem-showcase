@@ -1,0 +1,15 @@
+specVersion: "4.0"
+metadata:
+  name: ui5.ecosystem.demo.cascaded.consumer
+type: library
+resources:
+  configuration:
+    paths:
+      src: dist/resources
+      test: dist/test-resources
+framework:
+  name: OpenUI5
+  version: 1.148.0
+  libraries:
+    - name: sap.ui.core
+    - name: themelib_sap_horizon

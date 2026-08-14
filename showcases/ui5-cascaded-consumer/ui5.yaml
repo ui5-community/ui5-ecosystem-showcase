@@ -1,0 +1,32 @@
+specVersion: "4.0"
+metadata:
+  name: ui5.ecosystem.demo.cascaded.consumer
+type: library
+framework:
+  name: OpenUI5
+  version: 1.148.0
+  libraries:
+    - name: sap.ui.core
+    - name: themelib_sap_horizon
+builder:
+  customTasks:
+    # bundle the used @ui5/webcomponents-fiori into this library. With
+    # "cascadedBuild: true" the task reads the producer library's externals
+    # manifest and treats the already-bundled @ui5/webcomponents modules and
+    # package as externals, referencing the producer's bundled paths instead
+    # of re-bundling them.
+    - name: ui5-tooling-modules-task
+      afterTask: replaceVersion
+      configuration:
+        cascadedBuild: true
+        pluginOptions:
+          webcomponents:
+            scoping: false
+server:
+  customMiddleware:
+    # resolve the used @ui5/webcomponents(-fiori) modules at serve time so the
+    # test page can instantiate the wrapper controls during development
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: true

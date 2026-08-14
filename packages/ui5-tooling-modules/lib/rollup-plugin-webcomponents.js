@@ -56,7 +56,7 @@ const { compile } = require("handlebars");
 
 const prettier = require("@prettier/sync");
 
-module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, options, $metadata = {} } = {}) {
+module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, options, $metadata = {}, filterForExternalModules = () => false } = {}) {
 	// derive the configuration from the provided options
 	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, forceAllAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, customJSDocTags, removeCLDRData } =
 		Object.assign(
@@ -222,7 +222,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				}
 			}
 		}
-		if (!skip && registryEntry?.isUI5WebComponents && !emittedNpmPackages.includes(npmPackage)) {
+		if (!skip && registryEntry?.isUI5WebComponents && !emittedNpmPackages.includes(npmPackage) && !filterForExternalModules(npmPackage, null, false)) {
 			// tell rollup to create a chunk for the Web Components npm package
 			emitFile({
 				type: "chunk",
@@ -526,6 +526,11 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		},
 		async resolveId(source, importer, { /*attributes, custom,*/ isEntry }) {
 			if (skip) {
+				return null;
+			}
+
+			// is external?
+			if (filterForExternalModules(source, importer, false)) {
 				return null;
 			}
 
