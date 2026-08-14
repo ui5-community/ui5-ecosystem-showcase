@@ -185,6 +185,35 @@ function buildPackage({ package: pkg, template, outputDir }) {
 }
 
 // -------------------------------------------------------------------------
+// library (library.js) generation — used when libraryMode: true
+// -------------------------------------------------------------------------
+
+function buildLibrary({ package: pkg, template, outputDir }) {
+	const metadataObject = {
+		apiVersion: 2,
+		name: pkg.qualifiedNamespace,
+		version: pkg.version,
+		dependencies: ["sap.ui.core"],
+		types: Object.keys(pkg.enums).map((enumName) => pkg.enums[enumName]._ui5QualifiedName),
+		interfaces: Object.keys(pkg.interfaces).map((interfaceName) => pkg.interfaces[interfaceName]._ui5QualifiedName),
+		controls: Object.keys(pkg.customElements).map((elementName) => pkg.customElements[elementName]._ui5QualifiedName),
+		elements: [],
+	};
+	const metadata = JSON.stringify(metadataObject, undefined, 2);
+
+	const code = template({
+		metadata,
+		hasEnums: Object.keys(pkg.enums).length > 0,
+		enums: pkg.enums,
+		dependencies: pkg.dependencies?.map((dep) => dep),
+	});
+
+	// write to <outputDir>/<ui5Namespace>/library.js, e.g. sap/html/library.js
+	const moduleName = `${pkg.ui5Namespace}/library`;
+	return writeGeneratedFile(outputDir, moduleName, code);
+}
+
+// -------------------------------------------------------------------------
 // control wrapper generation — mirrors buildWrapper() of the rollup plugin
 // -------------------------------------------------------------------------
 
@@ -314,9 +343,10 @@ function buildWrapper({ clazz, template, outputDir, emitted }) {
  * @param {string} [opts.stripModulePrefix] leading module path segment to strip from the generated names, e.g. "dist"
  * @param {string} [opts.version] package version (default: version from nearest package.json)
  * @param {string} [opts.frameworkVersion] UI5 framework version for version-dependent generation (default: 2.0.0)
+ * @param {boolean} [opts.libraryMode] when true, generate a UI5 library.js (using Library.init) instead of a standalone package module
  * @returns {string[]} the list of generated file paths
  */
-function generateControls({ input, output, namespace: namespaceOverride, ui5Namespace, stripModulePrefix, version: versionOverride, frameworkVersion = "2.0.0" } = {}) {
+function generateControls({ input, output, namespace: namespaceOverride, ui5Namespace, stripModulePrefix, version: versionOverride, frameworkVersion = "2.0.0", libraryMode = false } = {}) {
 	if (!input || !output) {
 		throw new Error("Both a custom-elements.json path (input) and an output folder (output) are required.");
 	}
@@ -378,8 +408,14 @@ function generateControls({ input, output, namespace: namespaceOverride, ui5Name
 
 	const written = [];
 
-	// [1] generate the UI5 package (library) glue
-	written.push(buildPackage({ package: registryEntry, template: ui5PackageTemplate, outputDir }));
+	// [1] generate the UI5 package (library) glue — either as a standalone package module
+	// or as a proper Library.init() call when libraryMode is requested
+	if (libraryMode) {
+		const ui5LibraryTemplate = loadAndCompileTemplate("UI5Library.hbs");
+		written.push(buildLibrary({ package: registryEntry, template: ui5LibraryTemplate, outputDir }));
+	} else {
+		written.push(buildPackage({ package: registryEntry, template: ui5PackageTemplate, outputDir }));
+	}
 
 	// [2] generate one control wrapper per class described by the metadata
 	const emitted = new Set();
