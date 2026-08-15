@@ -29,6 +29,12 @@ Default value: `<app-id.zip>`
 - additionalFiles: `String<Array>` or `Object<Array>`
 List of files to be included in the ZIP archive relative to the project root or Map of of files to be included in the ZIP archive relative to the project root and target path in the ZIP archive.
 
+- includes: `String<Array>` (old alias: `includePatterns`)
+List of glob patterns matched against the archive-relative resource paths. When provided, only build resources matching at least one pattern are added to the archive (allow-list), e.g. `Component.js`, `manifest.json`, `css/**`.
+
+- excludes: `String<Array>` (old alias: `excludePatterns`)
+List of glob patterns matched against the archive-relative resource paths. Build resources matching any pattern are omitted from the archive, e.g. `**/*.map`, `**/*-dbg.js`. Unlike the native `builder.resources.excludes` in `ui5.yaml` (which only filters source files), this also removes files generated during the build such as source maps and debug bundles. The `additionalFiles` are not affected by these patterns.
+
 - onlyZip: `true|false`
 Set this to `true` to omit the resources contained in the ZIP from the build result (typically in the `dist` folder). By default, the build result contains all resources and the ZIP.
 
@@ -81,6 +87,31 @@ builder:
       - sap.ui.table
       - ui5.ecosystem.demo.lib
 ```
+
+### Include or exclude files from the archive
+
+Use the `excludes` option to strip files from the archive that are generated during the build but not needed for a production deployment, such as source maps (`.map`) and debug bundles (`-dbg.js`). Use the `includes` option to restrict the archive to an allow-list of resources. Both options accept an array of glob patterns (matched against the archive-relative resource paths):
+
+```yaml
+builder:
+  customTasks:
+  - name: ui5-task-zipper
+    afterTask: generateVersionInfo
+    configuration:
+      archiveName: "my-app-deployment"
+      # exclude generated artifacts from the archive
+      excludes:
+        - "**/*.map"
+        - "**/*-dbg.js"
+      # or: only include these resources in the archive
+      includes:
+        - "Component.js"
+        - "manifest.json"
+        - "css/**"
+        - "i18n/**"
+```
+
+If a resource matches both an `includes` and an `excludes` pattern, `excludes` wins.
 
 ## How it works
 
