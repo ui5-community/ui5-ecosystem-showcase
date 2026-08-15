@@ -101,6 +101,51 @@ test("archive creation w/ additional files map", async (t) => {
 	t.true(allDepsFound.every((dep) => dep === true));
 });
 
+test("archive excludes .map and -dbg.js files via glob patterns", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.excludes.yaml") };
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
+	});
+	const targetZip = path.resolve(t.context.tmpDir, "dist", "excludes.zip");
+	t.true(existsSync(targetZip));
+	// excluded artifacts must not be present in the archive
+	t.false(await promisifiedNeedleInHaystack(targetZip, ".js.map"), "source map files should be excluded");
+	t.false(await promisifiedNeedleInHaystack(targetZip, "-dbg.js"), "debug bundle files should be excluded");
+	// regular resources must still be present
+	t.true(await promisifiedNeedleInHaystack(targetZip, "manifest.json"), "manifest.json should still be included");
+});
+
+test("archive excludes files via excludePatterns alias", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.excludePatternsAlias.yaml") };
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
+	});
+	const targetZip = path.resolve(t.context.tmpDir, "dist", "excludeAlias.zip");
+	t.true(existsSync(targetZip));
+	t.false(await promisifiedNeedleInHaystack(targetZip, ".js.map"), "source map files should be excluded via alias");
+	t.false(await promisifiedNeedleInHaystack(targetZip, "-dbg.js"), "debug bundle files should be excluded via alias");
+});
+
+test("archive includes only allow-listed files via glob patterns", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.includes.yaml") };
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
+	});
+	const targetZip = path.resolve(t.context.tmpDir, "dist", "includes.zip");
+	t.true(existsSync(targetZip));
+	// allow-listed resources must be present
+	t.true(await promisifiedNeedleInHaystack(targetZip, "Component.js"), "Component.js should be included");
+	t.true(await promisifiedNeedleInHaystack(targetZip, "manifest.json"), "manifest.json should be included");
+	// non-listed resources must be absent
+	t.false(await promisifiedNeedleInHaystack(targetZip, "index.html"), "index.html should not be included");
+});
+
 test("archive creation w/ defaults", async (t) => {
   const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.basic.yaml") };
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {

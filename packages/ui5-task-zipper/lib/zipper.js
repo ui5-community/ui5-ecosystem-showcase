@@ -1,5 +1,6 @@
 const path = require("path");
 const yazl = require("yazl");
+const { minimatch } = require("minimatch");
 
 /**
  * Determines the project name from the given resource collection.
@@ -51,6 +52,8 @@ const absoluteToRelativePaths = (manifest) => {
  * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {string} [parameters.options.configuration.archiveName] ZIP archive name (defaults to project namespace)
  * @param {string} [parameters.options.configuration.additionalFiles] List of additional files to be included
+ * @param {string[]} [parameters.options.configuration.includes] Glob patterns; when set, only build resources matching at least one pattern are added to the archive (alias: includePatterns)
+ * @param {string[]} [parameters.options.configuration.excludes] Glob patterns; build resources matching any pattern are omitted from the archive (alias: excludePatterns)
  * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
@@ -68,6 +71,24 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	const includeDependencies = options && options.configuration && options.configuration.includeDependencies;
 	const onlyZip = options && options.configuration && options.configuration.onlyZip;
 	const zipName = `${defaultName || options.projectNamespace.replace(/\//g, "")}.zip`;
+
+	// glob patterns to include/exclude build resources from the archive (aliases: includePatterns/excludePatterns)
+	const includes = options?.configuration?.includes || options?.configuration?.includePatterns || [];
+	const excludes = options?.configuration?.excludes || options?.configuration?.excludePatterns || [];
+
+	// determine whether a build resource should be part of the archive based on the include/exclude globs
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function shouldIncludeResource(resourcePath) {
+		// exclude wins: drop the resource if it matches any exclude glob
+		if (excludes.some((glob) => minimatch(resourcePath, glob))) {
+			return false;
+		}
+		// when includes are given, only keep resources matching at least one include glob
+		if (includes.length > 0) {
+			return includes.some((glob) => minimatch(resourcePath, glob));
+		}
+		return true;
+	}
 
 	// determine the dependencies resource collection to be included
 	const deps =
@@ -107,10 +128,15 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 					// resource should not be part of the build result -> no need to include it in the zip
 					return;
 				}
+				const resourcePath = resource.getPath().replace(prefixPath, "").replace(/^\//, "");
+				if (!shouldIncludeResource(resourcePath)) {
+					// resource is filtered out by the include/exclude globs -> keep it in the build result but skip the zip
+					isDebug && log.info(`Skipping ${resource.getPath()} (excluded by include/exclude configuration).`);
+					return;
+				}
 				if (onlyZip) {
 					taskUtil.setTag(resource, OmitFromBuildResult, true);
 				}
-				const resourcePath = resource.getPath().replace(prefixPath, "").replace(/^\//, "");
 				if (!zipEntries.includes(resourcePath)) {
 					zipEntries.push(resourcePath);
 					return resource.getBuffer().then((buffer) => {
