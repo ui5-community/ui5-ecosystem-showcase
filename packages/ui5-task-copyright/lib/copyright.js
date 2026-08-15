@@ -2,6 +2,7 @@ const fs = require("fs");
 
 const { parse } = require("@typescript-eslint/typescript-estree");
 const { XMLParser } = require("fast-xml-parser");
+const { minimatch } = require("minimatch");
 
 /**
  * Task to append a copyright header for TypeScript, JavaScript and XML files
@@ -64,6 +65,25 @@ module.exports = async ({ log, workspace, options }) => {
 		options.configuration,
 	);
 
+	// glob-based include/exclude patterns (aligned with ui5-task-zipper); the classic
+	// substring-based `excludePatterns` is kept for backward compatibility
+	const includes = options?.configuration?.includes || [];
+	const excludes = options?.configuration?.excludes || [];
+
+	// determine whether a resource should be processed based on the include/exclude globs
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function shouldProcessResource(resourcePath) {
+		// exclude wins: drop the resource if it matches any exclude glob
+		if (excludes.some((glob) => minimatch(resourcePath, glob))) {
+			return false;
+		}
+		// when includes are given, only keep resources matching at least one include glob
+		if (includes.length > 0) {
+			return includes.some((glob) => minimatch(resourcePath, glob));
+		}
+		return true;
+	}
+
 	// the environment variable ui5_task_copyright__file can be used to specify a file path for the copyright
 	if (process.env.ui5_task_copyright__file) {
 		copyright = process.env.ui5_task_copyright__file;
@@ -92,8 +112,13 @@ module.exports = async ({ log, workspace, options }) => {
 			scriptResources.map(async (resource) => {
 				const resourcePath = resource.getPath();
 
-				// check if the resource should be excluded
+				// check if the resource should be excluded (classic substring behavior)
 				if (excludePatterns && excludePatterns.some((pattern) => resourcePath.includes(pattern))) {
+					return;
+				}
+
+				// check if the resource should be excluded (glob-based includes/excludes)
+				if (!shouldProcessResource(resourcePath)) {
 					return;
 				}
 
@@ -142,8 +167,13 @@ module.exports = async ({ log, workspace, options }) => {
 			xmlResources.map(async (resource) => {
 				const resourcePath = resource.getPath();
 
-				// check if the resource should be excluded
+				// check if the resource should be excluded (classic substring behavior)
 				if (excludePatterns && excludePatterns.some((pattern) => resourcePath.includes(pattern))) {
+					return;
+				}
+
+				// check if the resource should be excluded (glob-based includes/excludes)
+				if (!shouldProcessResource(resourcePath)) {
 					return;
 				}
 

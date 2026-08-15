@@ -158,6 +158,17 @@ test.before(async (t) => {
 					},
 					{
 						name: "ui5-middleware-simpleproxy",
+						mountPath: "/proxy-glob",
+						afterMiddleware: "compression",
+						configuration: {
+							debug,
+							baseUri: `http://www.example.com`,
+							excludes: ["**/excluded/**"],
+							includes: ["**/*.json"],
+						},
+					},
+					{
+						name: "ui5-middleware-simpleproxy",
 						mountPath: "/ws",
 						afterMiddleware: "compression",
 						configuration: {
@@ -381,6 +392,26 @@ test("excludePatterns option", async (t) => {
 	t.is(res.statusCode, 200, "Correct HTTP status code");
 	t.regex(res.headers["content-type"], /text/, "Correct content type");
 	t.regex(res.text, /Hello World/, "Correct response");
+});
+
+test("excludes/includes glob options", async (t) => {
+	nock("http://www.example.com/")
+		.get("/api/data.json")
+		.reply(200, JSON.stringify({ ok: true }), { "content-type": "application/json" })
+		.get("/excluded/data.json")
+		.reply(200, JSON.stringify({ ok: true }), { "content-type": "application/json" });
+
+	const { request } = t.context;
+	// a .json path (matches includes, not excluded) is proxied
+	const res = await request.get("/proxy-glob/api/data.json");
+	t.is(res.statusCode, 200, "included .json path is proxied");
+	t.regex(res.headers["content-type"], /json/, "Correct content type");
+	// a .json path under /excluded/ is excluded (exclude wins) -> not proxied -> 404 (no local resource)
+	const resExcluded = await request.get("/proxy-glob/excluded/data.json");
+	t.is(resExcluded.statusCode, 404, "excluded path is not proxied");
+	// a non-.json path does not match includes -> not proxied -> 404
+	const resNotIncluded = await request.get("/proxy-glob/api/data.txt");
+	t.is(resNotIncluded.statusCode, 404, "path not matching includes is not proxied");
 });
 
 test("skipCache option", async (t) => {

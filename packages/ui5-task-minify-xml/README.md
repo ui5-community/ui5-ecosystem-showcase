@@ -26,7 +26,13 @@ npm install ui5-task-minify-xml --save-dev
   the file extensions to glob for. defaults to `xml`.
 
 - excludePatterns: `Array<String>` 
-  array of paths inside `$yourapp/` to exclude from the minification, e.g. 3-rd party libs in `lib/*`. defaults to an empty array `[]`.
+  array of paths inside `$yourapp/` to exclude from the minification, e.g. 3-rd party libs in `lib/*`. defaults to an empty array `[]`. Uses substring matching (classic behavior).
+
+- includes: `Array<String>`
+  array of glob patterns (matched via [minimatch](https://github.com/isaacs/minimatch)); when set, only resources matching at least one pattern are minified, e.g. `["**/view/**"]`. defaults to an empty array `[]`.
+
+- excludes: `Array<String>`
+  array of glob patterns (matched via [minimatch](https://github.com/isaacs/minimatch)); resources matching any pattern are excluded from the minification, e.g. `["**/thirdparty/**", "**/*.fragment.xml"]`. defaults to an empty array `[]`.
 
 ## Usage
 

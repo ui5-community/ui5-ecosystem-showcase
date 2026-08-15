@@ -33,6 +33,10 @@ npm install ui5-middleware-simpleproxy --save-dev
   Query parameters set for the proxied request. Will overwrite the parameters from the request. 
 - `excludePatterns`: `string[]`
   Array of exclude patterns using glob syntax
+- `excludes`: `string[]`
+  Array of exclude patterns using glob syntax (alias of `excludePatterns`, aligned with the `ui5-task-zipper` convention). Requests matching any pattern are not proxied.
+- `includes`: `string[]`
+  Array of include patterns using glob syntax; when set, only requests matching at least one pattern are proxied.
 - `skipCache`: `boolean`
   Remove the cache guid when serving from the FLP launchpad if it matches an excludePattern
 - `enableWebSocket`: `<boolean>`, default: `false` *experimental*

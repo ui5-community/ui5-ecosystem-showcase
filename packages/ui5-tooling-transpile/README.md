@@ -36,10 +36,13 @@ npm install ui5-tooling-transpile --save-dev -rte
   path to the babel config file or object to use as configuration for babel instead of the babel configuration from the file system (as described at [Babel config files](https://babeljs.io/docs/en/config-files)), or the default configuration defined in this middleware (just using the `@babel/preset-env`)
 
 - includes: `String<Array>` (old alias: includePatterns)
-  array of paths your application to include in transpilation, e.g. `/modern-stuff/`
+  array of paths your application to include in transpilation, e.g. `/modern-stuff/`. By default matched as substrings; set `useGlobPatterns: true` to match them as glob patterns.
 
 - excludes: `String<Array>` (old alias: excludePatterns)
-  array of paths your application to exclude from transpilation, e.g. 3-rd party libs in `/lib/`
+  array of paths your application to exclude from transpilation, e.g. 3-rd party libs in `/lib/`. By default matched as substrings; set `useGlobPatterns: true` to match them as glob patterns.
+
+- useGlobPatterns: `boolean` (defaults to `false`)
+  when enabled, `includes`/`excludes` (and their `includePatterns`/`excludePatterns` aliases) are matched as glob patterns via [minimatch](https://github.com/isaacs/minimatch) instead of the classic substring matching — aligning the syntax with other UI5 tooling extensions (e.g. `ui5-task-zipper`). With this enabled, patterns must be written as globs, e.g. `**/thirdparty/**` or `**/*.png` (the built-in default excludes for images are globbed automatically). Kept `false` by default to preserve backward compatibility with existing substring configurations.
 
 - filePattern: `String`
   source file pattern for the resources to transpile, defaults to `.js` and will be changed to `.ts` if a `tsconfig.json` file is located in the project or by explicitly setting the configuration option transformTypeScript to `true` (multiple file extensions can be handled by specifying mutliple extensions using the glob syntax, e.g.: `.+(js|jsx)` or `.+(ts|tsx)`)

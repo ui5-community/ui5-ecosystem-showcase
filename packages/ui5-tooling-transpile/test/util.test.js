@@ -283,3 +283,39 @@ test("generate babel config file with a name", async (t) => {
 	t.deepEqual(config.presets[2].file.request, "@babel/preset-typescript");
 	fs.rmSync(tmpDir, { recursive: true });
 });
+
+test("shouldHandlePath: classic substring matching (default)", (t) => {
+	const { shouldHandlePath } = t.context.util;
+	// excluded by substring
+	t.false(shouldHandlePath("/my/app/thirdparty/foo.js", ["/thirdparty/"], []));
+	// not excluded
+	t.true(shouldHandlePath("/my/app/foo.js", ["/thirdparty/"], []));
+	// includes override an exclude (existing OR semantics)
+	t.true(shouldHandlePath("/my/app/thirdparty/keep.js", ["/thirdparty/"], ["keep"]));
+	// glob-style pattern is treated literally as a substring (does NOT match) -> path is handled
+	t.true(shouldHandlePath("/my/app/thirdparty/foo.js", ["**/thirdparty/**"], []));
+});
+
+test("shouldHandlePath: glob matching when useGlobPatterns is enabled", (t) => {
+	const { shouldHandlePath } = t.context.util;
+	// a substring pattern no longer matches as a glob -> path is handled
+	t.true(shouldHandlePath("/my/app/thirdparty/foo.js", ["/thirdparty/"], [], true));
+	// a proper glob excludes the path
+	t.false(shouldHandlePath("/my/app/thirdparty/foo.js", ["**/thirdparty/**"], [], true));
+	// includes glob overrides an exclude glob (existing OR semantics)
+	t.true(shouldHandlePath("/my/app/thirdparty/keep.js", ["**/thirdparty/**"], ["**/keep.js"], true));
+	// non-matching exclude glob -> path is handled
+	t.true(shouldHandlePath("/my/app/foo.js", ["**/thirdparty/**"], [], true));
+});
+
+test("createConfiguration: useGlobPatterns default false, globbed default excludes when enabled", async (t) => {
+	const { createConfiguration } = t.context.util;
+	// default: substring-style default excludes, flag false
+	const classic = await createConfiguration({ configuration: {} });
+	t.false(classic.useGlobPatterns);
+	t.deepEqual(classic.excludes, [".png", ".jpeg", ".jpg"]);
+	// with the flag: default excludes are expressed as globs
+	const glob = await createConfiguration({ configuration: { useGlobPatterns: true } });
+	t.true(glob.useGlobPatterns);
+	t.deepEqual(glob.excludes, ["**/*.png", "**/*.jpeg", "**/*.jpg"]);
+});
