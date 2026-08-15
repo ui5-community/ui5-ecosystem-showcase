@@ -15,6 +15,12 @@ overrides:
   # NOT overridden here: the cross-major bump would force-upgrade
   # transitive consumers and is more likely to break than to fix.
   "minimatch@<3.1.4": ">=3.1.4"
+  # karma@6.4.4 calls minimatch as a directly-callable function (mm(path, pattern)
+  # in lib/file-list.js). That callable default export only exists up to minimatch
+  # v7; v9+ moved it to the named `minimatch` export, so deduping karma onto a v9/v10
+  # copy breaks the showcase karma tests with "TypeError: mm is not a function".
+  # Pin karma's transitive minimatch to the last callable line.
+  "karma>minimatch": "7.4.9"
   "qs@<6.14.1": ">=6.14.1"
   "ws@>=8.0.0 <8.20.1": ">=8.20.1"
   "tmp@>=0.2.0 <0.2.6": ">=0.2.6"
