@@ -103,7 +103,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					const resourcePath = resource.getPath();
 					return (
 						!resourcePath.endsWith(".d.ts") &&
-						shouldHandlePath(resourcePath, config.excludes, config.includes)
+						shouldHandlePath(resourcePath, config.excludes, config.includes, config.useGlobPatterns)
 					);
 				})
 				.map((resource) => {
@@ -147,7 +147,10 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 
 	return async (req, res, next) => {
 		const pathname = req.url?.match("^[^?]*")[0];
-		if (pathname.endsWith(".js") && shouldHandlePath(pathname, config.excludes, config.includes)) {
+		if (
+			pathname.endsWith(".js") &&
+			shouldHandlePath(pathname, config.excludes, config.includes, config.useGlobPatterns)
+		) {
 			const pathWithFilePattern = pathname.replace(".js", config.filePattern);
 			config.debug && log.verbose(`Lookup resource ${pathWithFilePattern}`);
 

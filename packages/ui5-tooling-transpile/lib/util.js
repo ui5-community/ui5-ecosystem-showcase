@@ -2,6 +2,8 @@ const os = require("os");
 const path = require("path");
 const fs = require("fs");
 
+const { minimatch } = require("minimatch");
+
 // https://babeljs.io/docs/
 const babel = require("@babel/core");
 
@@ -322,9 +324,14 @@ module.exports = function (log) {
 				}
 			}
 
+			// derive whether the includes/excludes should be matched via glob (minimatch)
+			// instead of the classic substring matching (opt-in to stay backward compatible)
+			const useGlobPatterns = config.useGlobPatterns ?? false;
+
 			// derive the includes/excludes from the configuration
 			const includes = config.includes || config.includePatterns || [];
-			const defaultExcludes = [".png", ".jpeg", ".jpg"]; // still needed?
+			// the built-in default excludes must be expressed as globs when glob matching is enabled
+			const defaultExcludes = useGlobPatterns ? ["**/*.png", "**/*.jpeg", "**/*.jpg"] : [".png", ".jpeg", ".jpg"];
 			const excludes = defaultExcludes.concat(config.excludes || config.excludePatterns || []);
 
 			// derive whether JSX/TSX should be transformed or not
@@ -351,6 +358,7 @@ module.exports = function (log) {
 				generateBabelConfig: config.generateBabelConfig,
 				includes,
 				excludes,
+				useGlobPatterns,
 				filePattern,
 				omitTSFromBuildResult: config.omitTSFromBuildResult,
 				omitSourceMaps: config.omitSourceMaps,
@@ -652,13 +660,17 @@ module.exports = function (log) {
 		 * @param {string} pathname the path name
 		 * @param {Array<string>} excludes exclude paths
 		 * @param {Array<string>} includes include paths
+		 * @param {boolean} [useGlob] match patterns via glob (minimatch) instead of substring
 		 * @returns {boolean} true, if the path should be handled
 		 */
-		shouldHandlePath: function shouldHandlePath(pathname, excludes = [], includes = []) {
-			return (
-				!(excludes || []).some((pattern) => pathname.includes(pattern)) ||
-				(includes || []).some((pattern) => pathname.includes(pattern))
-			);
+		shouldHandlePath: function shouldHandlePath(pathname, excludes = [], includes = [], useGlob = false) {
+			// when glob matching is enabled, patterns are matched via minimatch; otherwise the
+			// classic substring matching is used (default, backward compatible)
+			const matches = (patterns) =>
+				(patterns || []).some((pattern) =>
+					useGlob ? minimatch(pathname, pattern) : pathname.includes(pattern)
+				);
+			return !matches(excludes) || matches(includes);
 		},
 
 		/**

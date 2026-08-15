@@ -11,9 +11,22 @@
     "directory": "packages/ui5-task-minify-xml"
   },
   "scripts": {
-    "lint": "eslint lib"
+    "lint": "eslint lib",
+    "test": "ava"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ],
+    "verbose": true,
+    "timeout": "5m"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^3",
+    "ava": "^8.0.1"
   },
   "dependencies": {
-    "minify-xml": "^4.5.2"
+    "minify-xml": "^4.5.2",
+    "minimatch": "^10.2.5"
   }
 }

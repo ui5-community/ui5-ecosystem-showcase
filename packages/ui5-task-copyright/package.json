@@ -33,6 +33,7 @@
   "dependencies": {
     "@typescript-eslint/typescript-estree": "^8.60.0",
     "fast-xml-parser": "^5.8.0",
-    "js-yaml": "^4.1.1"
+    "js-yaml": "^4.1.1",
+    "minimatch": "^10.2.5"
   }
 }

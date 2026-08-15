@@ -32,7 +32,13 @@ npm install ui5-task-copyright --save-dev
   the value of the currentYear placeholder in the copyright comments
 
 - excludePatterns: `Array<String>`
-  array of paths inside `$yourapp/` to exclude from the minification, e.g. 3-rd party libs in `lib/*`. defaults to an empty array `[]`.
+  array of paths inside `$yourapp/` to exclude from the copyright processing, e.g. 3-rd party libs in `lib/*`. defaults to an empty array `[]`. Uses substring matching (classic behavior).
+
+- includes: `Array<String>`
+  array of glob patterns (matched via [minimatch](https://github.com/isaacs/minimatch)); when set, only resources matching at least one pattern are processed, e.g. `["**/controller/**"]`. defaults to an empty array `[]`.
+
+- excludes: `Array<String>`
+  array of glob patterns (matched via [minimatch](https://github.com/isaacs/minimatch)); resources matching any pattern are excluded from processing, e.g. `["**/thirdparty/**", "**/*.designtime.js"]`. defaults to an empty array `[]`.
 
 ## Usage
 

@@ -37,6 +37,25 @@ function startsWithCopyright(file, copyrightString) {
 	return false;
 }
 
+test("Copyright with glob excludes", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.globExcludes.yaml") };
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-tsapp"),
+	});
+
+	const copyright = `Copyright ${new Date().getFullYear()} UI5 Community\nAll rights reserved.`;
+	// files NOT matching the exclude globs are stamped
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "Component.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/App.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/App.view.xml"), copyright));
+	// files matching the exclude globs are skipped (no copyright header)
+	t.false(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main.controller.js"), copyright));
+	t.false(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main-dbg.controller.js"), copyright));
+	t.false(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/Main.view.xml"), copyright));
+});
+
 test("Inline copyright", async (t) => {
 	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.inline.yaml") };
 	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {

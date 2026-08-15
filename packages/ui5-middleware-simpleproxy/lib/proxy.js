@@ -9,6 +9,8 @@
  * @property {map|yo<input>} [httpHeaders] Http headers set for the proxied request. Will overwrite the http headers from the request.
  * @property {map|yo<input>} [query] Query parameters set for the proxied request. Will overwrite the parameters from the request.
  * @property {string[]|yo<input>} [excludePatterns] Array of exclude patterns using glob syntax
+ * @property {string[]|yo<input>} [excludes] Array of exclude patterns using glob syntax (alias of excludePatterns, aligned with ui5-task-zipper)
+ * @property {string[]|yo<input>} [includes] Array of include patterns using glob syntax; when set, only matching requests are proxied
  * @property {boolean|yo<confirm>} [skipCache] Remove the cache guid when serving from the FLP launchpad if it matches an excludePattern
  * @property {boolean|yo<confirm>} [debug] see output
  */
@@ -87,6 +89,8 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 		httpHeaders: {},
 		query: null,
 		excludePatterns: [],
+		includes: [],
+		excludes: [],
 		skipCache: false,
 		enableWebSocket: false,
 	};
@@ -95,7 +99,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 	Object.assign(effectiveOptions, sanitizeObject(options.configuration), /* env values */ sanitizeObject(env));
 
 	// effective configuration options
-	const { debug, baseUri, strictSSL, removeETag, username, password, httpHeaders, query, excludePatterns, skipCache } = effectiveOptions;
+	const { debug, baseUri, strictSSL, removeETag, username, password, httpHeaders, query, excludePatterns, includes, excludes, skipCache } = effectiveOptions;
 
 	// log the configuration for the proxy in debug mode
 	debug && log.info(`[${baseUri}] Effective configuration:\n${JSON.stringify(effectiveOptions, undefined, 2)}`);
@@ -121,23 +125,25 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 	const { createProxyMiddleware, responseInterceptor } = await import("http-proxy-middleware");
 
 	// check whether the request should be included or not
-	const hasExcludePatterns = excludePatterns && Array.isArray(excludePatterns);
+	// `excludePatterns` is the pre-existing (glob) option; `excludes`/`includes` align with the
+	// ui5-task-zipper convention (also glob). `excludePatterns` and `excludes` are merged as they
+	// share identical glob semantics.
+	const effectiveExcludes = [...(Array.isArray(excludePatterns) ? excludePatterns : []), ...(Array.isArray(excludes) ? excludes : [])];
+	const effectiveIncludes = Array.isArray(includes) ? includes : [];
 	const filter = function (pathname, req) {
-		if (hasExcludePatterns) {
-			const exclude = excludePatterns.some((glob) => minimatch(pathname, glob));
-			if (exclude) {
-				const url = req.url;
-				debug && log.info(`[${baseUri}] Request ${url} is excluded`);
-				const reCBToken = /\/~.*~.\//g;
-				if (skipCache && reCBToken.test(url)) {
-					const newUrl = url.replace(reCBToken, "/");
-					debug && log.info(`[${baseUri}] Removing cachebuster token from ${url}, resolving to ${newUrl}`);
-					req.url = newUrl;
-				}
+		// a request matching any exclude glob is excluded (exclude wins)
+		const exclude = effectiveExcludes.some((glob) => minimatch(pathname, glob)) || (effectiveIncludes.length > 0 && !effectiveIncludes.some((glob) => minimatch(pathname, glob)));
+		if (exclude) {
+			const url = req.url;
+			debug && log.info(`[${baseUri}] Request ${url} is excluded`);
+			const reCBToken = /\/~.*~.\//g;
+			if (skipCache && reCBToken.test(url)) {
+				const newUrl = url.replace(reCBToken, "/");
+				debug && log.info(`[${baseUri}] Removing cachebuster token from ${url}, resolving to ${newUrl}`);
+				req.url = newUrl;
 			}
-			return !exclude;
 		}
-		return true;
+		return !exclude;
 	};
 
 	// run the proxy middleware based on the host configuration

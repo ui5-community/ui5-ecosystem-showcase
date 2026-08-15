@@ -26,7 +26,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 		createBabelConfig,
 		normalizeLineFeeds,
 		determineResourceFSPath,
-		transformAsync
+		transformAsync,
+		shouldHandlePath
 	} = require("./util")(log);
 	const { OmitFromBuildResult } = taskUtil.STANDARD_TAGS;
 
@@ -112,10 +113,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 			const resourcePath = resource.getPath();
 
 			// Ignore files that match the excludePatterns configuration
-			if (
-				!config.excludes.some((pattern) => resourcePath.includes(pattern)) ||
-				config.includes.some((pattern) => resourcePath.includes(pattern))
-			) {
+			if (shouldHandlePath(resourcePath, config.excludes, config.includes, config.useGlobPatterns)) {
 				const filePath = resourcePath.replace(new RegExp("\\.[^.]+$"), ".js");
 
 				// read source file
