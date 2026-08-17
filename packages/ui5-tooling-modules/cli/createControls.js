@@ -250,7 +250,7 @@ function serializeMetadata(clazz, namespace) {
 	);
 }
 
-function buildWrapper({ clazz, template, outputDir, emitted }) {
+function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 	// emission path + imports follow the (remappable, strip-aware) UI5 qualified name
 	const resolvedSource = clazz._ui5QualifiedNameSlashes;
 	if (emitted.has(resolvedSource)) {
@@ -300,7 +300,7 @@ function buildWrapper({ clazz, template, outputDir, emitted }) {
 	} else if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
 		webcBaseClass = clazz.superclass._ui5QualifiedNameSlashes;
 		// ensure the superclass wrapper exists as well
-		written.push(...buildWrapper({ clazz: clazz.superclass, template, outputDir, emitted }));
+		written.push(...buildWrapper({ clazz: clazz.superclass, template, outputDir, emitted, packageModule }));
 	}
 
 	// no runtime class import required for native HTML elements
@@ -311,8 +311,9 @@ function buildWrapper({ clazz, template, outputDir, emitted }) {
 	const code = template({
 		ui5ClassName,
 		jsDocClassHeader: undefined,
-		// if a UI5 superclass exists we import the package module, otherwise the Web Component module
-		namespace: ui5Superclass ? `${rootPath}${namespace}` : webcClass,
+		// if a UI5 superclass exists we import the package module (the standalone package glue or,
+		// in library mode, the "<namespace>/library" module), otherwise the Web Component module
+		namespace: ui5Superclass ? `${rootPath}${packageModule}` : webcClass,
 		metadata,
 		webcClass,
 		webcBaseClass: webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass,
@@ -417,12 +418,16 @@ function generateControls({ input, output, namespace: namespaceOverride, ui5Name
 		written.push(buildPackage({ package: registryEntry, template: ui5PackageTemplate, outputDir }));
 	}
 
-	// [2] generate one control wrapper per class described by the metadata
+	// [2] generate one control wrapper per class described by the metadata.
+	// In library mode the package glue lives at "<ui5Namespace>/library.js" (see buildLibrary),
+	// otherwise it is the standalone "<ui5Namespace>.js" package module — the wrappers must import
+	// whichever one exists, so the UI5 loader does not request a non-existent "<ui5Namespace>.js".
+	const packageModule = libraryMode ? `${registryEntry.ui5Namespace}/library` : registryEntry.ui5Namespace;
 	const emitted = new Set();
 	Object.keys(registryEntry.classes).forEach((cacheKey) => {
 		const clazz = registryEntry.classes[cacheKey];
 		if (clazz?._ui5metadata) {
-			written.push(...buildWrapper({ clazz, template: ui5ControlTemplate, outputDir, emitted }));
+			written.push(...buildWrapper({ clazz, template: ui5ControlTemplate, outputDir, emitted, packageModule }));
 		}
 	});
 
