@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.38.1
+
+### Patch Changes
+
+- [#1427](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1427) [`0d0762e`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0d0762eece7fcee3f5e2e81c3dd9e606fb244f2c) Thanks [@H4ze](https://github.com/H4ze)! - fix(ui5-tooling-modules): keep metadata property keys quoted in generated control wrappers
+
+  The `create-webc-controls` CLI now formats the generated sources with prettier's `quoteProps: "preserve"`, so metadata property names that are reserved words (e.g. HTML's `class`) stay quoted. Previously prettier's default `as-needed` emitted them unquoted which, although valid ES5+, was rejected by stricter validators (e.g. the OpenUI5 test setup).
+
 ## 3.38.0
 
 ### Minor Changes
