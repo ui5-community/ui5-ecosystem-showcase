@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.9.0
+
+### Minor Changes
+
+- [#1430](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1430) [`9aae380`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9aae380e35a8d40440fe0e376525d84e2d55d6c0) Thanks [@petermuessig](https://github.com/petermuessig)! - feat(ui5-middleware-simpleproxy): add `includes`/`excludes` glob options
+
+  Adds `excludes` (a glob-syntax alias of the pre-existing `excludePatterns`) and a new
+  `includes` option, both matched via `minimatch`, aligning the option naming with
+  `ui5-task-zipper`. When `includes` is set, only matching request paths are proxied;
+  `excludes`/`excludePatterns` still take precedence. The behavior of the existing
+  `excludePatterns` option is unchanged (it was already glob-based).
+
 ## 3.8.0
 
 ### Minor Changes

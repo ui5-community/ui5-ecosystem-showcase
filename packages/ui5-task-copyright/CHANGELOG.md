@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.6.0
+
+### Minor Changes
+
+- [#1430](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1430) [`9aae380`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9aae380e35a8d40440fe0e376525d84e2d55d6c0) Thanks [@petermuessig](https://github.com/petermuessig)! - feat(ui5-task-copyright): add glob-based `includes`/`excludes` options
+
+  Adds `includes`/`excludes` configuration options that are matched via `minimatch`
+  glob patterns (e.g. `**/thirdparty/**`, `**/*.designtime.js`), aligning the option
+  naming and semantics with `ui5-task-zipper`. `excludes` wins over `includes`; when
+  `includes` is set, only matching resources get the copyright header. The existing
+  `excludePatterns` option keeps its classic substring behavior for backward compatibility.
+
 ## 3.5.2
 
 ### Patch Changes

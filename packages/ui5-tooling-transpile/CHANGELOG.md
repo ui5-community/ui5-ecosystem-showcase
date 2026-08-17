@@ -1,5 +1,19 @@
 # Change Log
 
+## 3.13.0
+
+### Minor Changes
+
+- [#1430](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1430) [`9aae380`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9aae380e35a8d40440fe0e376525d84e2d55d6c0) Thanks [@petermuessig](https://github.com/petermuessig)! - feat(ui5-tooling-transpile): add `useGlobPatterns` flag for glob `includes`/`excludes`
+
+    Adds a `useGlobPatterns` boolean option (default `false`). When enabled, the
+    `includes`/`excludes` options (and their `includePatterns`/`excludePatterns` aliases)
+    are matched as glob patterns via `minimatch` instead of the classic substring matching,
+    aligning the syntax with other UI5 tooling extensions (e.g. `ui5-task-zipper`). With the
+    flag enabled, patterns must be written as globs (e.g. `**/thirdparty/**`, `**/*.png`) and
+    the built-in image default excludes are globbed automatically. The default remains
+    substring matching, so existing configurations are unaffected.
+
 ## 3.12.0
 
 ### Minor Changes
