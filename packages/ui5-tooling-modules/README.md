@@ -128,6 +128,10 @@ The following configuration options are relevant for the `task` and the `middlew
   List of entry point modules to include into the bundling. By default the entry point modules are discovered from the sources (`*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.xml`)
   &nbsp;
 
+- *cascadedBuild*: `boolean` *experimental feature*
+  Enables cascaded builds for scenarios where the same NPM package (e.g. `@ui5/webcomponents`) is bundled into multiple dependent libraries (e.g. `sap.m` and `sap.f`). When enabled, the build writes an externals manifest (`.ui5-tooling-modules/externals-manifest.json`) into the library root listing the modules and Web Components packages it has bundled and their target UI5 module paths. Libraries that depend on it and also enable `cascadedBuild` read these manifests and treat the already-bundled modules and packages as externals, referencing the dependency's bundled paths instead of re-bundling them. This avoids duplicating shared framework code and re-registering Web Components. To guarantee the required build order, the task requires its dependencies to be built first when this option is enabled. (defaults to `false`)
+  &nbsp;
+
 - *minify*: `boolean` *experimental feature*
   Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
   &nbsp;
