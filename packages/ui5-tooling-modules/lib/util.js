@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
 const { readFileSync, statSync, readdirSync, existsSync, realpathSync } = require("fs");
-const { readFile, stat, writeFile, mkdir } = require("fs").promises;
+const { readFile, stat, writeFile, mkdir, rename } = require("fs").promises;
 
 const rollup = require("rollup");
 const instructions = require("./rollup-plugin-instructions");
@@ -28,6 +28,37 @@ const parseJS = require("./utils/parseJS");
 
 const { createHash } = require("crypto");
 const sanitize = require("sanitize-filename");
+
+// ============================================================================
+// Build serialization — the web-components registry and the serializer
+// singletons are process-global and are reset at each rollup `buildStart`.
+// To prevent overlapping builds from clobbering each other's shared state
+// (e.g. a second build's `buildStart` wiping the registry a first build is
+// mid-populating), all rollup builds run strictly one at a time through a
+// chained-promise lock.
+// ============================================================================
+
+let _buildChain = Promise.resolve();
+/**
+ * Runs the given async function once the previous build has settled, so that
+ * no two rollup builds ever overlap in this process.
+ * @param {Function} fn async function performing the build
+ * @returns {Promise} the result of fn
+ */
+function withBuildLock(fn) {
+	// run after the previous build settles (whether it resolved or rejected)
+	const run = _buildChain.then(fn, fn);
+	// keep the chain alive even if this build rejects
+	_buildChain = run.then(
+		() => {},
+		() => {},
+	);
+	return run;
+}
+
+// in-flight bundle builds keyed by cacheKey, so concurrent callers requesting
+// the same bundle share a single build instead of running it redundantly
+const _inFlightBuilds = new Map();
 
 // ============================================================================
 // Cache invalidation helpers — sha256 layered fingerprint (Option A)
@@ -422,6 +453,11 @@ function findPackageJson(modulePath) {
  */
 class BundleInfoCache {
 	static #bundleInfoCache = {};
+	// pending persistent-cache writes, so callers (e.g. the build task) can
+	// await them before the process exits and the cache would be lost
+	static #pending = new Set();
+	// monotonic counter to build unique temp file names for atomic writes
+	static #writeCounter = 0;
 	static #cachePath(key) {
 		return path.join(process.cwd(), ".ui5-tooling-modules", `${key}.bundleinfo.json`);
 	}
@@ -431,7 +467,15 @@ class BundleInfoCache {
 		} else if (persist) {
 			const bundleInfoPath = this.#cachePath(key);
 			if (existsSync(bundleInfoPath)) {
-				const loaded = new BundleInfo().fromJSON(readFileSync(bundleInfoPath, { encoding: "utf8" }));
+				let loaded;
+				try {
+					loaded = new BundleInfo().fromJSON(readFileSync(bundleInfoPath, { encoding: "utf8" }));
+				} catch (err) {
+					// a corrupt / half-written cache file must never break the build:
+					// treat it as a cache miss so the bundle is rebuilt
+					console.error(`Failed to read bundle info from ${bundleInfoPath}! Rebuilding...`, err);
+					return undefined;
+				}
 				// Re-stat the recorded transitive module graph as a confirmation step.
 				// On fresh checkouts (e.g. CI / `git checkout`) entry-only mtime checks
 				// can produce a false positive; this validates the full graph.
@@ -454,14 +498,31 @@ class BundleInfoCache {
 			// cache load can verify the recorded graph still matches disk state.
 			bundleInfo.setInputFingerprint(getInputGraphFingerprint(bundleInfo.getRelatedPaths()));
 			const bundleInfoPath = this.#cachePath(key);
-			mkdir(path.dirname(bundleInfoPath), { recursive: true })
+			// write to a temp file and rename it into place so concurrent readers
+			// never observe a half-written file (rename is atomic on the same fs)
+			const tmpPath = `${bundleInfoPath}.${process.pid}.${this.#writeCounter++}.tmp`;
+			const write = mkdir(path.dirname(bundleInfoPath), { recursive: true })
 				.then(() => {
-					return writeFile(bundleInfoPath, JSON.stringify(bundleInfo, null, 2), { encoding: "utf8" });
+					return writeFile(tmpPath, JSON.stringify(bundleInfo, null, 2), { encoding: "utf8" });
+				})
+				.then(() => {
+					return rename(tmpPath, bundleInfoPath);
 				})
 				.catch((err) => {
 					console.error(`Failed to store bundle info in ${bundleInfoPath} on disk! Using in-memory cache only!`, err);
 				});
+			this.#pending.add(write);
+			write.finally(() => this.#pending.delete(write));
 		}
+	}
+	/**
+	 * Awaits all outstanding persistent-cache writes. Call this before the
+	 * process exits (e.g. at the end of the build task) so the on-disk cache
+	 * is durable.
+	 * @returns {Promise} resolves once all pending writes have settled
+	 */
+	static async flushPending() {
+		await Promise.all(Array.from(this.#pending));
 	}
 }
 
@@ -1279,76 +1340,80 @@ module.exports = function (log, projectInfo) {
 		 * @returns {rollup.RollupOutput} the build output of rollup
 		 */
 		createBundle: async function createBundle(moduleNames, { cwd = process.cwd(), depPaths = [], beforePlugins, afterPlugins, pluginOptions, generatedCode, sourcemap, inject } = {}) {
-			const { walk } = await import("estree-walker");
-			const $metadata = {};
-			const bundle = await rollup.rollup({
-				input: moduleNames,
-				//context: "exports" /* this is normally converted to undefined, but should be exports in our case! */,
-				context: "this",
-				plugins: [
-					...(beforePlugins || []),
-					replace({
-						preventAssignment: false,
-						delimiters: ["\\b", "\\b"],
-						values: {
-							"global.process.versions.node": JSON.stringify("false"), // in some cases, the global.process.versions.node is used to detect the existence of Node.js
-							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features based on the Node.js version
-							"process.env.NODE_ENV": JSON.stringify("production"), // we always build in production mode
-							"root.JS_MD5_NO_NODE_JS": JSON.stringify(true), // pdfMake decides upon this property whether it's Node.js runtimg or not
-						},
-					}),
-					injectESModule(),
-					skipAssets({
-						log,
-						extensions: ["css"],
-					}),
-					json(),
-					instructions(),
-					// Replace `node-fetch` / `cross-fetch` / `isomorphic-fetch`
-					// with a tiny shim that re-exports the browser's native
-					// Web Fetch API. This must happen BEFORE commonjs/polyfill
-					// resolution so the Node-only sub-graph (fetch-blob,
-					// fs.promises, node:net, ...) never gets pulled into the
-					// bundle in the first place.
-					fetchShim({ log }),
-					commonjs({
-						defaultIsModuleExports: "preferred",
-					}),
-					// node polyfills/resolution must happen after
-					// commonjs and amd to ensure e.g. exports is
-					// properly handled by those plugins
-					nodePolyfillsOverride({
-						log,
-						cwd,
-						moduleNames,
-					}),
-					// handle the webcomponents
-					webcomponents({
-						log,
-						resolveModule: function (moduleName) {
-							return that.resolveModule(moduleName, { cwd, depPaths });
-						},
-						projectInfo,
-						getPackageJson, // use the cached package.json if possible
-						options: pluginOptions?.["webcomponents"],
-						$metadata,
-					}),
-					// once the node polyfills are injected, we can
-					// resolve the modules from node_modules
-					resolveModulePlugin({
-						resolveModule: function (moduleName) {
-							return that.resolveModule(moduleName, { cwd, depPaths });
-						},
-					}),
-					// handle the import.meta usages (e.g. geomap loading maplibre)
-					importMeta(),
-					// the following plugins must be executed after the
-					// node polyfills are injected and the modules are resolved
-					// to ensure that the modules are properly transformed
-					nodePolyfills(),
-					nodePolyfillsOverride.inject(inject),
-					transformTopLevelThis({ log, walk }),
-					/*
+			// serialize all rollup builds in this process: the web-components
+			// registry and serializer singletons are global and reset at
+			// `buildStart`, so overlapping builds would clobber each other.
+			return withBuildLock(async () => {
+				const { walk } = await import("estree-walker");
+				const $metadata = {};
+				const bundle = await rollup.rollup({
+					input: moduleNames,
+					//context: "exports" /* this is normally converted to undefined, but should be exports in our case! */,
+					context: "this",
+					plugins: [
+						...(beforePlugins || []),
+						replace({
+							preventAssignment: false,
+							delimiters: ["\\b", "\\b"],
+							values: {
+								"global.process.versions.node": JSON.stringify("false"), // in some cases, the global.process.versions.node is used to detect the existence of Node.js
+								"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features based on the Node.js version
+								"process.env.NODE_ENV": JSON.stringify("production"), // we always build in production mode
+								"root.JS_MD5_NO_NODE_JS": JSON.stringify(true), // pdfMake decides upon this property whether it's Node.js runtimg or not
+							},
+						}),
+						injectESModule(),
+						skipAssets({
+							log,
+							extensions: ["css"],
+						}),
+						json(),
+						instructions(),
+						// Replace `node-fetch` / `cross-fetch` / `isomorphic-fetch`
+						// with a tiny shim that re-exports the browser's native
+						// Web Fetch API. This must happen BEFORE commonjs/polyfill
+						// resolution so the Node-only sub-graph (fetch-blob,
+						// fs.promises, node:net, ...) never gets pulled into the
+						// bundle in the first place.
+						fetchShim({ log }),
+						commonjs({
+							defaultIsModuleExports: "preferred",
+						}),
+						// node polyfills/resolution must happen after
+						// commonjs and amd to ensure e.g. exports is
+						// properly handled by those plugins
+						nodePolyfillsOverride({
+							log,
+							cwd,
+							moduleNames,
+						}),
+						// handle the webcomponents
+						webcomponents({
+							log,
+							resolveModule: function (moduleName) {
+								return that.resolveModule(moduleName, { cwd, depPaths });
+							},
+							projectInfo,
+							getPackageJson, // use the cached package.json if possible
+							options: pluginOptions?.["webcomponents"],
+							$metadata,
+						}),
+						// once the node polyfills are injected, we can
+						// resolve the modules from node_modules
+						resolveModulePlugin({
+							resolveModule: function (moduleName) {
+								return that.resolveModule(moduleName, { cwd, depPaths });
+							},
+						}),
+						// handle the import.meta usages (e.g. geomap loading maplibre)
+						importMeta(),
+						// the following plugins must be executed after the
+						// node polyfills are injected and the modules are resolved
+						// to ensure that the modules are properly transformed
+						nodePolyfills(),
+						nodePolyfillsOverride.inject(inject),
+						transformTopLevelThis({ log, walk }),
+						/*
 					{
 						name: 'moduleParsedHook',
 						moduleParsed({id, meta}) {
@@ -1359,60 +1424,61 @@ module.exports = function (log, projectInfo) {
 						}
 					},
 					*/
-					...(afterPlugins || []),
-				],
-				onwarn: function ({ loc, frame, code, message }) {
-					// Skip certain warnings
-					const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS", "MODULE_LEVEL_DIRECTIVE"];
-					if (skipWarnings.indexOf(code) !== -1) {
-						return;
-					}
-					// console.warn everything else
-					if (loc) {
-						log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
-						if (frame) log.warn(frame);
-					} else {
-						log.warn(`${message} [${code}]`);
-					}
-				},
-			});
-
-			// generate output specific code in-memory
-			// you can call this function multiple times on the same bundle object
-			const { output } = await bundle.generate({
-				format: "amd",
-				amd: {
-					define: "sap.ui.define",
-				},
-				intro: (s) => {
-					// FIX: if the module contains "exports.default" we need to
-					// add the exports variable to the bundle to ensure that
-					// the module can be used in the UI5 context
-					// (this happens e.g. when using the WebC Button solely)
-					let hasExportsDefault = false;
-					Object.values(s.modules || {}).forEach((m) => {
-						if (/\sexports.default/g.test(m.code)) {
-							hasExportsDefault = true;
+						...(afterPlugins || []),
+					],
+					onwarn: function ({ loc, frame, code, message }) {
+						// Skip certain warnings
+						const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS", "MODULE_LEVEL_DIRECTIVE"];
+						if (skipWarnings.indexOf(code) !== -1) {
+							return;
 						}
-					});
-					if (hasExportsDefault) {
-						return "var exports = exports || {};";
-					}
-					return "";
-				},
-				generatedCode,
-				chunkFileNames: (chunkInfo) => {
-					let { name } = chunkInfo;
-					let match = /^_?_polyfill-(.*)$/.exec(name);
-					name = match?.[1] || name;
-					return `${name}.js`;
-				},
-				sourcemap,
+						// console.warn everything else
+						if (loc) {
+							log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
+							if (frame) log.warn(frame);
+						} else {
+							log.warn(`${message} [${code}]`);
+						}
+					},
+				});
+
+				// generate output specific code in-memory
+				// you can call this function multiple times on the same bundle object
+				const { output } = await bundle.generate({
+					format: "amd",
+					amd: {
+						define: "sap.ui.define",
+					},
+					intro: (s) => {
+						// FIX: if the module contains "exports.default" we need to
+						// add the exports variable to the bundle to ensure that
+						// the module can be used in the UI5 context
+						// (this happens e.g. when using the WebC Button solely)
+						let hasExportsDefault = false;
+						Object.values(s.modules || {}).forEach((m) => {
+							if (/\sexports.default/g.test(m.code)) {
+								hasExportsDefault = true;
+							}
+						});
+						if (hasExportsDefault) {
+							return "var exports = exports || {};";
+						}
+						return "";
+					},
+					generatedCode,
+					chunkFileNames: (chunkInfo) => {
+						let { name } = chunkInfo;
+						let match = /^_?_polyfill-(.*)$/.exec(name);
+						name = match?.[1] || name;
+						return `${name}.js`;
+					},
+					sourcemap,
+				});
+
+				output.$metadata = $metadata;
+
+				return output;
 			});
-
-			output.$metadata = $metadata;
-
-			return output;
 		},
 
 		/**
@@ -1533,237 +1599,257 @@ module.exports = function (log, projectInfo) {
 				if (modules.length > 0) {
 					// check whether the module should be built?
 					if (skipCache || !BundleInfoCache.get(cacheKey, bundleCacheOptions)) {
-						bundling = true;
+						// in-flight dedup: concurrent callers that miss the cache for the
+						// same cacheKey share a single build result instead of each running
+						// a redundant rollup build. Forced rebuilds (skipCache) never join an
+						// existing in-flight build and never register themselves.
+						if (!skipCache && _inFlightBuilds.has(cacheKey)) {
+							bundleInfo = await _inFlightBuilds.get(cacheKey);
+						} else {
+							const buildPromise = (async () => {
+								bundling = true;
 
-						// bundle the given modules
-						const options = {
-							cwd,
-							depPaths,
-							beforePlugins: [logger({ log })],
-							afterPlugins: [],
-							generatedCode,
-							minify,
-							inject,
-							sourcemap,
-							pluginOptions,
-						};
-						// by default we add the dynamic imports plugin to keep dynamic imports for the given modules
-						// if the keepDynamicImports is a boolean, we keep the dynamic imports for all modules
-						options.afterPlugins.push(dynamicImports({ findPackageJson, keepDynamicImports }));
-						// when minifying the code, we add the terser plugin
-						if (minify) {
-							options.afterPlugins.push(
-								require("@rollup/plugin-terser")({
-									output: {
-										comments: /^!/, // Keeps comments starting with "!"
-									},
-								}),
-							);
-						}
-
-						// create the bundle for the given modules
-						const nameOfModules = modules.map((module) => module.name);
-						//const millis = Date.now(); // PERF
-						const output = await that.createBundle(nameOfModules, options);
-						const isWebComponent = (moduleName) => {
-							return !!(output.$metadata?.packages?.[moduleName] || output.$metadata?.controls?.[moduleName] || output.$metadata?.substitutes?.[moduleName]);
-						};
-						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`); // PERF
-						//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`); // PERF
-						//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`)); // PERF
-
-						// parse the rollup build result
-						const shiftedEntries = {};
-						dynamicEntriesPath = dynamicEntriesPath || "_dynamics";
-						for (const module of output) {
-							// all JS modules are considered as chunks
-							if (module.type === "chunk") {
-								// determine the file name by removing the file extension
-								const moduleName = module.fileName.substring(0, module.fileName.length - 3);
-								// lookup the output module in the list of input modules
-								// -> for web components modules, we replace the module 1:1 but can't set the isEntry flag
-								//    therefore we need to find whether there is an exact module match!
-								const isEntryModule = module.isEntry || modules.find((mod) => mod.name === moduleName);
-								const resolvedModules = isEntryModule && modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path) || mod.name === moduleName);
-								if (resolvedModules?.length > 0) {
-									// one module could be resolved by multiple input modules (e.g. export aliases in package.json)
-									for (const resolvedModule of resolvedModules) {
-										resolvedModule.originalName = module.name;
-										resolvedModule.code = module.code;
-										resolvedModule.relatedPaths = Object.keys(module.modules || {}).filter((m) => existsSyncAndIsFile(m));
-										resolvedModule.imports = module.imports;
-										resolvedModule.dynamicImports = module.dynamicImports;
-										resolvedModule.generated = !module.facadeModuleId;
-										resolvedModule.isWebComponent = isWebComponent(moduleName);
-										resolvedModule.isEntryPoint = true;
-										// store the shifted entry (for moveing the source maps)
-										shiftedEntries[module.fileName] = path.posix.dirname(resolvedModule.name);
-									}
-								} else {
-									// chunk module
-									let chunkName = moduleName;
-									// in case of dynamic entries we move them into a separate folder
-									// to allow to exclude them from the preload bundles easily
-									if (module.isDynamicEntry) {
-										chunkName = path.posix.join(dynamicEntriesPath, moduleName);
-										// store the shifted entry (for moveing the source maps)
-										shiftedEntries[module.fileName] = dynamicEntriesPath;
-									}
-									// add the chunk to the bundle info
-									bundleInfo.addChunk({
-										name: chunkName, //path.posix.join(filePath, chunkName),
-										originalName: moduleName,
-										code: module.code,
-										relatedPaths: Object.keys(module.modules || {}).filter((m) => existsSyncAndIsFile(m)),
-										imports: module.imports,
-										dynamicImports: module.dynamicImports,
-										generated: !module.facadeModuleId,
-										isWebComponent: isWebComponent(moduleName),
-									});
-								}
-							} else if (module.type === "asset") {
-								// asset module (e.g. source maps)
-								const sourcemapSource = JSON.parse(module.source);
-								// make the source path relative to the project (omitting the node_modules)
-								sourcemapSource.sources = sourcemapSource.sources.map((source) => {
-									if (source.lastIndexOf("node_modules") !== -1) {
-										const parts = source.split("node_modules/");
-										source = `.ui5-tooling-modules/${parts[parts.length - 1]}`;
-									}
-									return source;
-								});
-								// remove the ignore list from the source map
-								delete sourcemapSource["x_google_ignoreList"];
-								// shift the source map file to the dynamic entries path
-								const isShiftedEntry = !!shiftedEntries[sourcemapSource.file];
-								// add the source map to the bundle info
-								bundleInfo.addResource({
-									name: isShiftedEntry ? path.posix.join(shiftedEntries[sourcemapSource.file], module.fileName) : module.fileName,
-									code: JSON.stringify(sourcemapSource),
-								});
-							}
-						}
-
-						// helper to replace imports in the code
-						const replaceImports = function (code, importName, replacement) {
-							return code.replace(new RegExp(`((?:require|define|toUrl)(?:\\s*)(?:\\([^)]*(["'])))${importName}(\\2[^)]*\\))`, "g"), `$1${replacement}$3`);
-						};
-
-						// helper to replace params in the code
-						const replaceParam = function (code, search, replacement) {
-							const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-							const regex = new RegExp(`(?<!tag:\\s)(["'])${escapedSearchString}(.*?)\\1`, "g"); // do not match tag: "..."
-							return code.replace(regex, `$1${replacement}$2$1`);
-						};
-
-						// helper to replace params in the code
-						const replaceModules = function (code, search, replacement) {
-							if (code.indexOf(`pkg["_ui5metadata"] = {`) > -1) {
-								// in web components package modules all strings can be replaced (safe as generated by us)
-								code = replaceParam(code, search, replacement);
-							} else {
-								const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-								// covers the UI5 module loading functions
-								code = code.replace(new RegExp(`((?:require|requireSync|define|toUrl|isA)(?:\\s*)(?:\\([^)]*(["'])))${escapedSearchString}(.*?)\\2`, "mg"), `$1${replacement}$3$2`);
-								// covers all strings in the extend({ ... }) calls
-								const extendRe = /extend\s*\(([\s\S]*?)\)\s*;/g;
-								code = code.replace(extendRe, (full, body) => {
-									const replacedBody = replaceParam(body, search, replacement);
-									return full.replace(body, replacedBody);
-								});
-							}
-							return code;
-						};
-
-						// helper to replace params in the code
-						const replaceJSDoc = function (code, search, replacement) {
-							const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-							const regex = new RegExp(`(\\*\\s@(.*?)\\s+(?:module\\:)?)${escapedSearchString}`, "g");
-							return code.replace(regex, `$1${replacement}`);
-						};
-
-						// fix the imports for shifted modules - sanitize the files to remove trailing whitespaces and correct line feeds
-						for (const module of bundleInfo.getEntries()) {
-							// for CDN cases we need to ensure that module paths are absolute so that in case
-							// of looking up the module path to the root, the resources are resolved relative
-							// to the CDN instead of relative to the module - this is important knowledge to
-							// the module resolution concept as it doesn't behave like a file system
-							// ---
-							// Example:
-							//   resourcesroots: { "@ui5": "./resources/@ui5" }
-							//   module: ./resources/@ui5/webcomponents-ai
-							//     import { something } from "../@ui5/webcomponents";
-							//     => would resolve against CDN/resources/@ui5/webcomponents ==> 404
-							//        instead of ./resources/@ui5/webcomponents-ai
-							// ---
-							// HINT: useRelativeModulePaths = true ---> just use relative paths
-							//         UI5 testsuite scenario using control test pages as they all do not define
-							//         the testsuite namespace as root namespace for them we need to use the
-							//         relative module paths for proper loading
-							let moduleBasePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
-
-							// resources determined via getResource do not have imports or dynamicImports
-							// (we need this extra check to avoid modifying the code of the resources)
-							if ((module.imports?.length || 0) > 0 || (module.dynamicImports?.length || 0) > 0) {
-								// for all modules we need to replace the imports and dynamic imports and make their
-								// paths relative to the module base path (which is either relative or absolute)
-								let modifiedCode = module.code;
-								for (const importFile of module.imports) {
-									const importName = importFile.slice(0, path.extname(importFile).length * -1);
-									modifiedCode = replaceImports(modifiedCode, `./${importName}`, `${moduleBasePath}${importName}`);
-								}
-								for (const importFile of module.dynamicImports) {
-									const importName = importFile.slice(0, path.extname(importFile).length * -1);
-									modifiedCode = replaceImports(modifiedCode, `./${importName}`, `${moduleBasePath}${path.posix.join(dynamicEntriesPath, importName)}`);
-								}
-								module.code = modifiedCode;
-							} else if (module.generated) {
-								// fallback for UI5 wrappers and package infos which are generated to overlay the original module
-								// because the generated modules do not expose any imports or dynamic imports but we know that
-								// we also need to adopt their imports and dynamic imports
-								const relativePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
-								const modifiedCode = relativePath !== moduleBasePath ? replaceModules(module.code, relativePath, moduleBasePath) : module.code;
-								module.code = modifiedCode;
-							}
-
-							// with the following code we modify all module names to be relative to the project namespace
-							// this is needed for Web Components to ensure that the module names are properly prefixed
-							// with the project namespace (e.g. my.project.namespace.thirdparty)
-							if (!isMiddleware && typeof rewriteDep === "function") {
-								// for Web Components we need to prefix the module name with the module base path
-								// TODO: entry modules need to be shifted into the gen folder
-								let modifiedCode = module.code;
-								if (module.generated) {
-									// this is mainly for the UI5 control wrappers and package infos to replace the
-									// module names in JSDoc, extend calls and metadata definitions as the imports
-									// are usually relative and will be replaced at a later phase in the task
-									[
-										...Object.values(output.$metadata.packages || {}),
-										...Object.keys(output.$metadata.chunks || {}).map((s) => {
-											return { name: s };
+								// bundle the given modules
+								const options = {
+									cwd,
+									depPaths,
+									beforePlugins: [logger({ log })],
+									afterPlugins: [],
+									generatedCode,
+									minify,
+									inject,
+									sourcemap,
+									pluginOptions,
+								};
+								// by default we add the dynamic imports plugin to keep dynamic imports for the given modules
+								// if the keepDynamicImports is a boolean, we keep the dynamic imports for all modules
+								options.afterPlugins.push(dynamicImports({ findPackageJson, keepDynamicImports }));
+								// when minifying the code, we add the terser plugin
+								if (minify) {
+									options.afterPlugins.push(
+										require("@rollup/plugin-terser")({
+											output: {
+												comments: /^!/, // Keeps comments starting with "!"
+											},
 										}),
-									]
-										.sort((a, b) => b.name.localeCompare(a.name))
-										.forEach((package) => {
-											if (package.qualifiedName) {
-												modifiedCode = replaceModules(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
-											}
-											modifiedCode = replaceModules(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
-											if (package.qualifiedName) {
-												modifiedCode = replaceJSDoc(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
-											}
-											modifiedCode = replaceJSDoc(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
-										});
-									module.code = modifiedCode;
+									);
 								}
+
+								// create the bundle for the given modules
+								const nameOfModules = modules.map((module) => module.name);
+								//const millis = Date.now(); // PERF
+								const output = await that.createBundle(nameOfModules, options);
+								const isWebComponent = (moduleName) => {
+									return !!(output.$metadata?.packages?.[moduleName] || output.$metadata?.controls?.[moduleName] || output.$metadata?.substitutes?.[moduleName]);
+								};
+								//console.log(`createBundle overall duration: ${Date.now() - millis}ms`); // PERF
+								//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`); // PERF
+								//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`)); // PERF
+
+								// parse the rollup build result
+								const shiftedEntries = {};
+								dynamicEntriesPath = dynamicEntriesPath || "_dynamics";
+								for (const module of output) {
+									// all JS modules are considered as chunks
+									if (module.type === "chunk") {
+										// determine the file name by removing the file extension
+										const moduleName = module.fileName.substring(0, module.fileName.length - 3);
+										// lookup the output module in the list of input modules
+										// -> for web components modules, we replace the module 1:1 but can't set the isEntry flag
+										//    therefore we need to find whether there is an exact module match!
+										const isEntryModule = module.isEntry || modules.find((mod) => mod.name === moduleName);
+										const resolvedModules = isEntryModule && modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path) || mod.name === moduleName);
+										if (resolvedModules?.length > 0) {
+											// one module could be resolved by multiple input modules (e.g. export aliases in package.json)
+											for (const resolvedModule of resolvedModules) {
+												resolvedModule.originalName = module.name;
+												resolvedModule.code = module.code;
+												resolvedModule.relatedPaths = Object.keys(module.modules || {}).filter((m) => existsSyncAndIsFile(m));
+												resolvedModule.imports = module.imports;
+												resolvedModule.dynamicImports = module.dynamicImports;
+												resolvedModule.generated = !module.facadeModuleId;
+												resolvedModule.isWebComponent = isWebComponent(moduleName);
+												resolvedModule.isEntryPoint = true;
+												// store the shifted entry (for moveing the source maps)
+												shiftedEntries[module.fileName] = path.posix.dirname(resolvedModule.name);
+											}
+										} else {
+											// chunk module
+											let chunkName = moduleName;
+											// in case of dynamic entries we move them into a separate folder
+											// to allow to exclude them from the preload bundles easily
+											if (module.isDynamicEntry) {
+												chunkName = path.posix.join(dynamicEntriesPath, moduleName);
+												// store the shifted entry (for moveing the source maps)
+												shiftedEntries[module.fileName] = dynamicEntriesPath;
+											}
+											// add the chunk to the bundle info
+											bundleInfo.addChunk({
+												name: chunkName, //path.posix.join(filePath, chunkName),
+												originalName: moduleName,
+												code: module.code,
+												relatedPaths: Object.keys(module.modules || {}).filter((m) => existsSyncAndIsFile(m)),
+												imports: module.imports,
+												dynamicImports: module.dynamicImports,
+												generated: !module.facadeModuleId,
+												isWebComponent: isWebComponent(moduleName),
+											});
+										}
+									} else if (module.type === "asset") {
+										// asset module (e.g. source maps)
+										const sourcemapSource = JSON.parse(module.source);
+										// make the source path relative to the project (omitting the node_modules)
+										sourcemapSource.sources = sourcemapSource.sources.map((source) => {
+											if (source.lastIndexOf("node_modules") !== -1) {
+												const parts = source.split("node_modules/");
+												source = `.ui5-tooling-modules/${parts[parts.length - 1]}`;
+											}
+											return source;
+										});
+										// remove the ignore list from the source map
+										delete sourcemapSource["x_google_ignoreList"];
+										// shift the source map file to the dynamic entries path
+										const isShiftedEntry = !!shiftedEntries[sourcemapSource.file];
+										// add the source map to the bundle info
+										bundleInfo.addResource({
+											name: isShiftedEntry ? path.posix.join(shiftedEntries[sourcemapSource.file], module.fileName) : module.fileName,
+											code: JSON.stringify(sourcemapSource),
+										});
+									}
+								}
+
+								// helper to replace imports in the code
+								const replaceImports = function (code, importName, replacement) {
+									return code.replace(new RegExp(`((?:require|define|toUrl)(?:\\s*)(?:\\([^)]*(["'])))${importName}(\\2[^)]*\\))`, "g"), `$1${replacement}$3`);
+								};
+
+								// helper to replace params in the code
+								const replaceParam = function (code, search, replacement) {
+									const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
+									const regex = new RegExp(`(?<!tag:\\s)(["'])${escapedSearchString}(.*?)\\1`, "g"); // do not match tag: "..."
+									return code.replace(regex, `$1${replacement}$2$1`);
+								};
+
+								// helper to replace params in the code
+								const replaceModules = function (code, search, replacement) {
+									if (code.indexOf(`pkg["_ui5metadata"] = {`) > -1) {
+										// in web components package modules all strings can be replaced (safe as generated by us)
+										code = replaceParam(code, search, replacement);
+									} else {
+										const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
+										// covers the UI5 module loading functions
+										code = code.replace(
+											new RegExp(`((?:require|requireSync|define|toUrl|isA)(?:\\s*)(?:\\([^)]*(["'])))${escapedSearchString}(.*?)\\2`, "mg"),
+											`$1${replacement}$3$2`,
+										);
+										// covers all strings in the extend({ ... }) calls
+										const extendRe = /extend\s*\(([\s\S]*?)\)\s*;/g;
+										code = code.replace(extendRe, (full, body) => {
+											const replacedBody = replaceParam(body, search, replacement);
+											return full.replace(body, replacedBody);
+										});
+									}
+									return code;
+								};
+
+								// helper to replace params in the code
+								const replaceJSDoc = function (code, search, replacement) {
+									const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
+									const regex = new RegExp(`(\\*\\s@(.*?)\\s+(?:module\\:)?)${escapedSearchString}`, "g");
+									return code.replace(regex, `$1${replacement}`);
+								};
+
+								// fix the imports for shifted modules - sanitize the files to remove trailing whitespaces and correct line feeds
+								for (const module of bundleInfo.getEntries()) {
+									// for CDN cases we need to ensure that module paths are absolute so that in case
+									// of looking up the module path to the root, the resources are resolved relative
+									// to the CDN instead of relative to the module - this is important knowledge to
+									// the module resolution concept as it doesn't behave like a file system
+									// ---
+									// Example:
+									//   resourcesroots: { "@ui5": "./resources/@ui5" }
+									//   module: ./resources/@ui5/webcomponents-ai
+									//     import { something } from "../@ui5/webcomponents";
+									//     => would resolve against CDN/resources/@ui5/webcomponents ==> 404
+									//        instead of ./resources/@ui5/webcomponents-ai
+									// ---
+									// HINT: useRelativeModulePaths = true ---> just use relative paths
+									//         UI5 testsuite scenario using control test pages as they all do not define
+									//         the testsuite namespace as root namespace for them we need to use the
+									//         relative module paths for proper loading
+									let moduleBasePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
+
+									// resources determined via getResource do not have imports or dynamicImports
+									// (we need this extra check to avoid modifying the code of the resources)
+									if ((module.imports?.length || 0) > 0 || (module.dynamicImports?.length || 0) > 0) {
+										// for all modules we need to replace the imports and dynamic imports and make their
+										// paths relative to the module base path (which is either relative or absolute)
+										let modifiedCode = module.code;
+										for (const importFile of module.imports) {
+											const importName = importFile.slice(0, path.extname(importFile).length * -1);
+											modifiedCode = replaceImports(modifiedCode, `./${importName}`, `${moduleBasePath}${importName}`);
+										}
+										for (const importFile of module.dynamicImports) {
+											const importName = importFile.slice(0, path.extname(importFile).length * -1);
+											modifiedCode = replaceImports(modifiedCode, `./${importName}`, `${moduleBasePath}${path.posix.join(dynamicEntriesPath, importName)}`);
+										}
+										module.code = modifiedCode;
+									} else if (module.generated) {
+										// fallback for UI5 wrappers and package infos which are generated to overlay the original module
+										// because the generated modules do not expose any imports or dynamic imports but we know that
+										// we also need to adopt their imports and dynamic imports
+										const relativePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
+										const modifiedCode = relativePath !== moduleBasePath ? replaceModules(module.code, relativePath, moduleBasePath) : module.code;
+										module.code = modifiedCode;
+									}
+
+									// with the following code we modify all module names to be relative to the project namespace
+									// this is needed for Web Components to ensure that the module names are properly prefixed
+									// with the project namespace (e.g. my.project.namespace.thirdparty)
+									if (!isMiddleware && typeof rewriteDep === "function") {
+										// for Web Components we need to prefix the module name with the module base path
+										// TODO: entry modules need to be shifted into the gen folder
+										let modifiedCode = module.code;
+										if (module.generated) {
+											// this is mainly for the UI5 control wrappers and package infos to replace the
+											// module names in JSDoc, extend calls and metadata definitions as the imports
+											// are usually relative and will be replaced at a later phase in the task
+											[
+												...Object.values(output.$metadata.packages || {}),
+												...Object.keys(output.$metadata.chunks || {}).map((s) => {
+													return { name: s };
+												}),
+											]
+												.sort((a, b) => b.name.localeCompare(a.name))
+												.forEach((package) => {
+													if (package.qualifiedName) {
+														modifiedCode = replaceModules(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+													}
+													modifiedCode = replaceModules(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
+													if (package.qualifiedName) {
+														modifiedCode = replaceJSDoc(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+													}
+													modifiedCode = replaceJSDoc(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
+												});
+											module.code = modifiedCode;
+										}
+									}
+
+									// remove trailing whitespaces and correct line feeds (no windows line feeds!)
+									module.code = module.code.replace(/[ \t]+$/gm, "").replace(/\r\n/g, "\n");
+								}
+
+								// cache the output
+								BundleInfoCache.store(cacheKey, bundleInfo, bundleCacheOptions);
+								return bundleInfo;
+							})();
+							if (!skipCache) {
+								_inFlightBuilds.set(cacheKey, buildPromise);
+								// keep the map clean without creating a floating rejection
+								buildPromise.catch(() => {}).finally(() => _inFlightBuilds.delete(cacheKey));
 							}
-
-							// remove trailing whitespaces and correct line feeds (no windows line feeds!)
-							module.code = module.code.replace(/[ \t]+$/gm, "").replace(/\r\n/g, "\n");
+							bundleInfo = await buildPromise;
 						}
-
-						// cache the output
-						BundleInfoCache.store(cacheKey, bundleInfo, bundleCacheOptions);
 					} else {
 						// retrieve the cached output
 						bundleInfo = BundleInfoCache.get(cacheKey, bundleCacheOptions);
@@ -1860,6 +1946,17 @@ module.exports = function (log, projectInfo) {
 			} else {
 				throw new Error(`NPM package ${npmPackageName} not found. Ignoring package...`);
 			}
+		},
+
+		/**
+		 * Awaits all outstanding persistent bundle-info cache writes so the cache
+		 * is durable on disk before the process exits. The writes are otherwise
+		 * fire-and-forget (see {@link BundleInfoCache.store}); a caller (e.g. the
+		 * build task) should await this at the end of a run.
+		 * @returns {Promise} resolves once all pending cache writes have settled
+		 */
+		flushBundleInfoCache: async function flushBundleInfoCache() {
+			await BundleInfoCache.flushPending();
 		},
 	};
 	return that;
