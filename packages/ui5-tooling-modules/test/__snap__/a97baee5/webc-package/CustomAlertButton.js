@@ -3,10 +3,10 @@
  */
 sap.ui.define(
   ["sap/ui/core/webc/WebComponent", "../CustomAlertButton"],
-  function (WebComponentBaseClass) {
+  function (WebComponent) {
     "use strict";
 
-    const WrapperClass = WebComponentBaseClass.extend(
+    const CustomAlertButton = WebComponent.extend(
       "webc-package.CustomAlertButton",
       {
         metadata: {
@@ -44,6 +44,6 @@ sap.ui.define(
       }
     );
 
-    return WrapperClass;
+    return CustomAlertButton;
   }
 );

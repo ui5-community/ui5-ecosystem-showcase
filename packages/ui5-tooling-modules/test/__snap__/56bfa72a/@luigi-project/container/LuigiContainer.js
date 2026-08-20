@@ -3,10 +3,10 @@
  */
 sap.ui.define(
   ["sap/ui/core/webc/WebComponent", "../../@luigi-project/container"],
-  function (WebComponentBaseClass) {
+  function (WebComponent) {
     "use strict";
 
-    const WrapperClass = WebComponentBaseClass.extend(
+    const LuigiContainer = WebComponent.extend(
       "@luigi-project.container.LuigiContainer",
       {
         metadata: {
@@ -215,6 +215,6 @@ sap.ui.define(
       }
     );
 
-    return WrapperClass;
+    return LuigiContainer;
   }
 );
