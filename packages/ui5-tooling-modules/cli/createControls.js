@@ -25,7 +25,7 @@
  * targets native HTML element packages (e.g. "@ui5/html") whose wrappers extend
  * "sap/ui/core/html/HTMLElement" and have no runtime Web Component to import.
  */
-const { join, dirname, resolve } = require("path");
+const { join, dirname, resolve, posix } = require("path");
 const { readFileSync, writeFileSync, mkdirSync, existsSync } = require("fs");
 const { fileURLToPath } = require("url");
 
@@ -308,15 +308,20 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 		webcClass = undefined;
 	}
 
+	const resolvedWebcBaseClass = webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass;
+	const webcBaseClassName = posix.basename(resolvedWebcBaseClass).replace(/\.js$/, "");
+	const ui5ClassSimpleName = ui5ClassName.split(".").pop();
 	const code = template({
 		ui5ClassName,
+		ui5ClassSimpleName,
 		jsDocClassHeader: undefined,
 		// if a UI5 superclass exists we import the package module (the standalone package glue or,
 		// in library mode, the "<namespace>/library" module), otherwise the Web Component module
 		namespace: ui5Superclass ? `${rootPath}${packageModule}` : webcClass,
 		metadata,
 		webcClass,
-		webcBaseClass: webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass,
+		webcBaseClass: resolvedWebcBaseClass,
+		webcBaseClassName,
 		needsLabelEnablement,
 		needsEnabledPropagator,
 		needsMessageMixin,
