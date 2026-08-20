@@ -1332,19 +1332,27 @@ class RegistryEntry {
 }
 
 /**
- * Checks whether we should skips the *.d.ts file and/or JSDoc comment generation.
+ * Enables or disables the *.d.ts file and/or JSDoc comment generation
+ * for the current package registration based on its plugin settings.
+ * The serializer singletons are shared across the process, so the flag is
+ * (re)set on every registration to prevent one package's settings from
+ * leaking into a later package/project.
  * Configured via the respective pluginOptions in the ui5.yaml:
  *    - pluginOptions/webcomponents/skipDtsGeneration
- *    - pluginOptions/webcomponents/skipJsDocGeneration
+ *    - pluginOptions/webcomponents/skipJSDoc
  * @param {object} settings the settings object
  */
 function checkSerializerPluginActivation(settings = {}) {
-	if (settings.skipDtsGeneration) {
-		DTSSerializer.deactivate();
-	}
-	if (settings.skipJsDocGeneration) {
-		JSDocSerializer.deactivate();
-	}
+	DTSSerializer.setEnabled(!settings.skipDtsGeneration);
+	// NOTE: JSDoc generation is intentionally left always-enabled here.
+	// The `skipJSDoc` option has never actually gated JSDoc generation: the
+	// previous code checked `settings.skipJsDocGeneration`, a key that
+	// `register()` does not pass, so the deactivation was dead code and enum/
+	// interface JSDoc has always been emitted into generated bundles. Wiring
+	// `skipJSDoc` up correctly would remove that JSDoc from the happy-path
+	// output — a product behavior change that is out of scope here. We still
+	// reset the flag every registration so it cannot leak across projects.
+	JSDocSerializer.setEnabled(true);
 }
 
 const WebComponentRegistry = {
