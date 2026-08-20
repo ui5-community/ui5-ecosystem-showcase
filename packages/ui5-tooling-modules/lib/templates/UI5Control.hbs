@@ -9,7 +9,7 @@ sap.ui.define([
   "{{namespace}}",{{#if importWebCModule}}
   "{{webcClass}}",{{/if}}
 ], function(
-  WebComponentBaseClass,{{#if needsLabelEnablement}}
+  {{webcBaseClassName}},{{#if needsLabelEnablement}}
   LabelEnablement,{{/if}}{{#if needsEnabledPropagator}}
   EnabledPropagator,{{/if}}{{#if needsMessageMixin}}
   MessageMixin,{{/if}}
@@ -17,15 +17,15 @@ sap.ui.define([
   "use strict";
 
 {{{jsDocClassHeader}}}
-  const WrapperClass = WebComponentBaseClass.extend("{{ui5ClassName}}", {
+  const {{ui5ClassSimpleName}} = {{webcBaseClassName}}.extend("{{ui5ClassName}}", {
     metadata:
 {{{metadata}}}
   });
   {{#if needsLabelEnablement}}
-  LabelEnablement.enrich(WrapperClass.prototype);{{/if}}{{#if needsEnabledPropagator}}
-  EnabledPropagator.call(WrapperClass.prototype);{{/if}}{{#if needsMessageMixin}}
-  MessageMixin.call(WrapperClass.prototype);{{/if}}
+  LabelEnablement.enrich({{ui5ClassSimpleName}}.prototype);{{/if}}{{#if needsEnabledPropagator}}
+  EnabledPropagator.call({{ui5ClassSimpleName}}.prototype);{{/if}}{{#if needsMessageMixin}}
+  MessageMixin.call({{ui5ClassSimpleName}}.prototype);{{/if}}
 
-  return WrapperClass;
+  return {{ui5ClassSimpleName}};
 
 });
