@@ -8,119 +8,116 @@ sap.ui.define(
     "../../../@ui5/webcomponents",
     "../../../CheckBox"
   ],
-  function (WebComponentBaseClass, EnabledPropagator) {
+  function (WebComponent, EnabledPropagator) {
     "use strict";
 
-    const WrapperClass = WebComponentBaseClass.extend(
-      "@ui5.webcomponents.dist.CheckBox",
-      {
-        metadata: {
-          namespace: "@ui5/webcomponents",
-          qualifiedNamespace: "@ui5.webcomponents",
-          tag: "ui5-checkbox",
-          interfaces: ["sap.ui.core.IFormContent"],
-          properties: {
-            accessibleName: {
-              type: "string",
-              mapping: "property"
-            },
-            checked: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            enabled: {
-              type: "boolean",
-              defaultValue: true,
-              mapping: {
-                type: "property",
-                to: "disabled",
-                formatter: "_mapEnabled"
-              }
-            },
-            displayOnly: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            indeterminate: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            name: {
-              type: "string",
-              mapping: "property"
-            },
-            readonly: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            required: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            text: {
-              type: "string",
-              mapping: "property"
-            },
-            value: {
-              type: "string",
-              mapping: "property",
-              defaultValue: "on"
-            },
-            valueState: {
-              type: "sap.ui.core.ValueState",
-              mapping: {
-                formatter: "_mapValueState",
-                parser: "_parseValueState"
-              },
-              defaultValue: "None"
-            },
-            wrappingType: {
-              type: "@ui5.webcomponents.dist.types.WrappingType",
-              mapping: "property",
-              defaultValue: "Normal"
-            },
-            width: {
-              type: "sap.ui.core.CSSSize",
-              mapping: "style"
-            },
-            height: {
-              type: "sap.ui.core.CSSSize",
-              mapping: "style"
+    const CheckBox = WebComponent.extend("@ui5.webcomponents.dist.CheckBox", {
+      metadata: {
+        namespace: "@ui5/webcomponents",
+        qualifiedNamespace: "@ui5.webcomponents",
+        tag: "ui5-checkbox",
+        interfaces: ["sap.ui.core.IFormContent"],
+        properties: {
+          accessibleName: {
+            type: "string",
+            mapping: "property"
+          },
+          checked: {
+            type: "boolean",
+            mapping: "property",
+            defaultValue: false
+          },
+          enabled: {
+            type: "boolean",
+            defaultValue: true,
+            mapping: {
+              type: "property",
+              to: "disabled",
+              formatter: "_mapEnabled"
             }
           },
-          aggregations: {},
-          associations: {
-            ariaLabelledBy: {
-              type: "sap.ui.core.Control",
-              multiple: true,
-              mapping: {
-                type: "property",
-                to: "accessibleNameRef",
-                formatter: "_getAriaLabelledByForRendering"
-              }
-            }
+          displayOnly: {
+            type: "boolean",
+            mapping: "property",
+            defaultValue: false
           },
-          events: {
-            change: {
-              allowPreventDefault: true,
-              enableEventBubbling: true,
-              parameters: {}
-            }
+          indeterminate: {
+            type: "boolean",
+            mapping: "property",
+            defaultValue: false
           },
-          getters: [],
-          methods: [],
-          designtime: "@ui5/webcomponents/designtime/CheckBox.designtime"
-        }
+          name: {
+            type: "string",
+            mapping: "property"
+          },
+          readonly: {
+            type: "boolean",
+            mapping: "property",
+            defaultValue: false
+          },
+          required: {
+            type: "boolean",
+            mapping: "property",
+            defaultValue: false
+          },
+          text: {
+            type: "string",
+            mapping: "property"
+          },
+          value: {
+            type: "string",
+            mapping: "property",
+            defaultValue: "on"
+          },
+          valueState: {
+            type: "sap.ui.core.ValueState",
+            mapping: {
+              formatter: "_mapValueState",
+              parser: "_parseValueState"
+            },
+            defaultValue: "None"
+          },
+          wrappingType: {
+            type: "@ui5.webcomponents.dist.types.WrappingType",
+            mapping: "property",
+            defaultValue: "Normal"
+          },
+          width: {
+            type: "sap.ui.core.CSSSize",
+            mapping: "style"
+          },
+          height: {
+            type: "sap.ui.core.CSSSize",
+            mapping: "style"
+          }
+        },
+        aggregations: {},
+        associations: {
+          ariaLabelledBy: {
+            type: "sap.ui.core.Control",
+            multiple: true,
+            mapping: {
+              type: "property",
+              to: "accessibleNameRef",
+              formatter: "_getAriaLabelledByForRendering"
+            }
+          }
+        },
+        events: {
+          change: {
+            allowPreventDefault: true,
+            enableEventBubbling: true,
+            parameters: {}
+          }
+        },
+        getters: [],
+        methods: [],
+        designtime: "@ui5/webcomponents/designtime/CheckBox.designtime"
       }
-    );
+    });
 
-    EnabledPropagator.call(WrapperClass.prototype);
+    EnabledPropagator.call(CheckBox.prototype);
 
-    return WrapperClass;
+    return CheckBox;
   }
 );
