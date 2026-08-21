@@ -8,215 +8,212 @@ sap.ui.define(
     "../../../@ui5/webcomponents",
     "../../../Button"
   ],
-  function (WebComponentBaseClass, EnabledPropagator) {
+  function (WebComponent, EnabledPropagator) {
     "use strict";
 
-    const WrapperClass = WebComponentBaseClass.extend(
-      "@ui5.webcomponents.dist.Button",
-      {
-        metadata: {
-          namespace: "@ui5/webcomponents",
-          qualifiedNamespace: "@ui5.webcomponents",
-          tag: "ui5-button",
-          interfaces: ["@ui5.webcomponents.dist.Button.IButton"],
-          properties: {
-            accessibilityAttributes: {
-              type: "any",
-              mapping: "property",
-              defaultValue: {}
-            },
-            accessibleDescription: {
-              type: "string",
-              mapping: "property"
-            },
-            accessibleName: {
-              type: "string",
-              mapping: "property"
-            },
-            accessibleRole: {
-              type: "@ui5.webcomponents.dist.types.ButtonAccessibleRole",
-              mapping: "property",
-              defaultValue: "Button"
-            },
-            design: {
-              type: "@ui5.webcomponents.dist.types.ButtonDesign",
-              mapping: "property",
-              defaultValue: "Default"
-            },
-            enabled: {
-              type: "boolean",
-              defaultValue: true,
-              mapping: {
-                type: "property",
-                to: "disabled",
-                formatter: "_mapEnabled"
-              }
-            },
-            endIcon: {
-              type: "string",
-              mapping: "property"
-            },
-            form: {
-              type: "string",
-              mapping: "property"
-            },
-            icon: {
-              type: "string",
-              mapping: "property"
-            },
-            loading: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            loadingDelay: {
-              type: "float",
-              mapping: "property",
-              defaultValue: 1000
-            },
-            submits: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            type: {
-              type: "@ui5.webcomponents.dist.types.ButtonType",
-              mapping: "property",
-              defaultValue: "Button"
-            },
-            text: {
-              type: "string",
-              mapping: "textContent"
-            },
-            width: {
-              type: "sap.ui.core.CSSSize",
-              mapping: "style"
-            },
-            height: {
-              type: "sap.ui.core.CSSSize",
-              mapping: "style"
+    const Button = WebComponent.extend("@ui5.webcomponents.dist.Button", {
+      metadata: {
+        namespace: "@ui5/webcomponents",
+        qualifiedNamespace: "@ui5.webcomponents",
+        tag: "ui5-button",
+        interfaces: ["@ui5.webcomponents.dist.Button.IButton"],
+        properties: {
+          accessibilityAttributes: {
+            type: "any",
+            mapping: "property",
+            defaultValue: {}
+          },
+          accessibleDescription: {
+            type: "string",
+            mapping: "property"
+          },
+          accessibleName: {
+            type: "string",
+            mapping: "property"
+          },
+          accessibleRole: {
+            type: "@ui5.webcomponents.dist.types.ButtonAccessibleRole",
+            mapping: "property",
+            defaultValue: "Button"
+          },
+          design: {
+            type: "@ui5.webcomponents.dist.types.ButtonDesign",
+            mapping: "property",
+            defaultValue: "Default"
+          },
+          enabled: {
+            type: "boolean",
+            defaultValue: true,
+            mapping: {
+              type: "property",
+              to: "disabled",
+              formatter: "_mapEnabled"
             }
           },
-          aggregations: {
-            badge: {
-              type: "@ui5.webcomponents.dist.ButtonBadge",
-              multiple: true,
-              slot: "badge"
-            }
+          endIcon: {
+            type: "string",
+            mapping: "property"
           },
-          associations: {
-            ariaLabelledBy: {
-              type: "sap.ui.core.Control",
-              multiple: true,
-              mapping: {
-                type: "property",
-                to: "accessibleNameRef",
-                formatter: "_getAriaLabelledByForRendering"
-              }
-            }
+          form: {
+            type: "string",
+            mapping: "property"
           },
-          events: {
-            click: {
-              allowPreventDefault: true,
-              enableEventBubbling: true,
-              parameters: {
-                altKey: {
-                  type: "boolean",
-                  types: [
-                    {
-                      origType: "boolean",
-                      multiple: false,
-                      dedicatedTypes: [
-                        {
-                          dtsType: "boolean",
-                          ui5Type: "boolean"
-                        }
-                      ]
-                    }
-                  ],
-                  dtsParamDescription:
-                    'Returns whether the "ALT" key was pressed when the event was triggered.'
-                },
-                ctrlKey: {
-                  type: "boolean",
-                  types: [
-                    {
-                      origType: "boolean",
-                      multiple: false,
-                      dedicatedTypes: [
-                        {
-                          dtsType: "boolean",
-                          ui5Type: "boolean"
-                        }
-                      ]
-                    }
-                  ],
-                  dtsParamDescription:
-                    'Returns whether the "CTRL" key was pressed when the event was triggered.'
-                },
-                metaKey: {
-                  type: "boolean",
-                  types: [
-                    {
-                      origType: "boolean",
-                      multiple: false,
-                      dedicatedTypes: [
-                        {
-                          dtsType: "boolean",
-                          ui5Type: "boolean"
-                        }
-                      ]
-                    }
-                  ],
-                  dtsParamDescription:
-                    'Returns whether the "META" key was pressed when the event was triggered.'
-                },
-                originalEvent: {
-                  type: "object",
-                  types: [
-                    {
-                      origType: "Event",
-                      multiple: false,
-                      dedicatedTypes: [
-                        {
-                          dtsType: "Event",
-                          ui5Type: "object"
-                        }
-                      ]
-                    }
-                  ],
-                  dtsParamDescription:
-                    "Returns original event that comes from user's **click** interaction"
-                },
-                shiftKey: {
-                  type: "boolean",
-                  types: [
-                    {
-                      origType: "boolean",
-                      multiple: false,
-                      dedicatedTypes: [
-                        {
-                          dtsType: "boolean",
-                          ui5Type: "boolean"
-                        }
-                      ]
-                    }
-                  ],
-                  dtsParamDescription:
-                    'Returns whether the "SHIFT" key was pressed when the event was triggered.'
-                }
+          icon: {
+            type: "string",
+            mapping: "property"
+          },
+          loading: {
+            type: "boolean",
+            mapping: "property",
+            defaultValue: false
+          },
+          loadingDelay: {
+            type: "float",
+            mapping: "property",
+            defaultValue: 1000
+          },
+          submits: {
+            type: "boolean",
+            mapping: "property",
+            defaultValue: false
+          },
+          type: {
+            type: "@ui5.webcomponents.dist.types.ButtonType",
+            mapping: "property",
+            defaultValue: "Button"
+          },
+          text: {
+            type: "string",
+            mapping: "textContent"
+          },
+          width: {
+            type: "sap.ui.core.CSSSize",
+            mapping: "style"
+          },
+          height: {
+            type: "sap.ui.core.CSSSize",
+            mapping: "style"
+          }
+        },
+        aggregations: {
+          badge: {
+            type: "@ui5.webcomponents.dist.ButtonBadge",
+            multiple: true,
+            slot: "badge"
+          }
+        },
+        associations: {
+          ariaLabelledBy: {
+            type: "sap.ui.core.Control",
+            multiple: true,
+            mapping: {
+              type: "property",
+              to: "accessibleNameRef",
+              formatter: "_getAriaLabelledByForRendering"
+            }
+          }
+        },
+        events: {
+          click: {
+            allowPreventDefault: true,
+            enableEventBubbling: true,
+            parameters: {
+              altKey: {
+                type: "boolean",
+                types: [
+                  {
+                    origType: "boolean",
+                    multiple: false,
+                    dedicatedTypes: [
+                      {
+                        dtsType: "boolean",
+                        ui5Type: "boolean"
+                      }
+                    ]
+                  }
+                ],
+                dtsParamDescription:
+                  'Returns whether the "ALT" key was pressed when the event was triggered.'
+              },
+              ctrlKey: {
+                type: "boolean",
+                types: [
+                  {
+                    origType: "boolean",
+                    multiple: false,
+                    dedicatedTypes: [
+                      {
+                        dtsType: "boolean",
+                        ui5Type: "boolean"
+                      }
+                    ]
+                  }
+                ],
+                dtsParamDescription:
+                  'Returns whether the "CTRL" key was pressed when the event was triggered.'
+              },
+              metaKey: {
+                type: "boolean",
+                types: [
+                  {
+                    origType: "boolean",
+                    multiple: false,
+                    dedicatedTypes: [
+                      {
+                        dtsType: "boolean",
+                        ui5Type: "boolean"
+                      }
+                    ]
+                  }
+                ],
+                dtsParamDescription:
+                  'Returns whether the "META" key was pressed when the event was triggered.'
+              },
+              originalEvent: {
+                type: "object",
+                types: [
+                  {
+                    origType: "Event",
+                    multiple: false,
+                    dedicatedTypes: [
+                      {
+                        dtsType: "Event",
+                        ui5Type: "object"
+                      }
+                    ]
+                  }
+                ],
+                dtsParamDescription:
+                  "Returns original event that comes from user's **click** interaction"
+              },
+              shiftKey: {
+                type: "boolean",
+                types: [
+                  {
+                    origType: "boolean",
+                    multiple: false,
+                    dedicatedTypes: [
+                      {
+                        dtsType: "boolean",
+                        ui5Type: "boolean"
+                      }
+                    ]
+                  }
+                ],
+                dtsParamDescription:
+                  'Returns whether the "SHIFT" key was pressed when the event was triggered.'
               }
             }
-          },
-          getters: [],
-          methods: [],
-          designtime: "@ui5/webcomponents/designtime/Button.designtime"
-        }
+          }
+        },
+        getters: [],
+        methods: [],
+        designtime: "@ui5/webcomponents/designtime/Button.designtime"
       }
-    );
+    });
 
-    EnabledPropagator.call(WrapperClass.prototype);
+    EnabledPropagator.call(Button.prototype);
 
-    return WrapperClass;
+    return Button;
   }
 );
