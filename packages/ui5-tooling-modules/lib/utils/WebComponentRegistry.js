@@ -1235,6 +1235,10 @@ class RegistryEntry {
 			namespace: this.ui5Namespace,
 			qualifiedNamespace: this.qualifiedNamespace,
 			tag: classDef.scopedTagName || classDef.tagName,
+			// "void" overlay from the CEM class declaration marks void HTML elements (e.g. <br>,
+			// <img>) that must not render a closing tag or children. Only emitted when true, so
+			// non-void elements and UI5 Web Components stay unaffected.
+			...(classDef.void ? { void: true } : {}),
 			interfaces: [],
 			properties: {},
 			aggregations: {},
