@@ -449,7 +449,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
 			const resolvedWebcBaseClass = webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass;
 			const webcBaseClassName = posix.basename(resolvedWebcBaseClass).replace(/\.js$/, "");
-			const ui5ClassSimpleName = ui5ClassName.split(".").pop();
+			const ui5ClassSimpleName = WebComponentRegistryHelper.deriveClassVariableName(clazz);
 			const code = webcTmplFnUI5Control({
 				ui5ClassName: ui5ClassName,
 				ui5ClassSimpleName,
