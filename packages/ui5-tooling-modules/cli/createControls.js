@@ -310,7 +310,7 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 
 	const resolvedWebcBaseClass = webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass;
 	const webcBaseClassName = posix.basename(resolvedWebcBaseClass).replace(/\.js$/, "");
-	const ui5ClassSimpleName = ui5ClassName.split(".").pop();
+	const ui5ClassSimpleName = WebComponentRegistryHelper.deriveClassVariableName(clazz);
 	const code = template({
 		ui5ClassName,
 		ui5ClassSimpleName,
