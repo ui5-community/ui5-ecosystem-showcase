@@ -198,13 +198,34 @@ function buildLibrary({ package: pkg, template, outputDir }) {
 		interfaces: Object.keys(pkg.interfaces).map((interfaceName) => pkg.interfaces[interfaceName]._ui5QualifiedName),
 		controls: Object.keys(pkg.customElements).map((elementName) => pkg.customElements[elementName]._ui5QualifiedName),
 		elements: [],
+		// generated control wrappers ship no library styling, so tell the UI5 loader not to
+		// request a (non-existent) library.css per theme, which would otherwise 404 at runtime
+		noLibraryCSS: true,
 	};
 	const metadata = JSON.stringify(metadataObject, undefined, 2);
 
+	// The library.js places enums into their derived sub-namespace
+	// (e.g. thisLib.enums["Wrapping"]) so the JS object path matches the UI5 qualified
+	// name "sap.html.enums.Wrapping" and the generated JSDoc (@alias / @ui5-module-override).
+	// Important: the package module path (buildPackage -> UI5Package.hbs) intentionally emits
+	// them flat (pkg["Wrapping"]) for backward compatibility with released
+	// web component consumers. The two implementations therefore drift on purpose for now;
+	// This is to be unified in a future major version of ui5-tooling-modules.
+	// Additionally, only a single sub-namespace level ("enums") is supported here; deeper
+	// paths would need multi-level namespace initialization (out of scope for now).
+	const enums = Object.values(pkg.enums).map((enumDef) => {
+		const derived = enumDef._derivedUi5ClassName || enumDef.name; // e.g. "enums.Wrapping" | "Wrapping"
+		const subNamespace = derived.includes(".") ? derived.slice(0, derived.lastIndexOf(".")) : "";
+		const accessor = subNamespace ? `thisLib.${subNamespace}["${enumDef.name}"]` : `thisLib["${enumDef.name}"]`;
+		return { ...enumDef, _subNamespace: subNamespace, _libraryAccessor: accessor };
+	});
+	const enumNamespaces = [...new Set(enums.map((enumDef) => enumDef._subNamespace).filter(Boolean))];
+
 	const code = template({
 		metadata,
-		hasEnums: Object.keys(pkg.enums).length > 0,
-		enums: pkg.enums,
+		hasEnums: enums.length > 0,
+		enums,
+		enumNamespaces,
 		dependencies: pkg.dependencies?.map((dep) => dep),
 	});
 
@@ -217,17 +238,34 @@ function buildLibrary({ package: pkg, template, outputDir }) {
 // control wrapper generation — mirrors buildWrapper() of the rollup plugin
 // -------------------------------------------------------------------------
 
-function serializeMetadata(clazz, namespace) {
+function serializeMetadata(clazz) {
 	const ui5Metadata = clazz._ui5metadata;
+
+	// The createControls (library) path prunes the emitted control metadata to
+	// reduce payload, so we omit unused keys.
+	// Important: the rollup plugin (package path for released web component consumers) intentionally
+	// keeps the full metadata for backward compatibility -> both implementations drift on purpose for
+	// now; to be unified in a future major version. Keep the defaultValue handling below in sync.
 	const metadataObject = Object.assign({}, ui5Metadata, {
 		tag: ui5Metadata.tag,
-		designtime: `${namespace}/designtime/${clazz.name}.designtime`,
 	});
+	delete metadataObject.namespace;
+	delete metadataObject.qualifiedNamespace;
+	delete metadataObject.designtime;
+
 	// default values are special cased to avoid JSON.stringify() escaping them, which
 	// would make them invalid in the generated code. Must stay in sync with the rollup plugin.
 	return JSON.stringify(
 		metadataObject,
 		function (key, value) {
+			// omit empty object/array sections to reduce the generated payload
+			if (Array.isArray(value)) {
+				if (value.length === 0) {
+					return undefined;
+				}
+			} else if (value && typeof value === "object" && Object.keys(value).length === 0) {
+				return undefined;
+			}
 			if (key === "defaultValue") {
 				switch (value) {
 					case undefined:
@@ -260,12 +298,10 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 
 	const written = [];
 
-	const ui5Metadata = clazz._ui5metadata;
 	const ui5ClassName = clazz._ui5QualifiedName;
 	const ui5Superclass = clazz.superclass;
-	const namespace = ui5Metadata.namespace;
 
-	const metadata = serializeMetadata(clazz, namespace);
+	const metadata = serializeMetadata(clazz);
 
 	// no bundler chunk in the standalone scenario -> no runtime Web Component module to import
 	let webcClass = undefined;
