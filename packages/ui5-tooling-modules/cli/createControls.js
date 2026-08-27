@@ -217,7 +217,15 @@ function buildLibrary({ package: pkg, template, outputDir }) {
 		const derived = enumDef._derivedUi5ClassName || enumDef.name; // e.g. "enums.Wrapping" | "Wrapping"
 		const subNamespace = derived.includes(".") ? derived.slice(0, derived.lastIndexOf(".")) : "";
 		const accessor = subNamespace ? `thisLib.${subNamespace}["${enumDef.name}"]` : `thisLib["${enumDef.name}"]`;
-		return { ...enumDef, _subNamespace: subNamespace, _libraryAccessor: accessor };
+		// Members whose value starts with a digit are not valid TypeScript identifiers. Keep them
+		// out of the enum object literal so the downstream .d.ts generator does not pick them up,
+		// and re-add them to the runtime object via a bracket assignment instead (e.g.
+		// thisLib.enums["ListType"]["1"] = "1";). Done generically for all numeric members.
+		// Note: As of now it's only only "1" in the ListType, but we are prepared if the DOM introduces another one at one point.
+		const allValues = enumDef.values || [];
+		const literalValues = allValues.filter((v) => !/^[0-9]/.test(v.value));
+		const numericValues = allValues.filter((v) => /^[0-9]/.test(v.value));
+		return { ...enumDef, values: literalValues, numericValues, _subNamespace: subNamespace, _libraryAccessor: accessor };
 	});
 	const enumNamespaces = [...new Set(enums.map((enumDef) => enumDef._subNamespace).filter(Boolean))];
 
@@ -437,7 +445,12 @@ function generateControls({ input, output, namespace: namespaceOverride, ui5Name
 		version,
 		skipDtsGeneration: true,
 		skipJSDoc: true,
-		customJSDocTags: ["private"],
+		// Mark the generated enums (and their members) as @public so the downstream api.json ->
+		// .d.ts generator picks them up. In this CLI/library path JSDoc is otherwise skipped
+		// (skipJSDoc + jsDocClassHeader:undefined), so enums are the only entities carrying this
+		// tag — control classes/properties are unaffected. The rollup/webcomponents path keeps its
+		// own default and is untouched.
+		customJSDocTags: ["public"],
 	});
 
 	if (!registryEntry) {
