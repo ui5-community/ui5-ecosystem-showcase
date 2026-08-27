@@ -30,6 +30,11 @@ sap.ui.define([
     "{{this.name}}": "{{this.value}}",
   {{/each}}
   };
+  {{! Numeric members are added via bracket assignment (kept out of the literal above so the }}
+  {{! downstream .d.ts generator does not pick up invalid TypeScript identifiers). }}
+  {{#each this.numericValues}}
+  {{{../_libraryAccessor}}}["{{this.value}}"] = "{{this.value}}";
+  {{/each}}
   registerEnum("{{this._ui5QualifiedName}}", {{{this._libraryAccessor}}});
   {{/each}}
 
