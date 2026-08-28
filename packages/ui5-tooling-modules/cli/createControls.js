@@ -188,7 +188,7 @@ function buildPackage({ package: pkg, template, outputDir }) {
 // library (library.js) generation — used when libraryMode: true
 // -------------------------------------------------------------------------
 
-function buildLibrary({ package: pkg, template, outputDir }) {
+function buildLibrary({ package: pkg, template, outputDir, libraryDescription, since, author }) {
 	const metadataObject = {
 		apiVersion: 2,
 		name: pkg.qualifiedNamespace,
@@ -204,33 +204,56 @@ function buildLibrary({ package: pkg, template, outputDir }) {
 	};
 	const metadata = JSON.stringify(metadataObject, undefined, 2);
 
-	// The library.js places enums into their derived sub-namespace
-	// (e.g. thisLib.enums["Wrapping"]) so the JS object path matches the UI5 qualified
-	// name "sap.html.enums.Wrapping" and the generated JSDoc (@alias / @ui5-module-override).
+	// JSDoc block for the library namespace, rendered right above Library.init(). Without it the
+	// JSDoc build assigns wrong "resource"/"module" entries to the contained symbols (enums). The
+	// @alias makes JSDoc treat the "thisLib" variable as the library namespace, so the enums below
+	// resolve to e.g. "sap.html.enums.AriaRole".
+	const descriptionLines = String(libraryDescription || `The ${pkg.qualifiedNamespace} library.`).split("\n");
+	const libraryJsDoc = [
+		"/**",
+		...descriptionLines.map((line) => ` * ${line}`.replace(/\s+$/, "")),
+		" *",
+		" * @namespace",
+		` * @alias ${pkg.qualifiedNamespace}`,
+		` * @author ${author || "SAP SE"}`,
+		` * @version ${pkg.version}`,
+		...(since ? [` * @since ${since}`] : []),
+		" * @public",
+		" */",
+	].join("\n");
+
+	// The library.js places enums into their derived sub-namespace using dot-notation
+	// (e.g. thisLib.enums.Wrapping) so the JS object path matches the UI5 qualified name
+	// "sap.html.enums.Wrapping" AND the JSDoc build reads a clean "sap.html.enums.Wrapping" name
+	// (bracket access would leak as basename 'enums["Wrapping"]' into the api.json).
 	// Important: the package module path (buildPackage -> UI5Package.hbs) intentionally emits
-	// them flat (pkg["Wrapping"]) for backward compatibility with released
-	// web component consumers. The two implementations therefore drift on purpose for now;
-	// This is to be unified in a future major version of ui5-tooling-modules.
+	// them flat (pkg["Wrapping"]) for backward compatibility with released web component consumers.
+	// The two implementations therefore drift on purpose for now; to be unified in a future major.
 	// Additionally, only a single sub-namespace level ("enums") is supported here; deeper
 	// paths would need multi-level namespace initialization (out of scope for now).
 	const enums = Object.values(pkg.enums).map((enumDef) => {
 		const derived = enumDef._derivedUi5ClassName || enumDef.name; // e.g. "enums.Wrapping" | "Wrapping"
 		const subNamespace = derived.includes(".") ? derived.slice(0, derived.lastIndexOf(".")) : "";
-		const accessor = subNamespace ? `thisLib.${subNamespace}["${enumDef.name}"]` : `thisLib["${enumDef.name}"]`;
+		const accessor = subNamespace ? `thisLib.${subNamespace}.${enumDef.name}` : `thisLib.${enumDef.name}`;
 		// Members whose value starts with a digit are not valid TypeScript identifiers. Keep them
 		// out of the enum object literal so the downstream .d.ts generator does not pick them up,
 		// and re-add them to the runtime object via a bracket assignment instead (e.g.
-		// thisLib.enums["ListType"]["1"] = "1";). Done generically for all numeric members.
+		// thisLib.enums.ListType["1"] = "1";). Done generically for all numeric members.
 		// Note: As of now it's only only "1" in the ListType, but we are prepared if the DOM introduces another one at one point.
 		const allValues = enumDef.values || [];
 		const literalValues = allValues.filter((v) => !/^[0-9]/.test(v.value));
 		const numericValues = allValues.filter((v) => /^[0-9]/.test(v.value));
-		return { ...enumDef, values: literalValues, numericValues, _subNamespace: subNamespace, _libraryAccessor: accessor };
+		// Strip the vestigial "@alias module:..." and "@ui5-module-override ..." tags from the enum
+		// header JSDoc — they are not needed for the inline library.js enums and would pollute the
+		// api.json. Done on the spread copy only, so the shared enumDef (package path) is untouched.
+		const jsDoc = String(enumDef._jsDoc || "").replace(/^\s*\*\s*@(?:alias module:|ui5-module-override)\b.*\r?\n/gm, "");
+		return { ...enumDef, _jsDoc: jsDoc, values: literalValues, numericValues, _subNamespace: subNamespace, _libraryAccessor: accessor };
 	});
 	const enumNamespaces = [...new Set(enums.map((enumDef) => enumDef._subNamespace).filter(Boolean))];
 
 	const code = template({
 		metadata,
+		libraryJsDoc,
 		hasEnums: enums.length > 0,
 		enums,
 		enumNamespaces,
@@ -394,9 +417,24 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
  * @param {string} [opts.version] package version (default: version from nearest package.json)
  * @param {string} [opts.frameworkVersion] UI5 framework version for version-dependent generation (default: 2.0.0)
  * @param {boolean} [opts.libraryMode] when true, generate a UI5 library.js (using Library.init) instead of a standalone package module
+ * @param {string} [opts.libraryDescription] description text for the library.js namespace JSDoc block (libraryMode only; may contain newlines)
+ * @param {string} [opts.since] "@since" version for the library.js namespace JSDoc block (libraryMode only)
+ * @param {string} [opts.author] "@author" for the library.js namespace JSDoc block (libraryMode only, default "SAP SE")
  * @returns {string[]} the list of generated file paths
  */
-function generateControls({ input, output, namespace: namespaceOverride, ui5Namespace, stripModulePrefix, version: versionOverride, frameworkVersion = "2.0.0", libraryMode = false } = {}) {
+function generateControls({
+	input,
+	output,
+	namespace: namespaceOverride,
+	ui5Namespace,
+	stripModulePrefix,
+	version: versionOverride,
+	frameworkVersion = "2.0.0",
+	libraryMode = false,
+	libraryDescription,
+	since,
+	author,
+} = {}) {
 	if (!input || !output) {
 		throw new Error("Both a custom-elements.json path (input) and an output folder (output) are required.");
 	}
@@ -467,7 +505,7 @@ function generateControls({ input, output, namespace: namespaceOverride, ui5Name
 	// or as a proper Library.init() call when libraryMode is requested
 	if (libraryMode) {
 		const ui5LibraryTemplate = loadAndCompileTemplate("UI5Library.hbs");
-		written.push(buildLibrary({ package: registryEntry, template: ui5LibraryTemplate, outputDir }));
+		written.push(buildLibrary({ package: registryEntry, template: ui5LibraryTemplate, outputDir, libraryDescription, since, author }));
 	} else {
 		written.push(buildPackage({ package: registryEntry, template: ui5PackageTemplate, outputDir }));
 	}
