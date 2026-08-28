@@ -11,6 +11,9 @@ sap.ui.define([
   const { registerEnum } = DataType;
   {{/if}}
 
+  {{#if libraryJsDoc}}
+  {{{libraryJsDoc}}}
+  {{/if}}
   var thisLib = Library.init({{{metadata}}});
 
   {{! Review note, TH: enums are placed into their derived sub-namespace (e.g. thisLib.enums["Wrapping"]) }}
