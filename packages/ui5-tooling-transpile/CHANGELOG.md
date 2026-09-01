@@ -1,5 +1,15 @@
 # Change Log
 
+## 3.13.1
+
+### Patch Changes
+
+- [#1435](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1435) [`6dd8c9b`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6dd8c9b71125ff06feb45ef07c5dba8349afe7f1) Thanks [@petermuessig](https://github.com/petermuessig)! - chore(ui5-tooling-transpile): update browserslist to 4.28.8
+
+    Bumps the `browserslist` dependency from `^4.28.2` to `^4.28.8` to pick up
+    the latest 4.28.x patch release. All workspace consumers now dedupe onto a
+    single `4.28.8` resolution.
+
 ## 3.13.0
 
 ### Minor Changes
