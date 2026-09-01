@@ -92,3 +92,6 @@ TODO.md
 
 # MCP server tmp files
 .playwright-mcp
+
+# local-only announcement drafts (blog/social copy + images), never published from here
+announcements/
