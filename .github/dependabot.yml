@@ -10,6 +10,9 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      - dependency-name: "@ui5/project"
+      - dependency-name: "@ui5/cli"
 
   - package-ecosystem: "github-actions"
     directory: "/"
