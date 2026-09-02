@@ -48,6 +48,7 @@ const { createHash } = require("crypto");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 const JSDocSerializer = require("./utils/JSDocSerializer");
+const DTSSerializer = require("./utils/DTSSerializer");
 const WebComponentRegistryHelper = require("./utils/WebComponentRegistryHelper");
 const { UI5_ELEMENT_NAMESPACE } = WebComponentRegistryHelper;
 
@@ -699,7 +700,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			return null;
 		},
 
-		generateBundle(options, bundle) {
+		async generateBundle(options, bundle) {
 			if (skip) {
 				return;
 			}
@@ -744,6 +745,11 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					}
 				}
 			}
+
+			// ensure all fire-and-forget *.gen.d.ts writes triggered during this
+			// build have settled (or surfaced their errors) before the build
+			// reports success
+			await DTSSerializer.flush();
 		},
 	};
 };
