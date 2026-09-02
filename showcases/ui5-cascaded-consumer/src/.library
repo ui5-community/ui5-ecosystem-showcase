@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd">
+	<name>ui5.ecosystem.demo.cascaded.consumer</name>
+	<vendor>Peter Muessig</vendor>
+	<version>${version}</version>
+	<copyright>${copyright}</copyright>
+	<title>Cascaded build consumer library</title>
+	<documentation>Consumer library that reuses the producer's bundled @ui5/webcomponents via the externals manifest instead of re-bundling them</documentation>
+	<dependencies>
+		<dependency>
+			<libraryName>sap.ui.core</libraryName>
+		</dependency>
+		<dependency>
+			<libraryName>ui5.ecosystem.demo.cascaded.producer</libraryName>
+		</dependency>
+	</dependencies>
+</library>

@@ -1,0 +1,29 @@
+specVersion: "4.0"
+metadata:
+  name: ui5.ecosystem.demo.cascaded.producer
+type: library
+framework:
+  name: OpenUI5
+  version: 1.148.0
+  libraries:
+    - name: sap.ui.core
+    - name: themelib_sap_horizon
+builder:
+  customTasks:
+    # bundle the used @ui5/webcomponents into this library and write an
+    # externals manifest so that dependent libraries can reuse the bundled
+    # modules and Web Components packages instead of re-bundling them
+    - name: ui5-tooling-modules-task
+      afterTask: replaceVersion
+      configuration:
+        cascadedBuild: true
+        pluginOptions:
+          webcomponents:
+            scoping: false
+server:
+  customMiddleware:
+    # resolve the used @ui5/webcomponents modules at serve time
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: true
