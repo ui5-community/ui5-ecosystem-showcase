@@ -3,6 +3,27 @@
 const path = require("path");
 const fs = require("fs");
 
+// === PoC (UI5 CLI v5 build cache) ===========================================
+// Track BuildServers created by the opt-in cache path and release their file
+// watchers + SQLite cache handles once, on a graceful stop. A single shared
+// SIGTERM listener (registered lazily) avoids per-module MaxListeners warnings.
+// SIGTERM only — NOT SIGINT — so the host dev-server's Ctrl+C handling is left
+// untouched. Productisation should call destroy() from the host server's own
+// close hook instead of relying on a process signal.
+const __ui5BuildServers = new Set();
+let __ui5CleanupRegistered = false;
+function __registerBuildServerCleanup(buildServer) {
+	__ui5BuildServers.add(buildServer);
+	if (!__ui5CleanupRegistered) {
+		__ui5CleanupRegistered = true;
+		process.once("SIGTERM", () => {
+			for (const bs of __ui5BuildServers) {
+				bs.destroy().catch(() => {});
+			}
+		});
+	}
+}
+
 /**
  * @typedef applyUI5MiddlewareOptions
  * @type {object}
@@ -69,32 +90,79 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	const rootProject = graph.getRoot();
 
-	const readers = [];
-	await graph.traverseBreadthFirst(async function ({ project: dep }) {
-		if (dep.getName() === rootProject.getName()) {
-			// Ignore root project
-			return;
+	// === PoC (UI5 CLI v5 build cache) ========================================
+	// Opt-in: serve the mounted module through the v5 build-then-serve cache
+	// (graph.serve -> BuildServer) instead of the live source readers, so the
+	// build result is cached and reused across restarts.
+	// Two gates must BOTH hold, which guarantees ZERO change for @ui5/server v3/v4:
+	//   1. options.buildCache === true        (explicit opt-in via the module config)
+	//   2. typeof graph.serve === "function"  (this API only exists on @ui5/* v5)
+	// Requires an application/component-type configFile that defines the build
+	// TASKS (e.g. ui5-build.yaml). A `type: module` config is NOT supported here.
+	const useBuildCache = options.buildCache === true && typeof graph.serve === "function";
+
+	let resources;
+	if (useBuildCache) {
+		try {
+			const { default: Cache } = await import("@ui5/project/build/cache/Cache");
+			const buildServer = await graph.serve({
+				// Build the root (the mounted module) eagerly at startup so that a
+				// restart hits the cache; mirrors @ui5/server's own serve().
+				initialBuildRootProject: true,
+				excludedTasks: ["minify", "generateLibraryPreload", "generateComponentPreload", "generateBundle"],
+				cache: Cache.Default,
+			});
+			// Track for cleanup immediately (before touching readers), so the watcher
+			// + SQLite handle are released even if a later step throws.
+			__registerBuildServerCleanup(buildServer);
+			buildServer.on("error", (err) => {
+				console.error(`[ui5-middleware-ui5] BuildServer error: ${err?.message ?? err}`);
+				if (err?.stack) {
+					console.error(err.stack);
+				}
+			});
+			resources = {
+				rootProject: buildServer.getRootReader(),
+				dependencies: buildServer.getDependenciesReader(),
+				all: buildServer.getReader(),
+			};
+		} catch (err) {
+			// Degrade to the live source path rather than crash host startup if the
+			// build cache is unavailable (e.g. watcher-init / build-setup failure).
+			console.error(`[ui5-middleware-ui5] build cache unavailable, falling back to live source readers: ${err?.message ?? err}`);
+			resources = undefined;
 		}
-		readers.push(dep.getReader({ style: "runtime" }));
-	});
+	}
 
-	const dependencies = createReaderCollection({
-		name: `Dependency reader collection for project ${rootProject.getName()}`,
-		readers,
-	});
+	if (!resources) {
+		// --- legacy path (v3/v4, v5 without opt-in, or cache fallback): UNCHANGED -
+		const readers = [];
+		await graph.traverseBreadthFirst(async function ({ project: dep }) {
+			if (dep.getName() === rootProject.getName()) {
+				// Ignore root project
+				return;
+			}
+			readers.push(dep.getReader({ style: "runtime" }));
+		});
 
-	const rootReader = rootProject.getReader({ style: "runtime" });
+		const dependencies = createReaderCollection({
+			name: `Dependency reader collection for project ${rootProject.getName()}`,
+			readers,
+		});
 
-	// TODO change to ReaderCollection once duplicates are sorted out
-	const combo = createReaderCollection({
-		name: "server - prioritize workspace over dependencies",
-		readers: [rootReader, dependencies],
-	});
-	const resources = {
-		rootProject: rootReader,
-		dependencies: dependencies,
-		all: combo,
-	};
+		const rootReader = rootProject.getReader({ style: "runtime" });
+
+		// TODO change to ReaderCollection once duplicates are sorted out
+		const combo = createReaderCollection({
+			name: "server - prioritize workspace over dependencies",
+			readers: [rootReader, dependencies],
+		});
+		resources = {
+			rootProject: rootReader,
+			dependencies: dependencies,
+			all: combo,
+		};
+	}
 
 	// TODO: rework ui5-server API and make public
 	const { default: MiddlewareManager } = await import("@ui5/server/internal/MiddlewareManager");
