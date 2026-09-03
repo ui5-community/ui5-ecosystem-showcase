@@ -9,6 +9,11 @@ const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 const primitiveTypes = ["object", "boolean", "number", "integer", "bigint", "string", "null"];
 // Known native browser elements used as types in web components
 const nativeBrowserElements = ["DataTransfer", "Date", "Event", "File", "FileList"];
+// Fully-qualified UI5 core simple types that generators may emit verbatim in the CEM "type.text".
+// The CEM spec does not reserve a special URL type, so we intentionally add support for our core URI type.
+// In addition we use this to recognize URL relevant attributes (e.g. <a href>) for running them
+// through the UI5 URLListValidator.
+const recognizedUI5Types = new Set(["sap.ui.core.URI"]);
 
 const logger = SimpleLogger.create("🧬 WCR");
 
@@ -507,6 +512,13 @@ class RegistryEntry {
 					dtsType: this.#normalizeType(type),
 					ui5Type: this.#normalizeType(type),
 				};
+			} else if (recognizedUI5Types.has(type)) {
+				// case 4b: known fully-qualified UI5 core simple types (e.g. sap.ui.core.URI) emitted
+				// verbatim by generators -> pass through as the UI5 type (DTS falls back to string).
+				return {
+					dtsType: "string",
+					ui5Type: type,
+				};
 			} else if (nativeBrowserElements.includes(type)) {
 				// case 5: native browser elements
 				return {
@@ -746,6 +758,14 @@ class RegistryEntry {
 					mapping = {
 						formatter: "_mapValueState",
 						parser: "_parseValueState",
+					};
+				} else if (typeDef.ui5TypeInfo?.ui5Type === "sap.ui.core.URI") {
+					// URL-typed properties are validated at render time via URLListValidator to block
+					// unsafe schemes (javascript:, data:, ...). The formatter is implemented on
+					// sap.ui.core.html.HTMLElement and suppresses the attribute for rejected URLs.
+					mapping = {
+						type: "property",
+						formatter: "_validateUrl",
 					};
 				}
 
@@ -1235,6 +1255,10 @@ class RegistryEntry {
 			namespace: this.ui5Namespace,
 			qualifiedNamespace: this.qualifiedNamespace,
 			tag: classDef.scopedTagName || classDef.tagName,
+			// "void" overlay from the CEM class declaration marks void HTML elements (e.g. <br>,
+			// <img>) that must not render a closing tag or children. Only emitted when true, so
+			// non-void elements and UI5 Web Components stay unaffected.
+			...(classDef.void ? { void: true } : {}),
 			interfaces: [],
 			properties: {},
 			aggregations: {},

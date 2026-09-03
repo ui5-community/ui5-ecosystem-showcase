@@ -11,18 +11,34 @@ sap.ui.define([
   const { registerEnum } = DataType;
   {{/if}}
 
+  {{#if libraryJsDoc}}
+  {{{libraryJsDoc}}}
+  {{/if}}
   var thisLib = Library.init({{{metadata}}});
+
+  {{! Review note, TH: enums are placed into their derived sub-namespace (e.g. thisLib.enums["Wrapping"]) }}
+  {{! so the JS object path matches the qualified name "sap.html.enums.Wrapping". The package template }}
+  {{! (UI5Package.hbs) intentionally keeps the legacy flat placement for compat -> both DRIFT on purpose }}
+  {{! for now; to be unified in a future major version. Single sub-namespace level only. }}
+  {{#each enumNamespaces}}
+  thisLib.{{this}} = {};
+  {{/each}}
 
   // Enums
   {{#each enums}}
   {{{this._jsDoc}}}
-  thisLib["{{this.name}}"] = {
+  {{{this._libraryAccessor}}} = {
   {{#each this.values}}
     {{this._jsDoc}}
     "{{this.name}}": "{{this.value}}",
   {{/each}}
   };
-  registerEnum("{{this._ui5QualifiedName}}", thisLib["{{this.name}}"]);
+  {{! Numeric members are added via bracket assignment (kept out of the literal above so the }}
+  {{! downstream .d.ts generator does not pick up invalid TypeScript identifiers). }}
+  {{#each this.numericValues}}
+  {{{../_libraryAccessor}}}["{{this.value}}"] = "{{this.value}}";
+  {{/each}}
+  registerEnum("{{this._ui5QualifiedName}}", {{{this._libraryAccessor}}});
   {{/each}}
 
   return thisLib;

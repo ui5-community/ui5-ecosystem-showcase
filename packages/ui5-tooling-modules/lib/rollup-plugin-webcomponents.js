@@ -447,13 +447,18 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 
 			// generate the WebComponentControl code
 			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
+			const resolvedWebcBaseClass = webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass;
+			const webcBaseClassName = posix.basename(resolvedWebcBaseClass).replace(/\.js$/, "");
+			const ui5ClassSimpleName = WebComponentRegistryHelper.deriveClassVariableName(clazz);
 			const code = webcTmplFnUI5Control({
 				ui5ClassName: ui5ClassName,
+				ui5ClassSimpleName,
 				jsDocClassHeader,
 				namespace: ui5Superclass ? `${rootPath}${namespace}` : webcClass, // NATIVE_WEBC_SUPPORT: if the superclass is not a UI5Element, we need to import the WebComponent class from the package instead of the UI5Element class from the UI5 framework
 				metadata,
 				webcClass,
-				webcBaseClass: webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass,
+				webcBaseClass: resolvedWebcBaseClass,
+				webcBaseClassName,
 				needsLabelEnablement,
 				needsEnabledPropagator,
 				needsMessageMixin,

@@ -25,7 +25,7 @@
  * targets native HTML element packages (e.g. "@ui5/html") whose wrappers extend
  * "sap/ui/core/html/HTMLElement" and have no runtime Web Component to import.
  */
-const { join, dirname, resolve } = require("path");
+const { join, dirname, resolve, posix } = require("path");
 const { readFileSync, writeFileSync, mkdirSync, existsSync } = require("fs");
 const { fileURLToPath } = require("url");
 
@@ -188,7 +188,7 @@ function buildPackage({ package: pkg, template, outputDir }) {
 // library (library.js) generation — used when libraryMode: true
 // -------------------------------------------------------------------------
 
-function buildLibrary({ package: pkg, template, outputDir }) {
+function buildLibrary({ package: pkg, template, outputDir, libraryDescription, since, author }) {
 	const metadataObject = {
 		apiVersion: 2,
 		name: pkg.qualifiedNamespace,
@@ -198,13 +198,65 @@ function buildLibrary({ package: pkg, template, outputDir }) {
 		interfaces: Object.keys(pkg.interfaces).map((interfaceName) => pkg.interfaces[interfaceName]._ui5QualifiedName),
 		controls: Object.keys(pkg.customElements).map((elementName) => pkg.customElements[elementName]._ui5QualifiedName),
 		elements: [],
+		// generated control wrappers ship no library styling, so tell the UI5 loader not to
+		// request a (non-existent) library.css per theme, which would otherwise 404 at runtime
+		noLibraryCSS: true,
 	};
 	const metadata = JSON.stringify(metadataObject, undefined, 2);
 
+	// JSDoc block for the library namespace, rendered right above Library.init(). Without it the
+	// JSDoc build assigns wrong "resource"/"module" entries to the contained symbols (enums). The
+	// @alias makes JSDoc treat the "thisLib" variable as the library namespace, so the enums below
+	// resolve to e.g. "sap.html.enums.AriaRole".
+	const descriptionLines = String(libraryDescription || `The ${pkg.qualifiedNamespace} library.`).split("\n");
+	const libraryJsDoc = [
+		"/**",
+		...descriptionLines.map((line) => ` * ${line}`.replace(/\s+$/, "")),
+		" *",
+		" * @namespace",
+		` * @alias ${pkg.qualifiedNamespace}`,
+		` * @author ${author || "SAP SE"}`,
+		` * @version ${pkg.version}`,
+		...(since ? [` * @since ${since}`] : []),
+		" * @public",
+		" */",
+	].join("\n");
+
+	// The library.js places enums into their derived sub-namespace using dot-notation
+	// (e.g. thisLib.enums.Wrapping) so the JS object path matches the UI5 qualified name
+	// "sap.html.enums.Wrapping" AND the JSDoc build reads a clean "sap.html.enums.Wrapping" name
+	// (bracket access would leak as basename 'enums["Wrapping"]' into the api.json).
+	// Important: the package module path (buildPackage -> UI5Package.hbs) intentionally emits
+	// them flat (pkg["Wrapping"]) for backward compatibility with released web component consumers.
+	// The two implementations therefore drift on purpose for now; to be unified in a future major.
+	// Additionally, only a single sub-namespace level ("enums") is supported here; deeper
+	// paths would need multi-level namespace initialization (out of scope for now).
+	const enums = Object.values(pkg.enums).map((enumDef) => {
+		const derived = enumDef._derivedUi5ClassName || enumDef.name; // e.g. "enums.Wrapping" | "Wrapping"
+		const subNamespace = derived.includes(".") ? derived.slice(0, derived.lastIndexOf(".")) : "";
+		const accessor = subNamespace ? `thisLib.${subNamespace}.${enumDef.name}` : `thisLib.${enumDef.name}`;
+		// Members whose value starts with a digit are not valid TypeScript identifiers. Keep them
+		// out of the enum object literal so the downstream .d.ts generator does not pick them up,
+		// and re-add them to the runtime object via a bracket assignment instead (e.g.
+		// thisLib.enums.ListType["1"] = "1";). Done generically for all numeric members.
+		// Note: As of now it's only only "1" in the ListType, but we are prepared if the DOM introduces another one at one point.
+		const allValues = enumDef.values || [];
+		const literalValues = allValues.filter((v) => !/^[0-9]/.test(v.value));
+		const numericValues = allValues.filter((v) => /^[0-9]/.test(v.value));
+		// Strip the vestigial "@alias module:..." and "@ui5-module-override ..." tags from the enum
+		// header JSDoc — they are not needed for the inline library.js enums and would pollute the
+		// api.json. Done on the spread copy only, so the shared enumDef (package path) is untouched.
+		const jsDoc = String(enumDef._jsDoc || "").replace(/^\s*\*\s*@(?:alias module:|ui5-module-override)\b.*\r?\n/gm, "");
+		return { ...enumDef, _jsDoc: jsDoc, values: literalValues, numericValues, _subNamespace: subNamespace, _libraryAccessor: accessor };
+	});
+	const enumNamespaces = [...new Set(enums.map((enumDef) => enumDef._subNamespace).filter(Boolean))];
+
 	const code = template({
 		metadata,
-		hasEnums: Object.keys(pkg.enums).length > 0,
-		enums: pkg.enums,
+		libraryJsDoc,
+		hasEnums: enums.length > 0,
+		enums,
+		enumNamespaces,
 		dependencies: pkg.dependencies?.map((dep) => dep),
 	});
 
@@ -217,17 +269,34 @@ function buildLibrary({ package: pkg, template, outputDir }) {
 // control wrapper generation — mirrors buildWrapper() of the rollup plugin
 // -------------------------------------------------------------------------
 
-function serializeMetadata(clazz, namespace) {
+function serializeMetadata(clazz) {
 	const ui5Metadata = clazz._ui5metadata;
+
+	// The createControls (library) path prunes the emitted control metadata to
+	// reduce payload, so we omit unused keys.
+	// Important: the rollup plugin (package path for released web component consumers) intentionally
+	// keeps the full metadata for backward compatibility -> both implementations drift on purpose for
+	// now; to be unified in a future major version. Keep the defaultValue handling below in sync.
 	const metadataObject = Object.assign({}, ui5Metadata, {
 		tag: ui5Metadata.tag,
-		designtime: `${namespace}/designtime/${clazz.name}.designtime`,
 	});
+	delete metadataObject.namespace;
+	delete metadataObject.qualifiedNamespace;
+	delete metadataObject.designtime;
+
 	// default values are special cased to avoid JSON.stringify() escaping them, which
 	// would make them invalid in the generated code. Must stay in sync with the rollup plugin.
 	return JSON.stringify(
 		metadataObject,
 		function (key, value) {
+			// omit empty object/array sections to reduce the generated payload
+			if (Array.isArray(value)) {
+				if (value.length === 0) {
+					return undefined;
+				}
+			} else if (value && typeof value === "object" && Object.keys(value).length === 0) {
+				return undefined;
+			}
 			if (key === "defaultValue") {
 				switch (value) {
 					case undefined:
@@ -260,12 +329,10 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 
 	const written = [];
 
-	const ui5Metadata = clazz._ui5metadata;
 	const ui5ClassName = clazz._ui5QualifiedName;
 	const ui5Superclass = clazz.superclass;
-	const namespace = ui5Metadata.namespace;
 
-	const metadata = serializeMetadata(clazz, namespace);
+	const metadata = serializeMetadata(clazz);
 
 	// no bundler chunk in the standalone scenario -> no runtime Web Component module to import
 	let webcClass = undefined;
@@ -308,15 +375,20 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 		webcClass = undefined;
 	}
 
+	const resolvedWebcBaseClass = webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass;
+	const webcBaseClassName = posix.basename(resolvedWebcBaseClass).replace(/\.js$/, "");
+	const ui5ClassSimpleName = WebComponentRegistryHelper.deriveClassVariableName(clazz);
 	const code = template({
 		ui5ClassName,
+		ui5ClassSimpleName,
 		jsDocClassHeader: undefined,
 		// if a UI5 superclass exists we import the package module (the standalone package glue or,
 		// in library mode, the "<namespace>/library" module), otherwise the Web Component module
 		namespace: ui5Superclass ? `${rootPath}${packageModule}` : webcClass,
 		metadata,
 		webcClass,
-		webcBaseClass: webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass,
+		webcBaseClass: resolvedWebcBaseClass,
+		webcBaseClassName,
 		needsLabelEnablement,
 		needsEnabledPropagator,
 		needsMessageMixin,
@@ -345,9 +417,24 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
  * @param {string} [opts.version] package version (default: version from nearest package.json)
  * @param {string} [opts.frameworkVersion] UI5 framework version for version-dependent generation (default: 2.0.0)
  * @param {boolean} [opts.libraryMode] when true, generate a UI5 library.js (using Library.init) instead of a standalone package module
+ * @param {string} [opts.libraryDescription] description text for the library.js namespace JSDoc block (libraryMode only; may contain newlines)
+ * @param {string} [opts.since] "@since" version for the library.js namespace JSDoc block (libraryMode only)
+ * @param {string} [opts.author] "@author" for the library.js namespace JSDoc block (libraryMode only, default "SAP SE")
  * @returns {string[]} the list of generated file paths
  */
-function generateControls({ input, output, namespace: namespaceOverride, ui5Namespace, stripModulePrefix, version: versionOverride, frameworkVersion = "2.0.0", libraryMode = false } = {}) {
+function generateControls({
+	input,
+	output,
+	namespace: namespaceOverride,
+	ui5Namespace,
+	stripModulePrefix,
+	version: versionOverride,
+	frameworkVersion = "2.0.0",
+	libraryMode = false,
+	libraryDescription,
+	since,
+	author,
+} = {}) {
 	if (!input || !output) {
 		throw new Error("Both a custom-elements.json path (input) and an output folder (output) are required.");
 	}
@@ -396,7 +483,12 @@ function generateControls({ input, output, namespace: namespaceOverride, ui5Name
 		version,
 		skipDtsGeneration: true,
 		skipJSDoc: true,
-		customJSDocTags: ["private"],
+		// Mark the generated enums (and their members) as @public so the downstream api.json ->
+		// .d.ts generator picks them up. In this CLI/library path JSDoc is otherwise skipped
+		// (skipJSDoc + jsDocClassHeader:undefined), so enums are the only entities carrying this
+		// tag — control classes/properties are unaffected. The rollup/webcomponents path keeps its
+		// own default and is untouched.
+		customJSDocTags: ["public"],
 	});
 
 	if (!registryEntry) {
@@ -413,7 +505,7 @@ function generateControls({ input, output, namespace: namespaceOverride, ui5Name
 	// or as a proper Library.init() call when libraryMode is requested
 	if (libraryMode) {
 		const ui5LibraryTemplate = loadAndCompileTemplate("UI5Library.hbs");
-		written.push(buildLibrary({ package: registryEntry, template: ui5LibraryTemplate, outputDir }));
+		written.push(buildLibrary({ package: registryEntry, template: ui5LibraryTemplate, outputDir, libraryDescription, since, author }));
 	} else {
 		written.push(buildPackage({ package: registryEntry, template: ui5PackageTemplate, outputDir }));
 	}

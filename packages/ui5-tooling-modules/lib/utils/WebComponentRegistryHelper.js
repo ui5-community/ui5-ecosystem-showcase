@@ -110,6 +110,34 @@ const WebComponentRegistryHelper = {
 			return undefined;
 		}
 	},
+
+	// matches a syntactically valid JavaScript identifier (ASCII subset)
+	JS_IDENTIFIER_RE: /^[$A-Z_a-z][$\w]*$/,
+
+	/**
+	 * Derives the local variable name used for a control wrapper class in the generated code.
+	 *
+	 * The name is normally the last segment of the class' qualified UI5 name, which mirrors the
+	 * module file basename. Because it is emitted verbatim as a <code>const</code> identifier, it
+	 * must be a valid JavaScript identifier. If the derived segment is not (e.g. a module file name
+	 * containing a hyphen), we fall back to the declared class name, which is a real ES export
+	 * identifier. If neither yields a valid identifier we throw, since the generated code would
+	 * otherwise fail to parse.
+	 *
+	 * @param {object} classDef a class definition from a WebComponentRegistry entry
+	 * @returns {string} a valid JavaScript identifier to use as the wrapper's local variable name
+	 */
+	deriveClassVariableName(classDef) {
+		const simpleName = classDef?._ui5QualifiedName?.split(".").pop();
+		if (simpleName && this.JS_IDENTIFIER_RE.test(simpleName)) {
+			return simpleName;
+		}
+		if (classDef?.name && this.JS_IDENTIFIER_RE.test(classDef.name)) {
+			logger.warn(`Derived class name '${simpleName}' is not a valid JavaScript identifier; using the declared class name '${classDef.name}' instead.`);
+			return classDef.name;
+		}
+		throw new Error(`Cannot derive a valid JavaScript identifier for class '${classDef?._ui5QualifiedName ?? classDef?.name}'.`);
+	},
 };
 
 WebComponentRegistryHelper.UI5_ELEMENT_CACHE_KEY = WebComponentRegistryHelper.deriveCacheKey({
