@@ -235,6 +235,34 @@ test.afterEach.always(async (t) => {
 	process.chdir(cwd);
 });
 
+test("Resolve browser mapping for the selected package entry", (t) => {
+	const packageRoot = path.join(t.context.tmpDir, "node_modules", "browser-entry-test");
+	mkdirSync(path.join(packageRoot, "lib"), { recursive: true });
+	writeFileSync(
+		path.join(packageRoot, "package.json"),
+		JSON.stringify({
+			name: "browser-entry-test",
+			module: "./lib/index.es.js",
+			browser: {
+				"./lib/index.es.js": "./lib/index-browser.es.js",
+			},
+		}),
+	);
+	writeFileSync(path.join(packageRoot, "lib/index.es.js"), 'export default "node";\n');
+	writeFileSync(path.join(packageRoot, "lib/index-browser.es.js"), 'export default "browser";\n');
+
+	const projectInfo = {
+		pkgJson: {
+			name: "browser-entry-test-project",
+			dependencies: {},
+		},
+	};
+	const log = { verbose() {} };
+	const util = require("../lib/util")(log, projectInfo);
+
+	t.is(util.resolveModule("browser-entry-test", { cwd, depPaths: [path.join(t.context.tmpDir, "node_modules")] }), path.join(packageRoot, "lib/index-browser.es.js"));
+});
+
 test.serial("Verify generation of @stomp/stompjs", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(["@stomp/stompjs"], {

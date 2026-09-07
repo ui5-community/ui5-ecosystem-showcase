@@ -1215,7 +1215,14 @@ module.exports = function (log, projectInfo) {
 							// lookup the entry modules in the package.json root (esnext, module, main, ...)
 							mainExport = pkgJson;
 						}
-						const resolved = resolveTarget(mainExport);
+						let resolved = resolveTarget(mainExport);
+						if (resolved && isMappings(browser)) {
+							const browserSubPath = resolved.startsWith("./") ? resolved : `./${resolved}`;
+							const browserResolved = resolveExports(browser, browserSubPath);
+							if (browserResolved !== browserSubPath) {
+								resolved = browserResolved;
+							}
+						}
 						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
 					} else if (isMappings(exports)) {
 						// if the module is a sub module of the package
