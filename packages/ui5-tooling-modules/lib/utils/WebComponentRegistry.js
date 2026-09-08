@@ -575,9 +575,10 @@ class RegistryEntry {
 
 		// Special handling for Associations types
 		if (typeDef.origType === WEBC_ASSOCIATION_TYPE || typeDef.origType === WEBC_ASSOCIATION_TYPE_ALT) {
+			const refType = typeDef.types[0].dedicatedTypes[0];
 			typeDef.ui5TypeInfo = {
-				ui5Type: typeDef.types[0].ui5Type,
-				moduleType: typeDef.types[0].moduleType,
+				ui5Type: refType.ui5Type,
+				moduleType: refType.moduleType,
 				isComplexType: true,
 			};
 			return typeDef;
