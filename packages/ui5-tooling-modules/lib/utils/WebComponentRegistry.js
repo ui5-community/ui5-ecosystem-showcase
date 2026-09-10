@@ -1047,54 +1047,56 @@ class RegistryEntry {
 			});
 		}
 
-		// cssProperties: [ "width", "height", "display" ]
-		if (ui5metadata.tag && !this.#ui5PropertyExistsInParentChain(classDef, "width")) {
-			ui5metadata.properties["width"] = {
-				type: "sap.ui.core.CSSSize",
-				mapping: "style",
-			};
-			const description = "The 'width' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
-			JSDocSerializer.writeDoc(classDef, "properties", { name: "width", description });
+		if (!WebComponentRegistryHelper.isSubclassOf(classDef, "sap.ui.core.html", "HTMLElement")) {
+			// cssProperties: ["width", "height"]
+			if (ui5metadata.tag && !this.#ui5PropertyExistsInParentChain(classDef, "width")) {
+				ui5metadata.properties["width"] = {
+					type: "sap.ui.core.CSSSize",
+					mapping: "style",
+				};
+				const description = "The 'width' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
+				JSDocSerializer.writeDoc(classDef, "properties", { name: "width", description });
 
-			DTSSerializer.writeDts(classDef, "properties", {
-				name: "width",
-				description,
-				types: [
-					{
-						dedicatedTypes: [
-							{
-								ui5Type: "sap.ui.core.CSSSize",
-								packageName: "sap/ui/core/library",
-								dtsType: "CSSSize",
-							},
-						],
-					},
-				],
-			});
-		}
+				DTSSerializer.writeDts(classDef, "properties", {
+					name: "width",
+					description,
+					types: [
+						{
+							dedicatedTypes: [
+								{
+									ui5Type: "sap.ui.core.CSSSize",
+									packageName: "sap/ui/core/library",
+									dtsType: "CSSSize",
+								},
+							],
+						},
+					],
+				});
+			}
 
-		if (ui5metadata.tag && !this.#ui5PropertyExistsInParentChain(classDef, "height")) {
-			ui5metadata.properties["height"] = {
-				type: "sap.ui.core.CSSSize",
-				mapping: "style",
-			};
-			const description = "The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
-			JSDocSerializer.writeDoc(classDef, "properties", { name: "height", description });
-			DTSSerializer.writeDts(classDef, "properties", {
-				name: "height",
-				description,
-				types: [
-					{
-						dedicatedTypes: [
-							{
-								ui5Type: "sap.ui.core.CSSSize",
-								packageName: "sap/ui/core/library",
-								dtsType: "CSSSize",
-							},
-						],
-					},
-				],
-			});
+			if (ui5metadata.tag && !this.#ui5PropertyExistsInParentChain(classDef, "height")) {
+				ui5metadata.properties["height"] = {
+					type: "sap.ui.core.CSSSize",
+					mapping: "style",
+				};
+				const description = "The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
+				JSDocSerializer.writeDoc(classDef, "properties", { name: "height", description });
+				DTSSerializer.writeDts(classDef, "properties", {
+					name: "height",
+					description,
+					types: [
+						{
+							dedicatedTypes: [
+								{
+									ui5Type: "sap.ui.core.CSSSize",
+									packageName: "sap/ui/core/library",
+									dtsType: "CSSSize",
+								},
+							],
+						},
+					],
+				});
+			}
 		}
 	}
 
