@@ -495,6 +495,11 @@ function generateControls({
 		throw new Error("The WebComponentRegistry did not return an entry for the given manifest.");
 	}
 
+	if (libraryMode) {
+		// must correspond to the manifest dependencies, see buildLibrary
+		registryEntry.dependencies = ["sap/ui/core/library"];
+	}
+
 	// compile the templates
 	const ui5PackageTemplate = loadAndCompileTemplate("UI5Package.hbs");
 	const ui5ControlTemplate = loadAndCompileTemplate("UI5Control.hbs");
