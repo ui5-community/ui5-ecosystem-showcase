@@ -69,6 +69,54 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "SubCustomAlertButton.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SubCustomAlertButton",
+          "members": [
+            {
+              "kind": "field",
+              "name": "submessage",
+              "type": {
+                "text": "string"
+              },
+              "description": "Sets the alert message's sub message text.",
+              "default": "\"\"",
+              "privacy": "public"
+            }
+          ],
+          "attributes": [],
+          "superclass": {
+            "name": "CustomAlertButton",
+            "module": "CustomAlertButton.js"
+          },
+          "tagName": "sub-custom-alert-button",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SubCustomAlertButton",
+          "declaration": {
+            "name": "SubCustomAlertButton",
+            "module": "SubCustomAlertButton.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "sub-custom-alert-button",
+          "declaration": {
+            "name": "SubCustomAlertButton",
+            "module": "SubCustomAlertButton.js"
+          }
+        }
+      ]
     }
   ]
 }

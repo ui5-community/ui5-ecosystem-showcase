@@ -695,8 +695,16 @@ const webcContextModules = {
 	},
 	"sap/ui/core/webc/WebComponent": {
 		prototype: {},
-		extend: function (name, def) {
-			return { name, def };
+		// For UI5 the returned "class" must itself expose
+		// "extend" and "getMetadata" so generated subclass wrappers (e.g. SubCustomAlertButton
+		// extending CustomAlertButton) can extend the parent wrapper's return value.
+		extend: function extend(name, def) {
+			return {
+				name,
+				def,
+				extend,
+				getMetadata: webcContextModules["sap/ui/core/webc/WebComponent"].getMetadata,
+			};
 		},
 		getMetadata: function () {
 			const p = Object.getPrototypeOf(webcContextModules["sap/ui/core/webc/WebComponentMetadata"]);
@@ -960,6 +968,34 @@ test.serial("Verify generation of webc-package/CustomAlertButton Wrapper UI5 Con
 	const module = await env.getModule("webc-package/CustomAlertButton");
 	t.deepEqual(module.retVal.name, "webc-package.CustomAlertButton");
 	t.deepEqual(module.retVal.def.metadata.tag, "custom-alert-button");
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
+test.serial("Verify generation of subclass naming - webc-package/SubCustomAlertButton Wrapper UI5 Control", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(
+		["webc-package/SubCustomAlertButton"],
+		Object.assign({}, webcomponentsContext, {
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: webcContextModules,
+		}),
+		{
+			pluginOptions: {
+				webcomponents: {
+					scoping: false,
+					removeScopePrefix: true,
+					moduleBasePath: path.posix.join("ui5/ecosystem/demo/app", "thirdparty"),
+				},
+			},
+		},
+	);
+	const module = await env.getModule("webc-package/SubCustomAlertButton");
+	t.deepEqual(module.retVal.name, "webc-package.SubCustomAlertButton");
+	t.deepEqual(module.retVal.def.metadata.tag, "sub-custom-alert-button");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}

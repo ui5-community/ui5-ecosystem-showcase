@@ -2,7 +2,11 @@
  * ${copyright}
  */
 sap.ui.define(
-  ["sap/ui/core/webc/WebComponent", "../webc-package", "../CustomAlertButton"],
+  [
+    "sap/ui/core/webc/WebComponent",
+    "../webc-package",
+    "../SubCustomAlertButton"
+  ],
   function (WebComponent) {
     "use strict";
 

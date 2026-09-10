@@ -450,11 +450,19 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			const resolvedWebcBaseClass = webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass;
 			const webcBaseClassName = posix.basename(resolvedWebcBaseClass).replace(/\.js$/, "");
 			const ui5ClassSimpleName = WebComponentRegistryHelper.deriveClassVariableName(clazz);
+			// NATIVE_WEBC_SUPPORT:
+			// The always-emitted "namespace" import slot is a side-effect import: for classes with a
+			// UI5 superclass it points at the package module (which wires up enums).
+			// Otherwise it points directly at the native web component implementation. The native impl
+			// registers the custom element via customElements.define() and must always be imported;
+			// when the namespace slot already carries it (no UI5 superclass) we must not import it a
+			// second time.
+			const namespaceImport = ui5Superclass ? `${rootPath}${namespace}` : webcClass;
 			const code = webcTmplFnUI5Control({
 				ui5ClassName: ui5ClassName,
 				ui5ClassSimpleName,
 				jsDocClassHeader,
-				namespace: ui5Superclass ? `${rootPath}${namespace}` : webcClass, // NATIVE_WEBC_SUPPORT: if the superclass is not a UI5Element, we need to import the WebComponent class from the package instead of the UI5Element class from the UI5 framework
+				namespace: namespaceImport,
 				metadata,
 				webcClass,
 				webcBaseClass: resolvedWebcBaseClass,
@@ -462,7 +470,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				needsLabelEnablement,
 				needsEnabledPropagator,
 				needsMessageMixin,
-				importWebCModule: isClazzUI5Element && !!webcClass,
+				importWebCModule: !!webcClass && namespaceImport !== webcClass,
 			});
 
 			emitFile({
