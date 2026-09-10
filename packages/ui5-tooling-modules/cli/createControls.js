@@ -38,11 +38,13 @@ const { UI5_ELEMENT_NAMESPACE } = WebComponentRegistryHelper;
 
 const TEMPLATES_DIR = join(__dirname, "..", "lib", "templates");
 
-// prettier options for the generated sources (kept in sync with the rollup plugin).
+// Default prettier options for the generated sources (kept in sync with the rollup plugin).
 // quoteProps "preserve" keeps the quotes that JSON.stringify puts on every metadata key, so
 // property names that are reserved words (e.g. HTML's "class") stay quoted instead of being
 // unquoted by prettier's default "as-needed".
-const PRETTIER_OPTIONS = { semi: true, trailingComma: "none", parser: "babel", quoteProps: "preserve" };
+// Callers can extend or override these via the `prettierOptions` option of generateControls()
+// (e.g. `{ useTabs: true, tabWidth: 4 }` to follow the UI5 tab indentation convention).
+const DEFAULT_PRETTIER_OPTIONS = { semi: true, trailingComma: "none", parser: "babel", quoteProps: "preserve" };
 
 // -------------------------------------------------------------------------
 // argument parsing
@@ -134,10 +136,10 @@ function loadAndCompileTemplate(templateName) {
 // file emission
 // -------------------------------------------------------------------------
 
-function writeGeneratedFile(outputDir, moduleName, code) {
+function writeGeneratedFile(outputDir, moduleName, code, prettierOptions) {
 	const targetFile = join(outputDir, `${moduleName}.js`);
 	mkdirSync(dirname(targetFile), { recursive: true });
-	writeFileSync(targetFile, prettier.format(code, PRETTIER_OPTIONS), { encoding: "utf-8" });
+	writeFileSync(targetFile, prettier.format(code, prettierOptions), { encoding: "utf-8" });
 	return targetFile;
 }
 
@@ -145,7 +147,7 @@ function writeGeneratedFile(outputDir, moduleName, code) {
 // package (library) generation — mirrors buildPackage() of the rollup plugin
 // -------------------------------------------------------------------------
 
-function buildPackage({ package: pkg, template, outputDir }) {
+function buildPackage({ package: pkg, template, outputDir, prettierOptions }) {
 	// the generated library module path and qualified name follow the (remappable) UI5 namespace,
 	// not the physical npm package name
 	const source = pkg.ui5Namespace;
@@ -181,14 +183,14 @@ function buildPackage({ package: pkg, template, outputDir }) {
 		webcPackage: undefined,
 	});
 
-	return writeGeneratedFile(outputDir, source, code);
+	return writeGeneratedFile(outputDir, source, code, prettierOptions);
 }
 
 // -------------------------------------------------------------------------
 // library (library.js) generation — used when libraryMode: true
 // -------------------------------------------------------------------------
 
-function buildLibrary({ package: pkg, template, outputDir, libraryDescription, since, author }) {
+function buildLibrary({ package: pkg, template, outputDir, libraryDescription, since, author, prettierOptions }) {
 	const metadataObject = {
 		apiVersion: 2,
 		name: pkg.qualifiedNamespace,
@@ -262,7 +264,7 @@ function buildLibrary({ package: pkg, template, outputDir, libraryDescription, s
 
 	// write to <outputDir>/<ui5Namespace>/library.js, e.g. sap/html/library.js
 	const moduleName = `${pkg.ui5Namespace}/library`;
-	return writeGeneratedFile(outputDir, moduleName, code);
+	return writeGeneratedFile(outputDir, moduleName, code, prettierOptions);
 }
 
 // -------------------------------------------------------------------------
@@ -319,7 +321,7 @@ function serializeMetadata(clazz) {
 	);
 }
 
-function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
+function buildWrapper({ clazz, template, outputDir, emitted, packageModule, prettierOptions }) {
 	// emission path + imports follow the (remappable, strip-aware) UI5 qualified name
 	const resolvedSource = clazz._ui5QualifiedNameSlashes;
 	if (emitted.has(resolvedSource)) {
@@ -367,7 +369,7 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 	} else if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
 		webcBaseClass = clazz.superclass._ui5QualifiedNameSlashes;
 		// ensure the superclass wrapper exists as well
-		written.push(...buildWrapper({ clazz: clazz.superclass, template, outputDir, emitted, packageModule }));
+		written.push(...buildWrapper({ clazz: clazz.superclass, template, outputDir, emitted, packageModule, prettierOptions }));
 	}
 
 	// no runtime class import required for native HTML elements
@@ -395,7 +397,7 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
 		importWebCModule: isClazzUI5Element && !!webcClass,
 	});
 
-	written.push(writeGeneratedFile(outputDir, resolvedSource, code));
+	written.push(writeGeneratedFile(outputDir, resolvedSource, code, prettierOptions));
 	return written;
 }
 
@@ -420,6 +422,8 @@ function buildWrapper({ clazz, template, outputDir, emitted, packageModule }) {
  * @param {string} [opts.libraryDescription] description text for the library.js namespace JSDoc block (libraryMode only; may contain newlines)
  * @param {string} [opts.since] "@since" version for the library.js namespace JSDoc block (libraryMode only)
  * @param {string} [opts.author] "@author" for the library.js namespace JSDoc block (libraryMode only, default "SAP SE")
+ * @param {object} [opts.prettierOptions] additional prettier options merged on top of the defaults for the generated
+ *        sources, e.g. `{ useTabs: true, tabWidth: 4 }` to follow the UI5 tab indentation convention
  * @returns {string[]} the list of generated file paths
  */
 function generateControls({
@@ -434,6 +438,7 @@ function generateControls({
 	libraryDescription,
 	since,
 	author,
+	prettierOptions,
 } = {}) {
 	if (!input || !output) {
 		throw new Error("Both a custom-elements.json path (input) and an output folder (output) are required.");
@@ -506,13 +511,16 @@ function generateControls({
 
 	const written = [];
 
+	// caller-provided prettier options extend/override the defaults for the generated sources
+	const effectivePrettierOptions = { ...DEFAULT_PRETTIER_OPTIONS, ...prettierOptions };
+
 	// [1] generate the UI5 package (library) glue — either as a standalone package module
 	// or as a proper Library.init() call when libraryMode is requested
 	if (libraryMode) {
 		const ui5LibraryTemplate = loadAndCompileTemplate("UI5Library.hbs");
-		written.push(buildLibrary({ package: registryEntry, template: ui5LibraryTemplate, outputDir, libraryDescription, since, author }));
+		written.push(buildLibrary({ package: registryEntry, template: ui5LibraryTemplate, outputDir, libraryDescription, since, author, prettierOptions: effectivePrettierOptions }));
 	} else {
-		written.push(buildPackage({ package: registryEntry, template: ui5PackageTemplate, outputDir }));
+		written.push(buildPackage({ package: registryEntry, template: ui5PackageTemplate, outputDir, prettierOptions: effectivePrettierOptions }));
 	}
 
 	// [2] generate one control wrapper per class described by the metadata.
@@ -524,7 +532,7 @@ function generateControls({
 	Object.keys(registryEntry.classes).forEach((cacheKey) => {
 		const clazz = registryEntry.classes[cacheKey];
 		if (clazz?._ui5metadata) {
-			written.push(...buildWrapper({ clazz, template: ui5ControlTemplate, outputDir, emitted, packageModule }));
+			written.push(...buildWrapper({ clazz, template: ui5ControlTemplate, outputDir, emitted, packageModule, prettierOptions: effectivePrettierOptions }));
 		}
 	});
 
