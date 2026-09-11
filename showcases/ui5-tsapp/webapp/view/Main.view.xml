@@ -32,6 +32,7 @@
           theme="{= theming.getTheme() }"
         />
         <webc:CustomAlertButton id="alertBox" text="Click Me!" message="This is a custom alert box implemented as a web component." />
+        <!-- <webc:SubCustomAlertButton id="subAlertBox" text="sub - Click Me!" submessage="This is a sub custom alert box implemented as a web component." /> -->
       </VBox>
     </content>
   </Page>
