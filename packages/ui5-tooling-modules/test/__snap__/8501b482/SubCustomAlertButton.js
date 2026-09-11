@@ -1,4 +1,4 @@
-sap.ui.define(['exports', 'webc-package'], (function (exports, webcPackage) { 'use strict';
+sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	class CustomAlertButton extends HTMLElement {
 		static get observedAttributes() {
