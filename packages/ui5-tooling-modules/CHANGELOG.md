@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.38.2
+
+### Patch Changes
+
+- [#1433](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1433) [`ef24543`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ef245438acd73d4e1e803227e4143bb487cac78c) Thanks [@H4ze](https://github.com/H4ze)! - Use meaningful variable names in generated UI5Control wrappers
+
+  Replace generic `WebComponentBaseClass` with the actual base class name (e.g. `WebComponent`, `HTMLElementBase`) and `WrapperClass` with the actual UI5 class simple name (e.g. `Button`, `LuigiContainer`) in generated AMD wrapper files. Applied to both the Rollup plugin and the CLI code path.
+
 ## 3.38.1
 
 ### Patch Changes
