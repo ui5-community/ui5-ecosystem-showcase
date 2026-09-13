@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.38.3
+
+### Patch Changes
+
+- [#1445](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1445) [`38f7867`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/38f7867f09fb6d43686d5a2aa8fef9f96c193ad2) Thanks [@thomas-laussegger](https://github.com/thomas-laussegger)! - Respect object-style `browser` mappings when resolving a package's selected entry module.
+
 ## 3.38.2
 
 ### Patch Changes
