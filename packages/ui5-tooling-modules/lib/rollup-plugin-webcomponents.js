@@ -36,7 +36,7 @@
  *        `skip`, `scoping`, `scopeSuffix`, `enrichBusyIndicator`, `force`,
  *        `includeAssets`, `forceAllAssets`, `moduleBasePath`,
  *        `removeScopePrefix`, `skipJSDoc`, `skipDtsGeneration`,
- *        `customJSDocTags`, `removeCLDRData`
+ *        `customJSDocTags`, `removeCLDRData`, `failOnManifestError`
  * @param {object} [options.$metadata]
  *        out-parameter object that receives the discovered Web Component
  *        metadata so the parent task can re-use it across invocations
@@ -50,6 +50,7 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 const JSDocSerializer = require("./utils/JSDocSerializer");
 const WebComponentRegistryHelper = require("./utils/WebComponentRegistryHelper");
 const { UI5_ELEMENT_NAMESPACE } = WebComponentRegistryHelper;
+const { validateManifest, formatReport } = require("./utils/CustomElementsManifestValidator");
 
 const { lt, gte } = require("semver");
 const { compile } = require("handlebars");
@@ -58,22 +59,37 @@ const prettier = require("@prettier/sync");
 
 module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, forceAllAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, customJSDocTags, removeCLDRData } =
-		Object.assign(
-			{
-				skip: false,
-				scoping: true,
-				enrichBusyIndicator: false,
-				force: false,
-				includeAssets: false, // experimental (due to race condition!)
-				forceAllAssets: false, // experimental (only a hack due to timing issues when requiring Web Components from one package first and from other later!)
-				skipJSDoc: true,
-				skipDtsGeneration: true,
-				customJSDocTags: ["private"],
-				removeCLDRData: true,
-			},
-			options,
-		);
+	let {
+		skip,
+		scoping,
+		scopeSuffix,
+		enrichBusyIndicator,
+		force,
+		includeAssets,
+		forceAllAssets,
+		moduleBasePath,
+		removeScopePrefix,
+		skipJSDoc,
+		skipDtsGeneration,
+		customJSDocTags,
+		removeCLDRData,
+		failOnManifestError,
+	} = Object.assign(
+		{
+			skip: false,
+			scoping: true,
+			enrichBusyIndicator: false,
+			force: false,
+			includeAssets: false, // experimental (due to race condition!)
+			forceAllAssets: false, // experimental (only a hack due to timing issues when requiring Web Components from one package first and from other later!)
+			skipJSDoc: true,
+			skipDtsGeneration: true,
+			customJSDocTags: ["private"],
+			removeCLDRData: true,
+			failOnManifestError: false,
+		},
+		options,
+	);
 
 	// derive information from the projectInfo
 	const { pkgJson, framework } = projectInfo;
@@ -194,6 +210,15 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				// load custom elements metadata
 				if (metadataPath) {
 					const customElementsMetadata = JSON.parse(readFileSync(metadataPath, { encoding: "utf-8" }));
+
+					// validate the manifest upfront so structural / contract issues are
+					// surfaced as a grouped, severity-ranked report rather than as scattered
+					// warnings deep inside the parser
+					const validation = validateManifest(customElementsMetadata, { namespace: npmPackage, metadataPath });
+					formatReport(validation.issues, validation.summary, { namespace: npmPackage, metadataPath }, log);
+					if (failOnManifestError && validation.summary.error > 0) {
+						throw new Error(`Custom elements manifest validation failed for ${npmPackage} (${validation.summary.error} error(s)). See log for details.`);
+					}
 
 					// first time registering a new Web Component package
 					try {
