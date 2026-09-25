@@ -335,16 +335,20 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 				resource = getResource(moduleName, { cwd, depPaths, isMiddleware: true });
 			}
 
+			// detect a genuinely new module *before* bundleAndWatch adds it to
+			// requestedModules, so we can force a rebuild that includes it
+			const isNewModule = moduleName && !requestedModules.has(moduleName);
 			let bundleInfo = whenBundled && (await whenBundled);
 
 			// if a resource has been found in node_modules, we will
 			// trigger the bundling process and watch the bundled resources
 			if (!bundleInfo?.getEntry(moduleName) && (resource || existsPackage)) {
-				bundleAndWatch({ moduleName });
+				// force a rebuild only when the module is new (avoids thrash on repeat
+				// requests); concurrent forced rebuilds are serialized by the build lock
+				await bundleAndWatch({ moduleName, force: isNewModule });
+				// if the resource is a bundled resource, we need to wait for it
+				bundleInfo = whenBundled && (await whenBundled);
 			}
-
-			// if the resource is a bundled resource, we need to wait for it
-			bundleInfo = whenBundled && (await whenBundled);
 			if (bundleInfo?.error) {
 				log.error(bundleInfo.error);
 			}

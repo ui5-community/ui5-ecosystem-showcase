@@ -286,20 +286,40 @@ const Templates = {
 	class: loadAndCompile("../templates/dts/Class.hbs"),
 };
 
+// outstanding *.gen.d.ts writes; a build awaits these via DTSSerializer.flush()
+// so type generation is guaranteed complete (or its errors surfaced) before the
+// build reports success (writes were previously fire-and-forget)
+const pending = [];
+
 /**
  * The DTSSerializer is responsible for generating TypeScript declaration files (.d.ts)
  * for UI5 web components. It provides methods to initialize classes, write class bodies,
  * and serialize different UI5 elements like properties, aggregations, associations, and events.
  */
 const DTSSerializer = {
+	// whether *.d.ts generation is enabled; toggled per package via setEnabled().
+	// Replaces the former destructive deactivate() which permanently overwrote every
+	// method of the shared singleton with no-ops and thus leaked across projects.
+	_enabled: true,
+
 	/**
-	 * Deactivates the *.d.ts file generation via ui5.yaml configuration.
-	 * When called, all methods in this object will be replaced with no-op functions.
+	 * Enables or disables the *.d.ts file generation via ui5.yaml configuration.
+	 * Reversible per package/project so the shared singleton cannot leak state.
+	 * @param {boolean} enabled whether the generation should be enabled
 	 */
-	deactivate() {
-		for (const s in this) {
-			this[s] = () => {};
-		}
+	setEnabled(enabled) {
+		this._enabled = enabled !== false;
+	},
+
+	/**
+	 * Awaits all outstanding *.gen.d.ts writes (surfacing their errors) and then
+	 * clears the pending list, so a build can guarantee type generation has
+	 * completed before reporting success.
+	 * @returns {Promise} resolves once all pending writes have settled
+	 */
+	async flush() {
+		const inflight = pending.splice(0, pending.length);
+		await Promise.all(inflight);
 	},
 
 	/**
@@ -308,6 +328,8 @@ const DTSSerializer = {
 	 * @param {WebComponentRegistry.Entry} registryEntry the registry entry which will receive a set of serialized *.d.ts files.
 	 */
 	prepare: function (registryEntry) {
+		if (!this._enabled) return;
+
 		const cachePath = join(process.cwd(), ".ui5-tooling-modules");
 
 		if (!existsSync(join(cachePath, "types"))) {
@@ -315,45 +337,55 @@ const DTSSerializer = {
 			mkdirSync(join(cachePath, "types"), { recursive: true });
 		}
 
-		prettier
-			.format(
-				Templates.module({
-					registryEntry,
+		pending.push(
+			prettier
+				.format(
+					Templates.module({
+						registryEntry,
+					}),
+					{
+						// TODO: read from prettier config if existing
+						//       otherwise use some defaults
+						semi: true,
+						trailingComma: "none",
+						parser: "typescript",
+					},
+				)
+				.then((prettifiedTypes) => {
+					if (prettifiedTypes) {
+						writeFileSync(join(cachePath, "types", `${registryEntry.qualifiedNamespace}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+					}
+				})
+				.catch((err) => {
+					logger.error(`Failed to generate *.d.ts for ${registryEntry.qualifiedNamespace}!`, err);
 				}),
-				{
-					// TODO: read from prettier config if existing
-					//       otherwise use some defaults
-					semi: true,
-					trailingComma: "none",
-					parser: "typescript",
-				},
-			)
-			.then((prettifiedTypes) => {
-				if (prettifiedTypes) {
-					writeFileSync(join(cachePath, "types", `${registryEntry.qualifiedNamespace}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
-				}
-			});
+		);
 		for (const clazz in registryEntry.classes) {
 			if (registryEntry.classes[clazz].superclass) {
-				prettier
-					.format(
-						Templates.class({
-							clazz: registryEntry.classes[clazz],
-							BINDING_STRING_PLACEHOLDER: "`{${string}}`",
+				pending.push(
+					prettier
+						.format(
+							Templates.class({
+								clazz: registryEntry.classes[clazz],
+								BINDING_STRING_PLACEHOLDER: "`{${string}}`",
+							}),
+							{
+								// TODO: read from prettier config if existing
+								//       otherwise use some defaults
+								semi: true,
+								trailingComma: "none",
+								parser: "typescript",
+							},
+						)
+						.then((prettifiedTypes) => {
+							if (prettifiedTypes) {
+								writeFileSync(join(cachePath, "types", `${registryEntry.classes[clazz]._ui5QualifiedName}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+							}
+						})
+						.catch((err) => {
+							logger.error(`Failed to generate *.d.ts for ${registryEntry.classes[clazz]._ui5QualifiedName}!`, err);
 						}),
-						{
-							// TODO: read from prettier config if existing
-							//       otherwise use some defaults
-							semi: true,
-							trailingComma: "none",
-							parser: "typescript",
-						},
-					)
-					.then((prettifiedTypes) => {
-						if (prettifiedTypes) {
-							writeFileSync(join(cachePath, "types", `${registryEntry.classes[clazz]._ui5QualifiedName}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
-						}
-					});
+				);
 			}
 		}
 	},
@@ -364,6 +396,7 @@ const DTSSerializer = {
 	 * @param {WebComponentRegistry.ClassDef} classDef the class def to be initialized
 	 */
 	initClass(classDef) {
+		if (!this._enabled) return;
 		classDef._dts = {
 			globalImports: {},
 			imports: {},
@@ -381,6 +414,7 @@ const DTSSerializer = {
 	 * @param {WebComponentRegistry.ClassDef} classDef the class def for which the main class body should be written
 	 */
 	writeClassBody(classDef) {
+		if (!this._enabled) return;
 		// Common utility functions
 		/**
 		 * Creates a template for method documentation.
@@ -942,6 +976,7 @@ const DTSSerializer = {
 	 * @param {object} entityDef the entity definition, e.g. property or aggregation info
 	 */
 	writeDts(classDef, entityType, entityDef) {
+		if (!this._enabled) return;
 		// we clone the objects here to prevent accidental side effects
 		classDef._dts[entityType][entityDef.name] = Object.assign({}, entityDef);
 	},
@@ -982,6 +1017,7 @@ const DTSSerializer = {
 	 *        ```
 	 */
 	updateDts(classDef, source, target) {
+		if (!this._enabled) return;
 		const targetEntity = target.entity || source.entity;
 		const targetName = target.name || source.name;
 		classDef._dts[targetEntity][targetName] = classDef._dts[source.entity][source.name];

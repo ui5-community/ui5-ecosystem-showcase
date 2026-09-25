@@ -62,7 +62,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	};
 
 	// utility to scan the project for dependencies and resources
-	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log, projectInfo);
+	const { scan, getBundleInfo, getResource, existsResource, flushBundleInfoCache } = require("./util")(log, projectInfo);
 
 	// determine all paths for the dependencies
 	const depPaths = taskUtil
@@ -550,7 +550,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		const resComponent = await workspace.byPath(`/resources/${options.projectNamespace}/Component.js`);
 		if (resComponent) {
 			let pathMappings = "";
-			bundleInfo.getBundledResources().map(async ({ name }) => {
+			bundleInfo.getBundledResources().forEach(({ name }) => {
 				pathMappings += `"${name}": sap.ui.require.toUrl("${options.projectNamespace}/resources/${name}"),`;
 			});
 			let content = await resComponent.getString();
@@ -561,6 +561,10 @@ ${content}`;
 			await workspace.write(resComponent);
 		}
 	}
+
+	// ensure the persistent bundle-info cache is durable on disk before the
+	// task resolves (writes are otherwise fire-and-forget)
+	await flushBundleInfoCache();
 };
 
 /**
