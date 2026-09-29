@@ -157,7 +157,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	}
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteDep(dep, bundleInfo, useDottedNamespace) {
+	function rewriteDep(dep, bundleInfo, useDottedNamespace, isXMLNS) {
 		// remove the relative path and the project namespace
 		const aDep = stripRelativeSegments(dep.replaceAll(`${options.projectNamespace}/resources/`, ""));
 		const resource = config.addToNamespace && bundleInfo.getBundledResources().find(({ name }) => aDep === name);
@@ -184,7 +184,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			}
 			// Web Component related resources are put into a separate namespace (e.g. "gen")
 			//d = `${options.projectNamespace}/${!resource || resource.type === "script" || resource.isWebComponent || resource.isEntryPoint ? "gen" : thirdpartyNamespace}/${d}`;
-			d = `${options.projectNamespace}/${isWebComponent ? webComponentsNamespace : thirdpartyNamespace}/${d}`;
+			d = `${options.projectNamespace}/${isWebComponent || isXMLNS ? webComponentsNamespace : thirdpartyNamespace}/${d}`;
 			//d = `${options.projectNamespace}/${thirdpartyNamespace}/${d}`;
 			return useDottedNamespace ? d.replace(/\//g, ".") : d;
 		} else {
@@ -354,7 +354,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 								return name.startsWith(namespace);
 							})
 						) {
-							node[key] = rewriteDep(node[key], bundleInfo, true);
+							node[key] = rewriteDep(node[key], bundleInfo, true, true);
 							changed = true;
 						}
 						return;
