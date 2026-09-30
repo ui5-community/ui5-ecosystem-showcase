@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.38.4
+
+### Patch Changes
+
+- [#1454](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1454) [`cc14645`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cc14645c11e51acc48fd61e2d012ed9887bef7b3) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(ui5-tooling-modules): route XML namespace deps to web components namespace
+
 ## 3.38.3
 
 ### Patch Changes
