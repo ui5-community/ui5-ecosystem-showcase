@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.39.0
+
+### Minor Changes
+
+- [#1460](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1460) [`4e8aac3`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4e8aac3d47b35820762a59c230066d2e1e51213d) Thanks [@Thodd](https://github.com/Thodd)! - feat(ui5-tooling-modules): support `_ui5mapping` hint on custom element members
+  
+  A CEM producer can now attach a `_ui5mapping` object to a field member. The object is merged over the mapping that `WebComponentRegistry` computes for the generated UI5 property, allowing a package to refine the mapping — e.g. force a `type: "none"` mapping, set an explicit `to`, or declare a `syncOn` native event that syncs the live DOM value back into the control. A plain `"property"` string mapping is normalized to object form before merging.
+
 ## 3.38.4
 
 ### Patch Changes
