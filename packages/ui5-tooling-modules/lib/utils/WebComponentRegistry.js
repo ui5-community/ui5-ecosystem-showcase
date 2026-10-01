@@ -777,6 +777,15 @@ class RegistryEntry {
 					typeString = `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`;
 				}
 
+				// The CEM producer may refine the computed UI5 mapping via "_ui5mapping",
+				// e.g. to add a "syncOn" native event, force a "none" mapping type, or set
+				// an explicit "to"/formatter/parser. The hint is merged over the computed
+				// mapping; a plain "property" string is normalized to object form first.
+				if (propDef._ui5mapping) {
+					const baseMapping = typeof mapping === "string" ? { type: mapping } : mapping;
+					mapping = { ...baseMapping, ...propDef._ui5mapping };
+				}
+
 				ui5metadata.properties[propDef.name] = {
 					type: typeString,
 					mapping,

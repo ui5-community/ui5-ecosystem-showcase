@@ -157,3 +157,65 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 	compareFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-fiori"));
 	compareFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-ai"));
 });
+
+test.serial("'_ui5mapping' hint is merged into the generated UI5 property mapping", (t) => {
+	const customElementsMetadata = {
+		schemaVersion: "2.1.0",
+		modules: [
+			{
+				kind: "javascript-module",
+				path: "dist/MyField.js",
+				declarations: [
+					{
+						kind: "class",
+						name: "MyField",
+						tagName: "my-field",
+						customElement: true,
+						superclass: { name: "UI5Element", package: "@ui5/webcomponents-base" },
+						members: [
+							// plain property: no hint -> default short "property" mapping
+							{ kind: "field", name: "label", privacy: "public", type: { text: "string" } },
+							// hint overrides the computed mapping and adds a native sync event
+							{
+								kind: "field",
+								name: "value",
+								privacy: "public",
+								type: { text: "string" },
+								_ui5mapping: { type: "none", to: "value", syncOn: "change" },
+							},
+							// hint on an otherwise attribute-mapped property only adds "syncOn"
+							{
+								kind: "field",
+								name: "checked",
+								privacy: "public",
+								type: { text: "boolean" },
+								_ui5mapping: { type: "property", to: "checked", syncOn: "change" },
+							},
+						],
+					},
+				],
+				exports: [
+					{
+						kind: "custom-element-definition",
+						name: "my-field",
+						declaration: { name: "MyField", module: "dist/MyField.js" },
+					},
+				],
+			},
+		],
+	};
+
+	const entry = WebComponentRegistry.register({
+		customElementsMetadata,
+		namespace: "@test/ui5mapping",
+		npmPackagePath: "/tmp/test-ui5mapping/custom-elements.json",
+		version: "0.0.0",
+	});
+
+	const classDef = Object.values(entry.classes).find((c) => c._ui5metadata?.properties?.value);
+	const mProperties = classDef._ui5metadata.properties;
+
+	t.is(mProperties.label.mapping, "property", "property without a hint keeps the default short mapping");
+	t.deepEqual(mProperties.value.mapping, { type: "none", to: "value", syncOn: "change" }, "hint fully overrides the computed mapping");
+	t.deepEqual(mProperties.checked.mapping, { type: "property", to: "checked", syncOn: "change" }, "hint adds syncOn to an attribute-mapped property");
+});
