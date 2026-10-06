@@ -662,7 +662,7 @@ module.exports = function (log, projectInfo) {
 		 * @returns {object} unique dependencies, resources, namespaces, chunks, ...
 		 */
 		scan: async function (reader, config, { cwd = process.cwd(), depPaths = [] }) {
-			const { parse } = await import("@typescript-eslint/typescript-estree");
+			const { parseSync } = await import("oxc-parser");
 			const { walk } = await import("estree-walker");
 
 			const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
@@ -815,13 +815,19 @@ module.exports = function (log, projectInfo) {
 			// utility to lookup unique JS dependencies
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function findUniqueJSDeps(content, parentDepPath, ignoreImports) {
-				// use @typescript-eslint/typescript-estree to parse the UI5 modules
+				// use oxc-parser to parse the UI5 modules
 				// and extract the UI5 module dependencies
 				//   => can parse modern JS, TS, JSX, and TSX syntax
 				//      => supports the ES6 import/export syntax
 				//      => supports the UI5 sap.ui.require.toUrl and sap.ui.require/define/requireSync
 				try {
-					const program = parse(content, { jsx: path.extname(parentDepPath) !== ".ts", allowInvalidAST: true });
+					const ext = path.extname(parentDepPath);
+					const parseOpts = ext === ".js" || ext === ".mjs" || ext === ".cjs" ? { lang: "jsx" } : {};
+					const { program, errors } = parseSync(parentDepPath, content, parseOpts);
+					if (errors.length > 0) {
+						config.debug && log.warn(`Failed to analyze resource "${parentDepPath}" (${errors[0].message})!`);
+						return;
+					}
 					walk(program, {
 						enter(node, parent, prop, index) {
 							if (
