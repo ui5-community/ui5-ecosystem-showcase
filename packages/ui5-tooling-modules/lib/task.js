@@ -31,7 +31,7 @@ const sanitize = require("sanitize-filename");
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
-	const { parse } = await import("@typescript-eslint/typescript-estree");
+	const { parseSync } = await import("oxc-parser");
 	const { walk } = await import("estree-walker");
 
 	// determine the current working directory and the package.json path
@@ -197,7 +197,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	function rewriteJSDeps(content, bundleInfo, resourcePath) {
 		let changed = false;
 		try {
-			const program = parse(content, { comment: true, loc: true, range: true, tokens: true });
+			const { program, errors } = parseSync(resourcePath, content, { lang: "jsx" });
+			if (errors.length > 0) {
+				throw new Error(errors[0].message);
+			}
 			const tokens = {};
 			const isATokens = {};
 			let importsSapUiRequire = false;
