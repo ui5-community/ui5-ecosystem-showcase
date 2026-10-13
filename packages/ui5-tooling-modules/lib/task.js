@@ -285,14 +285,12 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						if (node?.arguments?.[0].type === "Literal" && typeof argument.value === "string") {
 							isATokens[argument.value] = rewriteDep(argument.value.replace(/\./g, "/"), bundleInfo, true);
 							argument.value = isATokens[argument.value];
-							argument.raw = `"${isATokens[argument.value]}"`;
 							changed = true;
 						} else if (node?.arguments?.[0].type === "ArrayExpression") {
 							argument.elements.forEach((elDep) => {
 								if (elDep?.type === "Literal" && typeof elDep?.value === "string") {
 									isATokens[elDep.value] = rewriteDep(elDep.value.replace(/\./g, "/"), bundleInfo, true);
 									elDep.value = isATokens[elDep.value];
-									elDep.raw = `"${isATokens[elDep.value]}"`;
 									changed = true;
 								}
 							});

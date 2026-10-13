@@ -825,8 +825,7 @@ module.exports = function (log, projectInfo) {
 					const parseOpts = ext === ".js" || ext === ".mjs" || ext === ".cjs" ? { lang: "jsx" } : {};
 					const { program, errors } = parseSync(parentDepPath, content, parseOpts);
 					if (errors.length > 0) {
-						config.debug && log.warn(`Failed to analyze resource "${parentDepPath}" (${errors[0].message})!`);
-						return;
+						config.debug && log.warn(`Parse issues in "${parentDepPath}" (${errors[0].message}), attempting partial analysis`);
 					}
 					walk(program, {
 						enter(node, parent, prop, index) {
