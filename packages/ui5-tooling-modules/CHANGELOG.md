@@ -1,5 +1,34 @@
 # Change Log
 
+## 3.40.0
+
+### Minor Changes
+
+- [#1462](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1462) [`c2bba4a`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c2bba4acc740e0c3dad1f93f3a1c254cbc69870b) Thanks [@akudev](https://github.com/akudev)! - feat(ui5-tooling-modules): replace `@typescript-eslint/typescript-estree` with `oxc-parser`
+  
+  TypeScript 7 ships without a programmatic API, which breaks `@typescript-eslint/typescript-estree`
+  (and its transitive `ts-api-utils` dependency) at load time. Since `ui5-tooling-modules` only uses
+  the parser for syntactic AST generation — no type checking or TypeScript program creation — this
+  replaces it with `oxc-parser`, a fast Rust-based ESTree-compatible parser that handles JS, TS, JSX
+  and TSX natively without any dependency on the `typescript` package.
+  
+  This removes the implicit `typescript <6.1.0` peer dependency constraint, allowing consumers to use
+  any TypeScript version including TypeScript 7.
+
+### Patch Changes
+
+- [#1464](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1464) [`22b68a7`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/22b68a7a5d476d9f4257e5631720fd169c3deb43) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(ui5-tooling-modules): restore partial-AST dependency scanning after oxc-parser migration
+  
+  `oxc-parser` always performs error recovery and returns a (possibly partial) program even when errors
+  are present — matching the `allowInvalidAST: true` behaviour of the replaced
+  `@typescript-eslint/typescript-estree`. An early `return` on `errors.length > 0` introduced during
+  the migration caused files with minor parse issues to be silently skipped entirely instead of having
+  their dependencies extracted from the recovered AST.
+  
+  Also removes two dead AST mutations (`argument.raw` / `elDep.raw`) in the `isA` rewrite path of
+  `task.js` that used the already-mutated value as a map key (yielding `"undefined"`) and were never
+  read back since AST-based code generation was replaced by regex substitution.
+
 ## 3.39.0
 
 ### Minor Changes
