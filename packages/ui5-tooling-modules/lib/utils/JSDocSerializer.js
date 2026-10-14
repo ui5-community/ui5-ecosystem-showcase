@@ -180,12 +180,18 @@ function _prepareUI5Metadata(classDef, jsdocTags) {
 
 const JSDocSerializer = {
 	/**
-	 * Deactivates the generation of JSDoc comments.
+	 * Flag whether the generation of JSDoc comments is enabled.
+	 * Reset per package registration via {@link JSDocSerializer.setEnabled}
+	 * so state cannot leak across projects sharing this singleton.
 	 */
-	deactivate() {
-		for (const s in this) {
-			this[s] = () => {};
-		}
+	_enabled: true,
+
+	/**
+	 * Enables or disables the generation of JSDoc comments.
+	 * @param {boolean} enabled whether the generation should be enabled (defaults to enabled)
+	 */
+	setEnabled(enabled) {
+		this._enabled = enabled !== false;
 	},
 
 	/**
@@ -193,6 +199,7 @@ const JSDocSerializer = {
 	 * @param {WebComponentRegistryEntry} registryEntry the registry entry for a web component package
 	 */
 	prepare(registryEntry) {
+		if (!this._enabled) return;
 		// Classes (used in WrapperControl.hbs)
 		Object.keys(registryEntry.classes).forEach((className) => {
 			const classDef = registryEntry.classes[className];
@@ -252,6 +259,7 @@ const JSDocSerializer = {
 	 * @param {object} classDef the class definition from the custom elements manifest
 	 */
 	initClass(classDef) {
+		if (!this._enabled) return;
 		classDef._jsDoc = {
 			classHeader: "",
 			metadata: "",
@@ -271,6 +279,7 @@ const JSDocSerializer = {
 	 * @returns
 	 */
 	serializeMetadata(classDef) {
+		if (!this._enabled) return;
 		classDef._jsDoc.metadata = Templates.ui5metadata({
 			jsDoc: classDef._jsDoc,
 			metadata: classDef._ui5metadata,
@@ -287,6 +296,7 @@ const JSDocSerializer = {
 	 * @param {object} entityDef the entity definition from the custom elements manifest
 	 */
 	writeDoc(classDef, entityType, entityDef) {
+		if (!this._enabled) return;
 		// we clone the objects here to prevent accidental side effects
 		classDef._jsDoc[entityType][entityDef.name] = Object.assign({}, entityDef);
 	},
