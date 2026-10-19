@@ -16,220 +16,220 @@ sap.ui.define(
       version: "2.23.1",
       dependencies: ["sap.ui.core"],
       types: [
-        "@ui5.webcomponents.dist.types.AvatarColorScheme",
-        "@ui5.webcomponents.dist.types.AvatarGroupType",
-        "@ui5.webcomponents.dist.types.AvatarMode",
-        "@ui5.webcomponents.dist.types.AvatarShape",
-        "@ui5.webcomponents.dist.types.AvatarSize",
-        "@ui5.webcomponents.dist.types.BackgroundDesign",
-        "@ui5.webcomponents.dist.types.BarAccessibleRole",
-        "@ui5.webcomponents.dist.types.BarDesign",
-        "@ui5.webcomponents.dist.types.BorderDesign",
-        "@ui5.webcomponents.dist.types.BreadcrumbsDesign",
-        "@ui5.webcomponents.dist.types.BreadcrumbsSeparator",
-        "@ui5.webcomponents.dist.types.BusyIndicatorSize",
-        "@ui5.webcomponents.dist.types.BusyIndicatorTextPlacement",
-        "@ui5.webcomponents.dist.types.ButtonAccessibleRole",
-        "@ui5.webcomponents.dist.types.ButtonBadgeDesign",
-        "@ui5.webcomponents.dist.types.ButtonDesign",
-        "@ui5.webcomponents.dist.types.ButtonType",
-        "@ui5.webcomponents.dist.types.CalendarLegendItemType",
-        "@ui5.webcomponents.dist.types.CalendarSelectionMode",
-        "@ui5.webcomponents.dist.types.CalendarWeekNumbering",
-        "@ui5.webcomponents.dist.types.CarouselArrowsPlacement",
-        "@ui5.webcomponents.dist.types.CarouselPageIndicatorType",
-        "@ui5.webcomponents.dist.types.ComboBoxFilter",
-        "@ui5.webcomponents.dist.types.ExpandableTextOverflowMode",
-        "@ui5.webcomponents.dist.types.FormAccessibleMode",
-        "@ui5.webcomponents.dist.types.FormItemSpacing",
-        "@ui5.webcomponents.dist.types.Highlight",
-        "@ui5.webcomponents.dist.types.IconDesign",
-        "@ui5.webcomponents.dist.types.IconMode",
-        "@ui5.webcomponents.dist.types.InputSuggestionsFilter",
-        "@ui5.webcomponents.dist.types.InputType",
-        "@ui5.webcomponents.dist.types.InteractiveAreaSize",
-        "@ui5.webcomponents.dist.types.LinkAccessibleRole",
-        "@ui5.webcomponents.dist.types.LinkDesign",
-        "@ui5.webcomponents.dist.types.ListAccessibleRole",
-        "@ui5.webcomponents.dist.types.ListGrowingMode",
-        "@ui5.webcomponents.dist.types.ListItemAccessibleRole",
-        "@ui5.webcomponents.dist.types.ListItemType",
-        "@ui5.webcomponents.dist.types.ListSelectionMode",
-        "@ui5.webcomponents.dist.types.ListSeparator",
-        "@ui5.webcomponents.dist.types.MenuItemGroupCheckMode",
-        "@ui5.webcomponents.dist.types.MessageStripDesign",
-        "@ui5.webcomponents.dist.types.NotificationListGrowingMode",
-        "@ui5.webcomponents.dist.types.OverflowMode",
-        "@ui5.webcomponents.dist.types.PanelAccessibleRole",
-        "@ui5.webcomponents.dist.types.PopoverHorizontalAlign",
-        "@ui5.webcomponents.dist.types.PopoverPlacement",
-        "@ui5.webcomponents.dist.types.PopoverVerticalAlign",
-        "@ui5.webcomponents.dist.types.PopupAccessibleRole",
-        "@ui5.webcomponents.dist.types.Priority",
-        "@ui5.webcomponents.dist.types.RatingIndicatorSize",
-        "@ui5.webcomponents.dist.types.SegmentedButtonSelectionMode",
-        "@ui5.webcomponents.dist.types.SelectTextSeparator",
-        "@ui5.webcomponents.dist.types.SemanticColor",
-        "@ui5.webcomponents.dist.types.SwitchDesign",
-        "@ui5.webcomponents.dist.types.TabLayout",
-        "@ui5.webcomponents.dist.types.TableCellHorizontalAlign",
-        "@ui5.webcomponents.dist.types.TableGrowingMode",
-        "@ui5.webcomponents.dist.types.TableOverflowMode",
-        "@ui5.webcomponents.dist.types.TableSelectionBehavior",
-        "@ui5.webcomponents.dist.types.TableSelectionMode",
-        "@ui5.webcomponents.dist.types.TableSelectionMultiHeaderSelector",
-        "@ui5.webcomponents.dist.types.TagDesign",
-        "@ui5.webcomponents.dist.types.TagSize",
-        "@ui5.webcomponents.dist.types.TextEmptyIndicatorMode",
-        "@ui5.webcomponents.dist.types.TitleLevel",
-        "@ui5.webcomponents.dist.types.ToastPlacement",
-        "@ui5.webcomponents.dist.types.ToolbarAlign",
-        "@ui5.webcomponents.dist.types.ToolbarDesign",
-        "@ui5.webcomponents.dist.types.ToolbarItemOverflowBehavior",
-        "@ui5.webcomponents.dist.types.WrappingType"
+        "ui5.webcomponents.dist.types.AvatarColorScheme",
+        "ui5.webcomponents.dist.types.AvatarGroupType",
+        "ui5.webcomponents.dist.types.AvatarMode",
+        "ui5.webcomponents.dist.types.AvatarShape",
+        "ui5.webcomponents.dist.types.AvatarSize",
+        "ui5.webcomponents.dist.types.BackgroundDesign",
+        "ui5.webcomponents.dist.types.BarAccessibleRole",
+        "ui5.webcomponents.dist.types.BarDesign",
+        "ui5.webcomponents.dist.types.BorderDesign",
+        "ui5.webcomponents.dist.types.BreadcrumbsDesign",
+        "ui5.webcomponents.dist.types.BreadcrumbsSeparator",
+        "ui5.webcomponents.dist.types.BusyIndicatorSize",
+        "ui5.webcomponents.dist.types.BusyIndicatorTextPlacement",
+        "ui5.webcomponents.dist.types.ButtonAccessibleRole",
+        "ui5.webcomponents.dist.types.ButtonBadgeDesign",
+        "ui5.webcomponents.dist.types.ButtonDesign",
+        "ui5.webcomponents.dist.types.ButtonType",
+        "ui5.webcomponents.dist.types.CalendarLegendItemType",
+        "ui5.webcomponents.dist.types.CalendarSelectionMode",
+        "ui5.webcomponents.dist.types.CalendarWeekNumbering",
+        "ui5.webcomponents.dist.types.CarouselArrowsPlacement",
+        "ui5.webcomponents.dist.types.CarouselPageIndicatorType",
+        "ui5.webcomponents.dist.types.ComboBoxFilter",
+        "ui5.webcomponents.dist.types.ExpandableTextOverflowMode",
+        "ui5.webcomponents.dist.types.FormAccessibleMode",
+        "ui5.webcomponents.dist.types.FormItemSpacing",
+        "ui5.webcomponents.dist.types.Highlight",
+        "ui5.webcomponents.dist.types.IconDesign",
+        "ui5.webcomponents.dist.types.IconMode",
+        "ui5.webcomponents.dist.types.InputSuggestionsFilter",
+        "ui5.webcomponents.dist.types.InputType",
+        "ui5.webcomponents.dist.types.InteractiveAreaSize",
+        "ui5.webcomponents.dist.types.LinkAccessibleRole",
+        "ui5.webcomponents.dist.types.LinkDesign",
+        "ui5.webcomponents.dist.types.ListAccessibleRole",
+        "ui5.webcomponents.dist.types.ListGrowingMode",
+        "ui5.webcomponents.dist.types.ListItemAccessibleRole",
+        "ui5.webcomponents.dist.types.ListItemType",
+        "ui5.webcomponents.dist.types.ListSelectionMode",
+        "ui5.webcomponents.dist.types.ListSeparator",
+        "ui5.webcomponents.dist.types.MenuItemGroupCheckMode",
+        "ui5.webcomponents.dist.types.MessageStripDesign",
+        "ui5.webcomponents.dist.types.NotificationListGrowingMode",
+        "ui5.webcomponents.dist.types.OverflowMode",
+        "ui5.webcomponents.dist.types.PanelAccessibleRole",
+        "ui5.webcomponents.dist.types.PopoverHorizontalAlign",
+        "ui5.webcomponents.dist.types.PopoverPlacement",
+        "ui5.webcomponents.dist.types.PopoverVerticalAlign",
+        "ui5.webcomponents.dist.types.PopupAccessibleRole",
+        "ui5.webcomponents.dist.types.Priority",
+        "ui5.webcomponents.dist.types.RatingIndicatorSize",
+        "ui5.webcomponents.dist.types.SegmentedButtonSelectionMode",
+        "ui5.webcomponents.dist.types.SelectTextSeparator",
+        "ui5.webcomponents.dist.types.SemanticColor",
+        "ui5.webcomponents.dist.types.SwitchDesign",
+        "ui5.webcomponents.dist.types.TabLayout",
+        "ui5.webcomponents.dist.types.TableCellHorizontalAlign",
+        "ui5.webcomponents.dist.types.TableGrowingMode",
+        "ui5.webcomponents.dist.types.TableOverflowMode",
+        "ui5.webcomponents.dist.types.TableSelectionBehavior",
+        "ui5.webcomponents.dist.types.TableSelectionMode",
+        "ui5.webcomponents.dist.types.TableSelectionMultiHeaderSelector",
+        "ui5.webcomponents.dist.types.TagDesign",
+        "ui5.webcomponents.dist.types.TagSize",
+        "ui5.webcomponents.dist.types.TextEmptyIndicatorMode",
+        "ui5.webcomponents.dist.types.TitleLevel",
+        "ui5.webcomponents.dist.types.ToastPlacement",
+        "ui5.webcomponents.dist.types.ToolbarAlign",
+        "ui5.webcomponents.dist.types.ToolbarDesign",
+        "ui5.webcomponents.dist.types.ToolbarItemOverflowBehavior",
+        "ui5.webcomponents.dist.types.WrappingType"
       ],
       interfaces: [
-        "@ui5.webcomponents.dist.AvatarGroup.IAvatarGroupItem",
-        "@ui5.webcomponents.dist.Button.IButton",
-        "@ui5.webcomponents.dist.Calendar.ICalendarSelectedDates",
-        "@ui5.webcomponents.dist.ColorPalette.IColorPaletteItem",
-        "@ui5.webcomponents.dist.ComboBox.IComboBoxItem",
-        "@ui5.webcomponents.dist.DynamicDateRange.IDynamicDateRangeOption",
-        "@ui5.webcomponents.dist.Form.IFormItem",
-        "@ui5.webcomponents.dist.Icon.IIcon",
-        "@ui5.webcomponents.dist.Input.IInputSuggestionItem",
-        "@ui5.webcomponents.dist.Menu.IMenuItem",
-        "@ui5.webcomponents.dist.MultiComboBox.IMultiComboBoxItem",
-        "@ui5.webcomponents.dist.SegmentedButton.ISegmentedButtonItem",
-        "@ui5.webcomponents.dist.Select.IOption",
-        "@ui5.webcomponents.dist.TabContainer.ITab",
-        "@ui5.webcomponents.dist.Table.ITableFeature",
-        "@ui5.webcomponents.dist.Table.ITableGrowing",
-        "@ui5.webcomponents.dist.ToolbarItem.IToolbarItemContent"
+        "ui5.webcomponents.dist.AvatarGroup.IAvatarGroupItem",
+        "ui5.webcomponents.dist.Button.IButton",
+        "ui5.webcomponents.dist.Calendar.ICalendarSelectedDates",
+        "ui5.webcomponents.dist.ColorPalette.IColorPaletteItem",
+        "ui5.webcomponents.dist.ComboBox.IComboBoxItem",
+        "ui5.webcomponents.dist.DynamicDateRange.IDynamicDateRangeOption",
+        "ui5.webcomponents.dist.Form.IFormItem",
+        "ui5.webcomponents.dist.Icon.IIcon",
+        "ui5.webcomponents.dist.Input.IInputSuggestionItem",
+        "ui5.webcomponents.dist.Menu.IMenuItem",
+        "ui5.webcomponents.dist.MultiComboBox.IMultiComboBoxItem",
+        "ui5.webcomponents.dist.SegmentedButton.ISegmentedButtonItem",
+        "ui5.webcomponents.dist.Select.IOption",
+        "ui5.webcomponents.dist.TabContainer.ITab",
+        "ui5.webcomponents.dist.Table.ITableFeature",
+        "ui5.webcomponents.dist.Table.ITableGrowing",
+        "ui5.webcomponents.dist.ToolbarItem.IToolbarItemContent"
       ],
       controls: [
-        "@ui5.webcomponents.dist.Avatar",
-        "@ui5.webcomponents.dist.AvatarBadge",
-        "@ui5.webcomponents.dist.AvatarGroup",
-        "@ui5.webcomponents.dist.Bar",
-        "@ui5.webcomponents.dist.Breadcrumbs",
-        "@ui5.webcomponents.dist.BreadcrumbsItem",
-        "@ui5.webcomponents.dist.BusyIndicator",
-        "@ui5.webcomponents.dist.Button",
-        "@ui5.webcomponents.dist.ButtonBadge",
-        "@ui5.webcomponents.dist.Calendar",
-        "@ui5.webcomponents.dist.CalendarDate",
-        "@ui5.webcomponents.dist.CalendarDateRange",
-        "@ui5.webcomponents.dist.CalendarLegend",
-        "@ui5.webcomponents.dist.CalendarLegendItem",
-        "@ui5.webcomponents.dist.Card",
-        "@ui5.webcomponents.dist.CardHeader",
-        "@ui5.webcomponents.dist.Carousel",
-        "@ui5.webcomponents.dist.CheckBox",
-        "@ui5.webcomponents.dist.ColorPalette",
-        "@ui5.webcomponents.dist.ColorPaletteItem",
-        "@ui5.webcomponents.dist.ColorPalettePopover",
-        "@ui5.webcomponents.dist.ColorPicker",
-        "@ui5.webcomponents.dist.ComboBox",
-        "@ui5.webcomponents.dist.ComboBoxItem",
-        "@ui5.webcomponents.dist.ComboBoxItemGroup",
-        "@ui5.webcomponents.dist.DatePicker",
-        "@ui5.webcomponents.dist.DateRangePicker",
-        "@ui5.webcomponents.dist.DateTimeInput",
-        "@ui5.webcomponents.dist.DateTimePicker",
-        "@ui5.webcomponents.dist.DayPicker",
-        "@ui5.webcomponents.dist.Dialog",
-        "@ui5.webcomponents.dist.DropIndicator",
-        "@ui5.webcomponents.dist.DynamicDateRange",
-        "@ui5.webcomponents.dist.ExpandableText",
-        "@ui5.webcomponents.dist.FileUploader",
-        "@ui5.webcomponents.dist.Form",
-        "@ui5.webcomponents.dist.FormGroup",
-        "@ui5.webcomponents.dist.FormItem",
-        "@ui5.webcomponents.dist.Icon",
-        "@ui5.webcomponents.dist.Input",
-        "@ui5.webcomponents.dist.Label",
-        "@ui5.webcomponents.dist.Link",
-        "@ui5.webcomponents.dist.List",
-        "@ui5.webcomponents.dist.ListItemCustom",
-        "@ui5.webcomponents.dist.ListItemGroup",
-        "@ui5.webcomponents.dist.ListItemGroupHeader",
-        "@ui5.webcomponents.dist.ListItemStandard",
-        "@ui5.webcomponents.dist.Menu",
-        "@ui5.webcomponents.dist.MenuItem",
-        "@ui5.webcomponents.dist.MenuItemGroup",
-        "@ui5.webcomponents.dist.MenuSeparator",
-        "@ui5.webcomponents.dist.MessageStrip",
-        "@ui5.webcomponents.dist.MonthPicker",
-        "@ui5.webcomponents.dist.MultiComboBox",
-        "@ui5.webcomponents.dist.MultiComboBoxItem",
-        "@ui5.webcomponents.dist.MultiComboBoxItemGroup",
-        "@ui5.webcomponents.dist.MultiInput",
-        "@ui5.webcomponents.dist.Option",
-        "@ui5.webcomponents.dist.OptionCustom",
-        "@ui5.webcomponents.dist.Panel",
-        "@ui5.webcomponents.dist.Popover",
-        "@ui5.webcomponents.dist.ProgressIndicator",
-        "@ui5.webcomponents.dist.RadioButton",
-        "@ui5.webcomponents.dist.RangeSlider",
-        "@ui5.webcomponents.dist.RatingIndicator",
-        "@ui5.webcomponents.dist.ResponsivePopover",
-        "@ui5.webcomponents.dist.SegmentedButton",
-        "@ui5.webcomponents.dist.SegmentedButtonItem",
-        "@ui5.webcomponents.dist.Select",
-        "@ui5.webcomponents.dist.Slider",
-        "@ui5.webcomponents.dist.SliderHandle",
-        "@ui5.webcomponents.dist.SliderTooltip",
-        "@ui5.webcomponents.dist.SpecialCalendarDate",
-        "@ui5.webcomponents.dist.SplitButton",
-        "@ui5.webcomponents.dist.StepInput",
-        "@ui5.webcomponents.dist.SuggestionItem",
-        "@ui5.webcomponents.dist.SuggestionItemCustom",
-        "@ui5.webcomponents.dist.SuggestionItemGroup",
-        "@ui5.webcomponents.dist.SuggestionListItem",
-        "@ui5.webcomponents.dist.Switch",
-        "@ui5.webcomponents.dist.Tab",
-        "@ui5.webcomponents.dist.TabContainer",
-        "@ui5.webcomponents.dist.TabSeparator",
-        "@ui5.webcomponents.dist.Table",
-        "@ui5.webcomponents.dist.TableCell",
-        "@ui5.webcomponents.dist.TableGroupRow",
-        "@ui5.webcomponents.dist.TableGrowing",
-        "@ui5.webcomponents.dist.TableHeaderCell",
-        "@ui5.webcomponents.dist.TableHeaderCellActionAI",
-        "@ui5.webcomponents.dist.TableHeaderRow",
-        "@ui5.webcomponents.dist.TableRow",
-        "@ui5.webcomponents.dist.TableRowAction",
-        "@ui5.webcomponents.dist.TableRowActionNavigation",
-        "@ui5.webcomponents.dist.TableSelection",
-        "@ui5.webcomponents.dist.TableSelectionMulti",
-        "@ui5.webcomponents.dist.TableSelectionSingle",
-        "@ui5.webcomponents.dist.TableVirtualizer",
-        "@ui5.webcomponents.dist.Tag",
-        "@ui5.webcomponents.dist.Text",
-        "@ui5.webcomponents.dist.TextArea",
-        "@ui5.webcomponents.dist.TimePicker",
-        "@ui5.webcomponents.dist.TimePickerClock",
-        "@ui5.webcomponents.dist.TimeSelectionClocks",
-        "@ui5.webcomponents.dist.TimeSelectionInputs",
-        "@ui5.webcomponents.dist.Title",
-        "@ui5.webcomponents.dist.Toast",
-        "@ui5.webcomponents.dist.ToggleButton",
-        "@ui5.webcomponents.dist.ToggleSpinButton",
-        "@ui5.webcomponents.dist.Token",
-        "@ui5.webcomponents.dist.Tokenizer",
-        "@ui5.webcomponents.dist.Toolbar",
-        "@ui5.webcomponents.dist.ToolbarButton",
-        "@ui5.webcomponents.dist.ToolbarItem",
-        "@ui5.webcomponents.dist.ToolbarSelect",
-        "@ui5.webcomponents.dist.ToolbarSelectOption",
-        "@ui5.webcomponents.dist.ToolbarSeparator",
-        "@ui5.webcomponents.dist.ToolbarSpacer",
-        "@ui5.webcomponents.dist.Tree",
-        "@ui5.webcomponents.dist.TreeItem",
-        "@ui5.webcomponents.dist.TreeItemCustom",
-        "@ui5.webcomponents.dist.YearPicker",
-        "@ui5.webcomponents.dist.YearRangePicker"
+        "ui5.webcomponents.dist.Avatar",
+        "ui5.webcomponents.dist.AvatarBadge",
+        "ui5.webcomponents.dist.AvatarGroup",
+        "ui5.webcomponents.dist.Bar",
+        "ui5.webcomponents.dist.Breadcrumbs",
+        "ui5.webcomponents.dist.BreadcrumbsItem",
+        "ui5.webcomponents.dist.BusyIndicator",
+        "ui5.webcomponents.dist.Button",
+        "ui5.webcomponents.dist.ButtonBadge",
+        "ui5.webcomponents.dist.Calendar",
+        "ui5.webcomponents.dist.CalendarDate",
+        "ui5.webcomponents.dist.CalendarDateRange",
+        "ui5.webcomponents.dist.CalendarLegend",
+        "ui5.webcomponents.dist.CalendarLegendItem",
+        "ui5.webcomponents.dist.Card",
+        "ui5.webcomponents.dist.CardHeader",
+        "ui5.webcomponents.dist.Carousel",
+        "ui5.webcomponents.dist.CheckBox",
+        "ui5.webcomponents.dist.ColorPalette",
+        "ui5.webcomponents.dist.ColorPaletteItem",
+        "ui5.webcomponents.dist.ColorPalettePopover",
+        "ui5.webcomponents.dist.ColorPicker",
+        "ui5.webcomponents.dist.ComboBox",
+        "ui5.webcomponents.dist.ComboBoxItem",
+        "ui5.webcomponents.dist.ComboBoxItemGroup",
+        "ui5.webcomponents.dist.DatePicker",
+        "ui5.webcomponents.dist.DateRangePicker",
+        "ui5.webcomponents.dist.DateTimeInput",
+        "ui5.webcomponents.dist.DateTimePicker",
+        "ui5.webcomponents.dist.DayPicker",
+        "ui5.webcomponents.dist.Dialog",
+        "ui5.webcomponents.dist.DropIndicator",
+        "ui5.webcomponents.dist.DynamicDateRange",
+        "ui5.webcomponents.dist.ExpandableText",
+        "ui5.webcomponents.dist.FileUploader",
+        "ui5.webcomponents.dist.Form",
+        "ui5.webcomponents.dist.FormGroup",
+        "ui5.webcomponents.dist.FormItem",
+        "ui5.webcomponents.dist.Icon",
+        "ui5.webcomponents.dist.Input",
+        "ui5.webcomponents.dist.Label",
+        "ui5.webcomponents.dist.Link",
+        "ui5.webcomponents.dist.List",
+        "ui5.webcomponents.dist.ListItemCustom",
+        "ui5.webcomponents.dist.ListItemGroup",
+        "ui5.webcomponents.dist.ListItemGroupHeader",
+        "ui5.webcomponents.dist.ListItemStandard",
+        "ui5.webcomponents.dist.Menu",
+        "ui5.webcomponents.dist.MenuItem",
+        "ui5.webcomponents.dist.MenuItemGroup",
+        "ui5.webcomponents.dist.MenuSeparator",
+        "ui5.webcomponents.dist.MessageStrip",
+        "ui5.webcomponents.dist.MonthPicker",
+        "ui5.webcomponents.dist.MultiComboBox",
+        "ui5.webcomponents.dist.MultiComboBoxItem",
+        "ui5.webcomponents.dist.MultiComboBoxItemGroup",
+        "ui5.webcomponents.dist.MultiInput",
+        "ui5.webcomponents.dist.Option",
+        "ui5.webcomponents.dist.OptionCustom",
+        "ui5.webcomponents.dist.Panel",
+        "ui5.webcomponents.dist.Popover",
+        "ui5.webcomponents.dist.ProgressIndicator",
+        "ui5.webcomponents.dist.RadioButton",
+        "ui5.webcomponents.dist.RangeSlider",
+        "ui5.webcomponents.dist.RatingIndicator",
+        "ui5.webcomponents.dist.ResponsivePopover",
+        "ui5.webcomponents.dist.SegmentedButton",
+        "ui5.webcomponents.dist.SegmentedButtonItem",
+        "ui5.webcomponents.dist.Select",
+        "ui5.webcomponents.dist.Slider",
+        "ui5.webcomponents.dist.SliderHandle",
+        "ui5.webcomponents.dist.SliderTooltip",
+        "ui5.webcomponents.dist.SpecialCalendarDate",
+        "ui5.webcomponents.dist.SplitButton",
+        "ui5.webcomponents.dist.StepInput",
+        "ui5.webcomponents.dist.SuggestionItem",
+        "ui5.webcomponents.dist.SuggestionItemCustom",
+        "ui5.webcomponents.dist.SuggestionItemGroup",
+        "ui5.webcomponents.dist.SuggestionListItem",
+        "ui5.webcomponents.dist.Switch",
+        "ui5.webcomponents.dist.Tab",
+        "ui5.webcomponents.dist.TabContainer",
+        "ui5.webcomponents.dist.TabSeparator",
+        "ui5.webcomponents.dist.Table",
+        "ui5.webcomponents.dist.TableCell",
+        "ui5.webcomponents.dist.TableGroupRow",
+        "ui5.webcomponents.dist.TableGrowing",
+        "ui5.webcomponents.dist.TableHeaderCell",
+        "ui5.webcomponents.dist.TableHeaderCellActionAI",
+        "ui5.webcomponents.dist.TableHeaderRow",
+        "ui5.webcomponents.dist.TableRow",
+        "ui5.webcomponents.dist.TableRowAction",
+        "ui5.webcomponents.dist.TableRowActionNavigation",
+        "ui5.webcomponents.dist.TableSelection",
+        "ui5.webcomponents.dist.TableSelectionMulti",
+        "ui5.webcomponents.dist.TableSelectionSingle",
+        "ui5.webcomponents.dist.TableVirtualizer",
+        "ui5.webcomponents.dist.Tag",
+        "ui5.webcomponents.dist.Text",
+        "ui5.webcomponents.dist.TextArea",
+        "ui5.webcomponents.dist.TimePicker",
+        "ui5.webcomponents.dist.TimePickerClock",
+        "ui5.webcomponents.dist.TimeSelectionClocks",
+        "ui5.webcomponents.dist.TimeSelectionInputs",
+        "ui5.webcomponents.dist.Title",
+        "ui5.webcomponents.dist.Toast",
+        "ui5.webcomponents.dist.ToggleButton",
+        "ui5.webcomponents.dist.ToggleSpinButton",
+        "ui5.webcomponents.dist.Token",
+        "ui5.webcomponents.dist.Tokenizer",
+        "ui5.webcomponents.dist.Toolbar",
+        "ui5.webcomponents.dist.ToolbarButton",
+        "ui5.webcomponents.dist.ToolbarItem",
+        "ui5.webcomponents.dist.ToolbarSelect",
+        "ui5.webcomponents.dist.ToolbarSelectOption",
+        "ui5.webcomponents.dist.ToolbarSeparator",
+        "ui5.webcomponents.dist.ToolbarSpacer",
+        "ui5.webcomponents.dist.Tree",
+        "ui5.webcomponents.dist.TreeItem",
+        "ui5.webcomponents.dist.TreeItemCustom",
+        "ui5.webcomponents.dist.YearPicker",
+        "ui5.webcomponents.dist.YearRangePicker"
       ],
       elements: [],
       rootPath: "../"
@@ -240,7 +240,7 @@ sap.ui.define(
      * Different types of AvatarColorScheme.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/AvatarColorScheme
+     * @alias module:ui5/webcomponents/dist/types/AvatarColorScheme
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarColorScheme
      * @private
      */
@@ -325,14 +325,14 @@ sap.ui.define(
       Transparent: "Transparent"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.AvatarColorScheme",
+      "ui5.webcomponents.dist.types.AvatarColorScheme",
       pkg["AvatarColorScheme"]
     );
     /**
      * Different types of AvatarGroupType.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/AvatarGroupType
+     * @alias module:ui5/webcomponents/dist/types/AvatarGroupType
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarGroupType
      * @private
      */
@@ -351,14 +351,14 @@ sap.ui.define(
       Individual: "Individual"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.AvatarGroupType",
+      "ui5.webcomponents.dist.types.AvatarGroupType",
       pkg["AvatarGroupType"]
     );
     /**
      * Different Avatar modes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/AvatarMode
+     * @alias module:ui5/webcomponents/dist/types/AvatarMode
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarMode
      * @private
      */
@@ -387,12 +387,12 @@ sap.ui.define(
        */
       Interactive: "Interactive"
     };
-    registerEnum("@ui5.webcomponents.dist.types.AvatarMode", pkg["AvatarMode"]);
+    registerEnum("ui5.webcomponents.dist.types.AvatarMode", pkg["AvatarMode"]);
     /**
      * Different types of AvatarShape.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/AvatarShape
+     * @alias module:ui5/webcomponents/dist/types/AvatarShape
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarShape
      * @private
      */
@@ -411,14 +411,14 @@ sap.ui.define(
       Square: "Square"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.AvatarShape",
+      "ui5.webcomponents.dist.types.AvatarShape",
       pkg["AvatarShape"]
     );
     /**
      * Different types of AvatarSize.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/AvatarSize
+     * @alias module:ui5/webcomponents/dist/types/AvatarSize
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarSize
      * @private
      */
@@ -459,12 +459,12 @@ sap.ui.define(
        */
       XS: "XS"
     };
-    registerEnum("@ui5.webcomponents.dist.types.AvatarSize", pkg["AvatarSize"]);
+    registerEnum("ui5.webcomponents.dist.types.AvatarSize", pkg["AvatarSize"]);
     /**
      * Defines background designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BackgroundDesign
+     * @alias module:ui5/webcomponents/dist/types/BackgroundDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BackgroundDesign
      * @private
      */
@@ -489,14 +489,14 @@ sap.ui.define(
       Transparent: "Transparent"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.BackgroundDesign",
+      "ui5.webcomponents.dist.types.BackgroundDesign",
       pkg["BackgroundDesign"]
     );
     /**
      * ListItem accessible roles.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BarAccessibleRole
+     * @alias module:ui5/webcomponents/dist/types/BarAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.BarAccessibleRole
      * @private
      */
@@ -515,14 +515,14 @@ sap.ui.define(
       Toolbar: "Toolbar"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.BarAccessibleRole",
+      "ui5.webcomponents.dist.types.BarAccessibleRole",
       pkg["BarAccessibleRole"]
     );
     /**
      * Different types of Bar design
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BarDesign
+     * @alias module:ui5/webcomponents/dist/types/BarDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BarDesign
      * @private
      */
@@ -552,12 +552,12 @@ sap.ui.define(
        */
       Subheader: "Subheader"
     };
-    registerEnum("@ui5.webcomponents.dist.types.BarDesign", pkg["BarDesign"]);
+    registerEnum("ui5.webcomponents.dist.types.BarDesign", pkg["BarDesign"]);
     /**
      * Defines border designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BorderDesign
+     * @alias module:ui5/webcomponents/dist/types/BorderDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BorderDesign
      * @private
      */
@@ -576,14 +576,14 @@ sap.ui.define(
       Solid: "Solid"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.BorderDesign",
+      "ui5.webcomponents.dist.types.BorderDesign",
       pkg["BorderDesign"]
     );
     /**
      * Different  Breadcrumbs designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BreadcrumbsDesign
+     * @alias module:ui5/webcomponents/dist/types/BreadcrumbsDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BreadcrumbsDesign
      * @private
      */
@@ -603,14 +603,14 @@ sap.ui.define(
       Standard: "Standard"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.BreadcrumbsDesign",
+      "ui5.webcomponents.dist.types.BreadcrumbsDesign",
       pkg["BreadcrumbsDesign"]
     );
     /**
      * Different Breadcrumbs separators.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BreadcrumbsSeparator
+     * @alias module:ui5/webcomponents/dist/types/BreadcrumbsSeparator
      * @ui5-module-override @ui5/webcomponents dist.types.BreadcrumbsSeparator
      * @private
      */
@@ -653,14 +653,14 @@ sap.ui.define(
       Slash: "Slash"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.BreadcrumbsSeparator",
+      "ui5.webcomponents.dist.types.BreadcrumbsSeparator",
       pkg["BreadcrumbsSeparator"]
     );
     /**
      * Different BusyIndicator sizes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BusyIndicatorSize
+     * @alias module:ui5/webcomponents/dist/types/BusyIndicatorSize
      * @ui5-module-override @ui5/webcomponents dist.types.BusyIndicatorSize
      * @private
      */
@@ -685,14 +685,14 @@ sap.ui.define(
       S: "S"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.BusyIndicatorSize",
+      "ui5.webcomponents.dist.types.BusyIndicatorSize",
       pkg["BusyIndicatorSize"]
     );
     /**
      * Different BusyIndicator text placements.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/BusyIndicatorTextPlacement
+     * @alias module:ui5/webcomponents/dist/types/BusyIndicatorTextPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.BusyIndicatorTextPlacement
      * @private
      */
@@ -711,14 +711,14 @@ sap.ui.define(
       Top: "Top"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.BusyIndicatorTextPlacement",
+      "ui5.webcomponents.dist.types.BusyIndicatorTextPlacement",
       pkg["BusyIndicatorTextPlacement"]
     );
     /**
      * Button accessible roles.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ButtonAccessibleRole
+     * @alias module:ui5/webcomponents/dist/types/ButtonAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonAccessibleRole
      * @private
      */
@@ -737,14 +737,14 @@ sap.ui.define(
       Link: "Link"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ButtonAccessibleRole",
+      "ui5.webcomponents.dist.types.ButtonAccessibleRole",
       pkg["ButtonAccessibleRole"]
     );
     /**
      * Determines where the badge will be placed and how it will be styled.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ButtonBadgeDesign
+     * @alias module:ui5/webcomponents/dist/types/ButtonBadgeDesign
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonBadgeDesign
      * @private
      */
@@ -771,14 +771,14 @@ sap.ui.define(
       OverlayText: "OverlayText"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ButtonBadgeDesign",
+      "ui5.webcomponents.dist.types.ButtonBadgeDesign",
       pkg["ButtonBadgeDesign"]
     );
     /**
      * Different Button designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ButtonDesign
+     * @alias module:ui5/webcomponents/dist/types/ButtonDesign
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonDesign
      * @private
      */
@@ -821,14 +821,14 @@ sap.ui.define(
       Transparent: "Transparent"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ButtonDesign",
+      "ui5.webcomponents.dist.types.ButtonDesign",
       pkg["ButtonDesign"]
     );
     /**
      * Determines if the button has special form-related functionality.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ButtonType
+     * @alias module:ui5/webcomponents/dist/types/ButtonType
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonType
      * @private
      */
@@ -852,12 +852,12 @@ sap.ui.define(
        */
       Submit: "Submit"
     };
-    registerEnum("@ui5.webcomponents.dist.types.ButtonType", pkg["ButtonType"]);
+    registerEnum("ui5.webcomponents.dist.types.ButtonType", pkg["ButtonType"]);
     /**
      * Enum for calendar legend items' types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/CalendarLegendItemType
+     * @alias module:ui5/webcomponents/dist/types/CalendarLegendItemType
      * @ui5-module-override @ui5/webcomponents dist.types.CalendarLegendItemType
      * @private
      */
@@ -1002,14 +1002,14 @@ sap.ui.define(
       Working: "Working"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.CalendarLegendItemType",
+      "ui5.webcomponents.dist.types.CalendarLegendItemType",
       pkg["CalendarLegendItemType"]
     );
     /**
      * Different Calendar selection mode.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/CalendarSelectionMode
+     * @alias module:ui5/webcomponents/dist/types/CalendarSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.CalendarSelectionMode
      * @private
      */
@@ -1034,7 +1034,7 @@ sap.ui.define(
       Single: "Single"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.CalendarSelectionMode",
+      "ui5.webcomponents.dist.types.CalendarSelectionMode",
       pkg["CalendarSelectionMode"]
     );
     /**
@@ -1044,7 +1044,7 @@ sap.ui.define(
      * - The first week of the year.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/CalendarWeekNumbering
+     * @alias module:ui5/webcomponents/dist/types/CalendarWeekNumbering
      * @ui5-module-override @ui5/webcomponents dist.types.CalendarWeekNumbering
      * @private
      */
@@ -1083,14 +1083,14 @@ sap.ui.define(
       WesternTraditional: "WesternTraditional"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.CalendarWeekNumbering",
+      "ui5.webcomponents.dist.types.CalendarWeekNumbering",
       pkg["CalendarWeekNumbering"]
     );
     /**
      * Different Carousel arrows placement.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/CarouselArrowsPlacement
+     * @alias module:ui5/webcomponents/dist/types/CarouselArrowsPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.CarouselArrowsPlacement
      * @private
      */
@@ -1109,14 +1109,14 @@ sap.ui.define(
       Navigation: "Navigation"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.CarouselArrowsPlacement",
+      "ui5.webcomponents.dist.types.CarouselArrowsPlacement",
       pkg["CarouselArrowsPlacement"]
     );
     /**
      * Different Carousel page indicator types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/CarouselPageIndicatorType
+     * @alias module:ui5/webcomponents/dist/types/CarouselPageIndicatorType
      * @ui5-module-override @ui5/webcomponents dist.types.CarouselPageIndicatorType
      * @private
      */
@@ -1136,14 +1136,14 @@ sap.ui.define(
       Numeric: "Numeric"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.CarouselPageIndicatorType",
+      "ui5.webcomponents.dist.types.CarouselPageIndicatorType",
       pkg["CarouselPageIndicatorType"]
     );
     /**
      * Different filtering types of the ComboBox.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ComboBoxFilter
+     * @alias module:ui5/webcomponents/dist/types/ComboBoxFilter
      * @ui5-module-override @ui5/webcomponents dist.types.ComboBoxFilter
      * @private
      */
@@ -1174,14 +1174,14 @@ sap.ui.define(
       StartsWithPerTerm: "StartsWithPerTerm"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ComboBoxFilter",
+      "ui5.webcomponents.dist.types.ComboBoxFilter",
       pkg["ComboBoxFilter"]
     );
     /**
      * Overflow Mode.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ExpandableTextOverflowMode
+     * @alias module:ui5/webcomponents/dist/types/ExpandableTextOverflowMode
      * @ui5-module-override @ui5/webcomponents dist.types.ExpandableTextOverflowMode
      * @private
      */
@@ -1200,7 +1200,7 @@ sap.ui.define(
       Popover: "Popover"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ExpandableTextOverflowMode",
+      "ui5.webcomponents.dist.types.ExpandableTextOverflowMode",
       pkg["ExpandableTextOverflowMode"]
     );
     /**
@@ -1214,7 +1214,7 @@ sap.ui.define(
      * - "Edit" mode should be used when the form consists of editable (e.g. input fields) form items.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/FormAccessibleMode
+     * @alias module:ui5/webcomponents/dist/types/FormAccessibleMode
      * @ui5-module-override @ui5/webcomponents dist.types.FormAccessibleMode
      * @private
      */
@@ -1233,14 +1233,14 @@ sap.ui.define(
       Edit: "Edit"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.FormAccessibleMode",
+      "ui5.webcomponents.dist.types.FormAccessibleMode",
       pkg["FormAccessibleMode"]
     );
     /**
      * Different spacing of the form items.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/FormItemSpacing
+     * @alias module:ui5/webcomponents/dist/types/FormItemSpacing
      * @ui5-module-override @ui5/webcomponents dist.types.FormItemSpacing
      * @private
      */
@@ -1259,14 +1259,14 @@ sap.ui.define(
       Normal: "Normal"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.FormItemSpacing",
+      "ui5.webcomponents.dist.types.FormItemSpacing",
       pkg["FormItemSpacing"]
     );
     /**
      * Different types of Highlight .
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/Highlight
+     * @alias module:ui5/webcomponents/dist/types/Highlight
      * @ui5-module-override @ui5/webcomponents dist.types.Highlight
      * @private
      */
@@ -1302,12 +1302,12 @@ sap.ui.define(
        */
       Positive: "Positive"
     };
-    registerEnum("@ui5.webcomponents.dist.types.Highlight", pkg["Highlight"]);
+    registerEnum("ui5.webcomponents.dist.types.Highlight", pkg["Highlight"]);
     /**
      * Different Icon semantic designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/IconDesign
+     * @alias module:ui5/webcomponents/dist/types/IconDesign
      * @ui5-module-override @ui5/webcomponents dist.types.IconDesign
      * @private
      */
@@ -1361,12 +1361,12 @@ sap.ui.define(
        */
       Positive: "Positive"
     };
-    registerEnum("@ui5.webcomponents.dist.types.IconDesign", pkg["IconDesign"]);
+    registerEnum("ui5.webcomponents.dist.types.IconDesign", pkg["IconDesign"]);
     /**
      * Different Icon modes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/IconMode
+     * @alias module:ui5/webcomponents/dist/types/IconMode
      * @ui5-module-override @ui5/webcomponents dist.types.IconMode
      * @private
      */
@@ -1395,12 +1395,12 @@ sap.ui.define(
        */
       Interactive: "Interactive"
     };
-    registerEnum("@ui5.webcomponents.dist.types.IconMode", pkg["IconMode"]);
+    registerEnum("ui5.webcomponents.dist.types.IconMode", pkg["IconMode"]);
     /**
      * Different filtering types of the Input.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/InputSuggestionsFilter
+     * @alias module:ui5/webcomponents/dist/types/InputSuggestionsFilter
      * @ui5-module-override @ui5/webcomponents dist.types.InputSuggestionsFilter
      * @private
      */
@@ -1431,14 +1431,14 @@ sap.ui.define(
       StartsWithPerTerm: "StartsWithPerTerm"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.InputSuggestionsFilter",
+      "ui5.webcomponents.dist.types.InputSuggestionsFilter",
       pkg["InputSuggestionsFilter"]
     );
     /**
      * Different input types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/InputType
+     * @alias module:ui5/webcomponents/dist/types/InputType
      * @ui5-module-override @ui5/webcomponents dist.types.InputType
      * @private
      */
@@ -1486,12 +1486,12 @@ sap.ui.define(
        */
       URL: "URL"
     };
-    registerEnum("@ui5.webcomponents.dist.types.InputType", pkg["InputType"]);
+    registerEnum("ui5.webcomponents.dist.types.InputType", pkg["InputType"]);
     /**
      * Defines the area size around the component that the user can select.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/InteractiveAreaSize
+     * @alias module:ui5/webcomponents/dist/types/InteractiveAreaSize
      * @ui5-module-override @ui5/webcomponents dist.types.InteractiveAreaSize
      * @private
      */
@@ -1510,14 +1510,14 @@ sap.ui.define(
       Normal: "Normal"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.InteractiveAreaSize",
+      "ui5.webcomponents.dist.types.InteractiveAreaSize",
       pkg["InteractiveAreaSize"]
     );
     /**
      * Link accessible roles.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/LinkAccessibleRole
+     * @alias module:ui5/webcomponents/dist/types/LinkAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.LinkAccessibleRole
      * @private
      */
@@ -1536,14 +1536,14 @@ sap.ui.define(
       Link: "Link"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.LinkAccessibleRole",
+      "ui5.webcomponents.dist.types.LinkAccessibleRole",
       pkg["LinkAccessibleRole"]
     );
     /**
      * Different link designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/LinkDesign
+     * @alias module:ui5/webcomponents/dist/types/LinkDesign
      * @ui5-module-override @ui5/webcomponents dist.types.LinkDesign
      * @private
      */
@@ -1567,12 +1567,12 @@ sap.ui.define(
        */
       Subtle: "Subtle"
     };
-    registerEnum("@ui5.webcomponents.dist.types.LinkDesign", pkg["LinkDesign"]);
+    registerEnum("ui5.webcomponents.dist.types.LinkDesign", pkg["LinkDesign"]);
     /**
      * List accessible roles.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ListAccessibleRole
+     * @alias module:ui5/webcomponents/dist/types/ListAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.ListAccessibleRole
      * @private
      */
@@ -1603,14 +1603,14 @@ sap.ui.define(
       Tree: "Tree"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ListAccessibleRole",
+      "ui5.webcomponents.dist.types.ListAccessibleRole",
       pkg["ListAccessibleRole"]
     );
     /**
      * Different list growing modes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ListGrowingMode
+     * @alias module:ui5/webcomponents/dist/types/ListGrowingMode
      * @ui5-module-override @ui5/webcomponents dist.types.ListGrowingMode
      * @private
      */
@@ -1636,14 +1636,14 @@ sap.ui.define(
       Scroll: "Scroll"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ListGrowingMode",
+      "ui5.webcomponents.dist.types.ListGrowingMode",
       pkg["ListGrowingMode"]
     );
     /**
      * ListItem accessible roles.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ListItemAccessibleRole
+     * @alias module:ui5/webcomponents/dist/types/ListItemAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.ListItemAccessibleRole
      * @private
      */
@@ -1680,14 +1680,14 @@ sap.ui.define(
       TreeItem: "TreeItem"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ListItemAccessibleRole",
+      "ui5.webcomponents.dist.types.ListItemAccessibleRole",
       pkg["ListItemAccessibleRole"]
     );
     /**
      * Different list item types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ListItemType
+     * @alias module:ui5/webcomponents/dist/types/ListItemType
      * @ui5-module-override @ui5/webcomponents dist.types.ListItemType
      * @private
      */
@@ -1718,14 +1718,14 @@ sap.ui.define(
       Navigation: "Navigation"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ListItemType",
+      "ui5.webcomponents.dist.types.ListItemType",
       pkg["ListItemType"]
     );
     /**
      * Different list selection modes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ListSelectionMode
+     * @alias module:ui5/webcomponents/dist/types/ListSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.ListSelectionMode
      * @private
      */
@@ -1776,14 +1776,14 @@ sap.ui.define(
       SingleStart: "SingleStart"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ListSelectionMode",
+      "ui5.webcomponents.dist.types.ListSelectionMode",
       pkg["ListSelectionMode"]
     );
     /**
      * Different types of list items separators.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ListSeparator
+     * @alias module:ui5/webcomponents/dist/types/ListSeparator
      * @ui5-module-override @ui5/webcomponents dist.types.ListSeparator
      * @private
      */
@@ -1809,14 +1809,14 @@ sap.ui.define(
       None: "None"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ListSeparator",
+      "ui5.webcomponents.dist.types.ListSeparator",
       pkg["ListSeparator"]
     );
     /**
      * Menu item group check modes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/MenuItemGroupCheckMode
+     * @alias module:ui5/webcomponents/dist/types/MenuItemGroupCheckMode
      * @ui5-module-override @ui5/webcomponents dist.types.MenuItemGroupCheckMode
      * @private
      */
@@ -1841,14 +1841,14 @@ sap.ui.define(
       Single: "Single"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.MenuItemGroupCheckMode",
+      "ui5.webcomponents.dist.types.MenuItemGroupCheckMode",
       pkg["MenuItemGroupCheckMode"]
     );
     /**
      * MessageStrip designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/MessageStripDesign
+     * @alias module:ui5/webcomponents/dist/types/MessageStripDesign
      * @ui5-module-override @ui5/webcomponents dist.types.MessageStripDesign
      * @private
      */
@@ -1891,14 +1891,14 @@ sap.ui.define(
       Positive: "Positive"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.MessageStripDesign",
+      "ui5.webcomponents.dist.types.MessageStripDesign",
       pkg["MessageStripDesign"]
     );
     /**
      * Different notification list growing modes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/NotificationListGrowingMode
+     * @alias module:ui5/webcomponents/dist/types/NotificationListGrowingMode
      * @ui5-module-override @ui5/webcomponents dist.types.NotificationListGrowingMode
      * @private
      */
@@ -1918,14 +1918,14 @@ sap.ui.define(
       None: "None"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.NotificationListGrowingMode",
+      "ui5.webcomponents.dist.types.NotificationListGrowingMode",
       pkg["NotificationListGrowingMode"]
     );
     /**
      * Tabs overflow mode in TabContainer.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/OverflowMode
+     * @alias module:ui5/webcomponents/dist/types/OverflowMode
      * @ui5-module-override @ui5/webcomponents dist.types.OverflowMode
      * @private
      */
@@ -1944,14 +1944,14 @@ sap.ui.define(
       StartAndEnd: "StartAndEnd"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.OverflowMode",
+      "ui5.webcomponents.dist.types.OverflowMode",
       pkg["OverflowMode"]
     );
     /**
      * Panel accessible roles.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/PanelAccessibleRole
+     * @alias module:ui5/webcomponents/dist/types/PanelAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.PanelAccessibleRole
      * @private
      */
@@ -1979,14 +1979,14 @@ sap.ui.define(
       Region: "Region"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.PanelAccessibleRole",
+      "ui5.webcomponents.dist.types.PanelAccessibleRole",
       pkg["PanelAccessibleRole"]
     );
     /**
      * Popover horizontal align types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/PopoverHorizontalAlign
+     * @alias module:ui5/webcomponents/dist/types/PopoverHorizontalAlign
      * @ui5-module-override @ui5/webcomponents dist.types.PopoverHorizontalAlign
      * @private
      */
@@ -2017,14 +2017,14 @@ sap.ui.define(
       Stretch: "Stretch"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.PopoverHorizontalAlign",
+      "ui5.webcomponents.dist.types.PopoverHorizontalAlign",
       pkg["PopoverHorizontalAlign"]
     );
     /**
      * Popover placements.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/PopoverPlacement
+     * @alias module:ui5/webcomponents/dist/types/PopoverPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.PopoverPlacement
      * @private
      */
@@ -2055,14 +2055,14 @@ sap.ui.define(
       Top: "Top"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.PopoverPlacement",
+      "ui5.webcomponents.dist.types.PopoverPlacement",
       pkg["PopoverPlacement"]
     );
     /**
      * Popover vertical align types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/PopoverVerticalAlign
+     * @alias module:ui5/webcomponents/dist/types/PopoverVerticalAlign
      * @ui5-module-override @ui5/webcomponents dist.types.PopoverVerticalAlign
      * @private
      */
@@ -2093,14 +2093,14 @@ sap.ui.define(
       Top: "Top"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.PopoverVerticalAlign",
+      "ui5.webcomponents.dist.types.PopoverVerticalAlign",
       pkg["PopoverVerticalAlign"]
     );
     /**
      * Popup accessible roles.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/PopupAccessibleRole
+     * @alias module:ui5/webcomponents/dist/types/PopupAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.PopupAccessibleRole
      * @private
      */
@@ -2125,14 +2125,14 @@ sap.ui.define(
       None: "None"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.PopupAccessibleRole",
+      "ui5.webcomponents.dist.types.PopupAccessibleRole",
       pkg["PopupAccessibleRole"]
     );
     /**
      * Different types of Priority.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/Priority
+     * @alias module:ui5/webcomponents/dist/types/Priority
      * @ui5-module-override @ui5/webcomponents dist.types.Priority
      * @private
      */
@@ -2162,13 +2162,13 @@ sap.ui.define(
        */
       None: "None"
     };
-    registerEnum("@ui5.webcomponents.dist.types.Priority", pkg["Priority"]);
+    registerEnum("ui5.webcomponents.dist.types.Priority", pkg["Priority"]);
     /**
      * Types of icon sizes used in the RatingIndicator.
      * Provides predefined size categories to ensure consistent scaling and spacing of icons.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/RatingIndicatorSize
+     * @alias module:ui5/webcomponents/dist/types/RatingIndicatorSize
      * @ui5-module-override @ui5/webcomponents dist.types.RatingIndicatorSize
      * @private
      */
@@ -2194,14 +2194,14 @@ sap.ui.define(
       S: "S"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.RatingIndicatorSize",
+      "ui5.webcomponents.dist.types.RatingIndicatorSize",
       pkg["RatingIndicatorSize"]
     );
     /**
      * Different SegmentedButton selection modes.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/SegmentedButtonSelectionMode
+     * @alias module:ui5/webcomponents/dist/types/SegmentedButtonSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.SegmentedButtonSelectionMode
      * @private
      */
@@ -2220,14 +2220,14 @@ sap.ui.define(
       Single: "Single"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.SegmentedButtonSelectionMode",
+      "ui5.webcomponents.dist.types.SegmentedButtonSelectionMode",
       pkg["SegmentedButtonSelectionMode"]
     );
     /**
      * Defines the separator types for Select component two-column layout.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/SelectTextSeparator
+     * @alias module:ui5/webcomponents/dist/types/SelectTextSeparator
      * @ui5-module-override @ui5/webcomponents dist.types.SelectTextSeparator
      * @private
      */
@@ -2252,14 +2252,14 @@ sap.ui.define(
       VerticalLine: "VerticalLine"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.SelectTextSeparator",
+      "ui5.webcomponents.dist.types.SelectTextSeparator",
       pkg["SelectTextSeparator"]
     );
     /**
      * Different types of SemanticColor.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/SemanticColor
+     * @alias module:ui5/webcomponents/dist/types/SemanticColor
      * @ui5-module-override @ui5/webcomponents dist.types.SemanticColor
      * @private
      */
@@ -2296,14 +2296,14 @@ sap.ui.define(
       Positive: "Positive"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.SemanticColor",
+      "ui5.webcomponents.dist.types.SemanticColor",
       pkg["SemanticColor"]
     );
     /**
      * Different types of Switch designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/SwitchDesign
+     * @alias module:ui5/webcomponents/dist/types/SwitchDesign
      * @ui5-module-override @ui5/webcomponents dist.types.SwitchDesign
      * @private
      */
@@ -2322,14 +2322,14 @@ sap.ui.define(
       Textual: "Textual"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.SwitchDesign",
+      "ui5.webcomponents.dist.types.SwitchDesign",
       pkg["SwitchDesign"]
     );
     /**
      * Tab layout of TabContainer.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TabLayout
+     * @alias module:ui5/webcomponents/dist/types/TabLayout
      * @ui5-module-override @ui5/webcomponents dist.types.TabLayout
      * @private
      */
@@ -2347,12 +2347,12 @@ sap.ui.define(
        */
       Standard: "Standard"
     };
-    registerEnum("@ui5.webcomponents.dist.types.TabLayout", pkg["TabLayout"]);
+    registerEnum("ui5.webcomponents.dist.types.TabLayout", pkg["TabLayout"]);
     /**
      * Alignment of the &lt;ui5-table-cell&gt; component.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TableCellHorizontalAlign
+     * @alias module:ui5/webcomponents/dist/types/TableCellHorizontalAlign
      * @ui5-module-override @ui5/webcomponents dist.types.TableCellHorizontalAlign
      * @private
      */
@@ -2389,14 +2389,14 @@ sap.ui.define(
       Start: "Start"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.TableCellHorizontalAlign",
+      "ui5.webcomponents.dist.types.TableCellHorizontalAlign",
       pkg["TableCellHorizontalAlign"]
     );
     /**
      * Growing mode of the &lt;ui5-table&gt; component.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TableGrowingMode
+     * @alias module:ui5/webcomponents/dist/types/TableGrowingMode
      * @ui5-module-override @ui5/webcomponents dist.types.TableGrowingMode
      * @private
      */
@@ -2417,14 +2417,14 @@ sap.ui.define(
       Scroll: "Scroll"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.TableGrowingMode",
+      "ui5.webcomponents.dist.types.TableGrowingMode",
       pkg["TableGrowingMode"]
     );
     /**
      * Overflow mode of the `ui5-table` component.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TableOverflowMode
+     * @alias module:ui5/webcomponents/dist/types/TableOverflowMode
      * @ui5-module-override @ui5/webcomponents dist.types.TableOverflowMode
      * @private
      */
@@ -2443,14 +2443,14 @@ sap.ui.define(
       Scroll: "Scroll"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.TableOverflowMode",
+      "ui5.webcomponents.dist.types.TableOverflowMode",
       pkg["TableOverflowMode"]
     );
     /**
      * Selection behavior of the `ui5-table` selection components.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TableSelectionBehavior
+     * @alias module:ui5/webcomponents/dist/types/TableSelectionBehavior
      * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionBehavior
      * @private
      */
@@ -2471,14 +2471,14 @@ sap.ui.define(
       RowSelector: "RowSelector"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.TableSelectionBehavior",
+      "ui5.webcomponents.dist.types.TableSelectionBehavior",
       pkg["TableSelectionBehavior"]
     );
     /**
      * Selection modes of the &lt;ui5-table&gt; component.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TableSelectionMode
+     * @alias module:ui5/webcomponents/dist/types/TableSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionMode
      * @private
      */
@@ -2503,14 +2503,14 @@ sap.ui.define(
       Single: "Single"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.TableSelectionMode",
+      "ui5.webcomponents.dist.types.TableSelectionMode",
       pkg["TableSelectionMode"]
     );
     /**
      * Selectors of the table header row in multi-selection scenarios.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TableSelectionMultiHeaderSelector
+     * @alias module:ui5/webcomponents/dist/types/TableSelectionMultiHeaderSelector
      * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionMultiHeaderSelector
      * @private
      */
@@ -2529,14 +2529,14 @@ sap.ui.define(
       SelectAll: "SelectAll"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.TableSelectionMultiHeaderSelector",
+      "ui5.webcomponents.dist.types.TableSelectionMultiHeaderSelector",
       pkg["TableSelectionMultiHeaderSelector"]
     );
     /**
      * Defines tag design types.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TagDesign
+     * @alias module:ui5/webcomponents/dist/types/TagDesign
      * @ui5-module-override @ui5/webcomponents dist.types.TagDesign
      * @private
      */
@@ -2584,12 +2584,12 @@ sap.ui.define(
        */
       Set2: "Set2"
     };
-    registerEnum("@ui5.webcomponents.dist.types.TagDesign", pkg["TagDesign"]);
+    registerEnum("ui5.webcomponents.dist.types.TagDesign", pkg["TagDesign"]);
     /**
      * Predefined sizes for the tag.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TagSize
+     * @alias module:ui5/webcomponents/dist/types/TagSize
      * @ui5-module-override @ui5/webcomponents dist.types.TagSize
      * @private
      */
@@ -2607,12 +2607,12 @@ sap.ui.define(
        */
       S: "S"
     };
-    registerEnum("@ui5.webcomponents.dist.types.TagSize", pkg["TagSize"]);
+    registerEnum("ui5.webcomponents.dist.types.TagSize", pkg["TagSize"]);
     /**
      * Empty Indicator Mode.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TextEmptyIndicatorMode
+     * @alias module:ui5/webcomponents/dist/types/TextEmptyIndicatorMode
      * @ui5-module-override @ui5/webcomponents dist.types.TextEmptyIndicatorMode
      * @private
      */
@@ -2631,14 +2631,14 @@ sap.ui.define(
       On: "On"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.TextEmptyIndicatorMode",
+      "ui5.webcomponents.dist.types.TextEmptyIndicatorMode",
       pkg["TextEmptyIndicatorMode"]
     );
     /**
      * Different types of Title level.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TitleLevel
+     * @alias module:ui5/webcomponents/dist/types/TitleLevel
      * @ui5-module-override @ui5/webcomponents dist.types.TitleLevel
      * @private
      */
@@ -2680,12 +2680,12 @@ sap.ui.define(
        */
       H6: "H6"
     };
-    registerEnum("@ui5.webcomponents.dist.types.TitleLevel", pkg["TitleLevel"]);
+    registerEnum("ui5.webcomponents.dist.types.TitleLevel", pkg["TitleLevel"]);
     /**
      * Toast placement.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ToastPlacement
+     * @alias module:ui5/webcomponents/dist/types/ToastPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.ToastPlacement
      * @private
      */
@@ -2747,14 +2747,14 @@ sap.ui.define(
       TopStart: "TopStart"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ToastPlacement",
+      "ui5.webcomponents.dist.types.ToastPlacement",
       pkg["ToastPlacement"]
     );
     /**
      * Defines which direction the items of ui5-toolbar will be aligned.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ToolbarAlign
+     * @alias module:ui5/webcomponents/dist/types/ToolbarAlign
      * @ui5-module-override @ui5/webcomponents dist.types.ToolbarAlign
      * @private
      */
@@ -2773,14 +2773,14 @@ sap.ui.define(
       Start: "Start"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ToolbarAlign",
+      "ui5.webcomponents.dist.types.ToolbarAlign",
       pkg["ToolbarAlign"]
     );
     /**
      * Defines the available toolbar designs.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ToolbarDesign
+     * @alias module:ui5/webcomponents/dist/types/ToolbarDesign
      * @ui5-module-override @ui5/webcomponents dist.types.ToolbarDesign
      * @private
      */
@@ -2799,14 +2799,14 @@ sap.ui.define(
       Transparent: "Transparent"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ToolbarDesign",
+      "ui5.webcomponents.dist.types.ToolbarDesign",
       pkg["ToolbarDesign"]
     );
     /**
      * Defines the priority of the toolbar item to go inside overflow popover.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/ToolbarItemOverflowBehavior
+     * @alias module:ui5/webcomponents/dist/types/ToolbarItemOverflowBehavior
      * @ui5-module-override @ui5/webcomponents dist.types.ToolbarItemOverflowBehavior
      * @private
      */
@@ -2831,14 +2831,14 @@ sap.ui.define(
       NeverOverflow: "NeverOverflow"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.ToolbarItemOverflowBehavior",
+      "ui5.webcomponents.dist.types.ToolbarItemOverflowBehavior",
       pkg["ToolbarItemOverflowBehavior"]
     );
     /**
      * Different types of wrapping.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/WrappingType
+     * @alias module:ui5/webcomponents/dist/types/WrappingType
      * @ui5-module-override @ui5/webcomponents dist.types.WrappingType
      * @private
      */
@@ -2857,7 +2857,7 @@ sap.ui.define(
       Normal: "Normal"
     };
     registerEnum(
-      "@ui5.webcomponents.dist.types.WrappingType",
+      "ui5.webcomponents.dist.types.WrappingType",
       pkg["WrappingType"]
     );
 
@@ -2866,7 +2866,7 @@ sap.ui.define(
      * Interface for components that represent an avatar and may be slotted in numerous higher-order components such as `ui5-avatar-group`
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/AvatarGroup.IAvatarGroupItem
+     * @name module:ui5/webcomponents/dist/AvatarGroup.IAvatarGroupItem
      * @ui5-module-override @ui5/webcomponents IAvatarGroupItem
      * @private
      */
@@ -2874,7 +2874,7 @@ sap.ui.define(
      * Interface for components that may be used as a button inside numerous higher-order components
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Button.IButton
+     * @name module:ui5/webcomponents/dist/Button.IButton
      * @ui5-module-override @ui5/webcomponents IButton
      * @private
      */
@@ -2884,7 +2884,7 @@ sap.ui.define(
      * **Note:** Use with `ui5-date` or `ui5-date-range` as calendar date selection types.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Calendar.ICalendarSelectedDates
+     * @name module:ui5/webcomponents/dist/Calendar.ICalendarSelectedDates
      * @ui5-module-override @ui5/webcomponents ICalendarSelectedDates
      * @private
      */
@@ -2892,7 +2892,7 @@ sap.ui.define(
      * Interface for components that may be used inside a `ui5-color-palette` or `ui5-color-palette-popover`
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/ColorPalette.IColorPaletteItem
+     * @name module:ui5/webcomponents/dist/ColorPalette.IColorPaletteItem
      * @ui5-module-override @ui5/webcomponents IColorPaletteItem
      * @private
      */
@@ -2900,7 +2900,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside a `ui5-combobox`
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/ComboBox.IComboBoxItem
+     * @name module:ui5/webcomponents/dist/ComboBox.IComboBoxItem
      * @ui5-module-override @ui5/webcomponents IComboBoxItem
      * @private
      */
@@ -2926,7 +2926,7 @@ sap.ui.define(
      * - `isValidString(value: string): boolean`: Validates whether a given string is a valid representation of the dynamic date range value.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/DynamicDateRange.IDynamicDateRangeOption
+     * @name module:ui5/webcomponents/dist/DynamicDateRange.IDynamicDateRangeOption
      * @ui5-module-override @ui5/webcomponents IDynamicDateRangeOption
      * @private
      */
@@ -2934,7 +2934,7 @@ sap.ui.define(
      * Interface for components that can be slotted inside `ui5-form` as items.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Form.IFormItem
+     * @name module:ui5/webcomponents/dist/Form.IFormItem
      * @ui5-module-override @ui5/webcomponents IFormItem
      * @private
      */
@@ -2942,7 +2942,7 @@ sap.ui.define(
      * Interface for components that represent an icon, usable in numerous higher-order components
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Icon.IIcon
+     * @name module:ui5/webcomponents/dist/Icon.IIcon
      * @ui5-module-override @ui5/webcomponents IIcon
      * @private
      */
@@ -2950,7 +2950,7 @@ sap.ui.define(
      * Interface for components that represent a suggestion item, usable in `ui5-input`
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Input.IInputSuggestionItem
+     * @name module:ui5/webcomponents/dist/Input.IInputSuggestionItem
      * @ui5-module-override @ui5/webcomponents IInputSuggestionItem
      * @private
      */
@@ -2960,7 +2960,7 @@ sap.ui.define(
      * **Note:** Use with `ui5-menu-item` or `ui5-menu-separator`. Implementing the interface does not guarantee that any other classes can work with the `ui5-menu`.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Menu.IMenuItem
+     * @name module:ui5/webcomponents/dist/Menu.IMenuItem
      * @ui5-module-override @ui5/webcomponents IMenuItem
      * @private
      */
@@ -2968,7 +2968,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside a `ui5-multi-combobox` as items
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/MultiComboBox.IMultiComboBoxItem
+     * @name module:ui5/webcomponents/dist/MultiComboBox.IMultiComboBoxItem
      * @ui5-module-override @ui5/webcomponents IMultiComboBoxItem
      * @private
      */
@@ -2976,7 +2976,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside `ui5-segmented-button` as items
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/SegmentedButton.ISegmentedButtonItem
+     * @name module:ui5/webcomponents/dist/SegmentedButton.ISegmentedButtonItem
      * @ui5-module-override @ui5/webcomponents ISegmentedButtonItem
      * @private
      */
@@ -2984,7 +2984,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside `ui5-select` as options
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Select.IOption
+     * @name module:ui5/webcomponents/dist/Select.IOption
      * @ui5-module-override @ui5/webcomponents IOption
      * @private
      */
@@ -2994,7 +2994,7 @@ sap.ui.define(
      * **Note:** Use directly `ui5-tab` or `ui5-tab-seprator`. Implementing the interface does not guarantee that the class can work as a tab.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/TabContainer.ITab
+     * @name module:ui5/webcomponents/dist/TabContainer.ITab
      * @ui5-module-override @ui5/webcomponents ITab
      * @private
      */
@@ -3002,7 +3002,7 @@ sap.ui.define(
      * Interface for components that can be slotted inside the `features` slot of the `ui5-table`.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Table.ITableFeature
+     * @name module:ui5/webcomponents/dist/Table.ITableFeature
      * @ui5-module-override @ui5/webcomponents ITableFeature
      * @private
      */
@@ -3011,7 +3011,7 @@ sap.ui.define(
      * and provide growing/data loading functionality.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Table.ITableGrowing
+     * @name module:ui5/webcomponents/dist/Table.ITableGrowing
      * @ui5-module-override @ui5/webcomponents ITableGrowing
      * @private
      */
@@ -3021,7 +3021,7 @@ sap.ui.define(
      * It could be any HTMLElement or UI5 Web Component with option to specify custom overflow closing events and overflow behavior.
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/ToolbarItem.IToolbarItemContent
+     * @name module:ui5/webcomponents/dist/ToolbarItem.IToolbarItemContent
      * @ui5-module-override @ui5/webcomponents IToolbarItemContent
      * @private
      */

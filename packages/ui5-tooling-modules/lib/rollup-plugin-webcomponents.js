@@ -35,7 +35,7 @@
  * @param {object} [options.options] plugin tuning knobs:
  *        `skip`, `scoping`, `scopeSuffix`, `enrichBusyIndicator`, `force`,
  *        `includeAssets`, `forceAllAssets`, `moduleBasePath`,
- *        `removeScopePrefix`, `skipJSDoc`, `skipDtsGeneration`,
+ *        `removeScopePrefix`, `replaceDashes`, `skipJSDoc`, `skipDtsGeneration`,
  *        `customJSDocTags`, `removeCLDRData`
  * @param {object} [options.$metadata]
  *        out-parameter object that receives the discovered Web Component
@@ -58,22 +58,36 @@ const prettier = require("@prettier/sync");
 
 module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, forceAllAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, customJSDocTags, removeCLDRData } =
-		Object.assign(
-			{
-				skip: false,
-				scoping: true,
-				enrichBusyIndicator: false,
-				force: false,
-				includeAssets: false, // experimental (due to race condition!)
-				forceAllAssets: false, // experimental (only a hack due to timing issues when requiring Web Components from one package first and from other later!)
-				skipJSDoc: true,
-				skipDtsGeneration: true,
-				customJSDocTags: ["private"],
-				removeCLDRData: true,
-			},
-			options,
-		);
+	let {
+		skip,
+		scoping,
+		scopeSuffix,
+		enrichBusyIndicator,
+		force,
+		includeAssets,
+		forceAllAssets,
+		moduleBasePath,
+		removeScopePrefix,
+		replaceDashes,
+		skipJSDoc,
+		skipDtsGeneration,
+		customJSDocTags,
+		removeCLDRData,
+	} = Object.assign(
+		{
+			skip: false,
+			scoping: true,
+			enrichBusyIndicator: false,
+			force: false,
+			includeAssets: false, // experimental (due to race condition!)
+			forceAllAssets: false, // experimental (only a hack due to timing issues when requiring Web Components from one package first and from other later!)
+			skipJSDoc: true,
+			skipDtsGeneration: true,
+			customJSDocTags: ["private"],
+			removeCLDRData: true,
+		},
+		options,
+	);
 
 	// derive information from the projectInfo
 	const { pkgJson, framework } = projectInfo;
@@ -206,6 +220,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 							frameworkVersion,
 							moduleBasePath,
 							removeScopePrefix,
+							replaceDashes,
 							scopeSuffix: ui5WebCScopeSuffix,
 							npmPackagePath,
 							skipDtsGeneration,
