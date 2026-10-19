@@ -1,5 +1,21 @@
 # Change Log
 
+## 3.41.1
+
+### Patch Changes
+
+- [#1468](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1468) [`ec56483`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ec56483d74a465ba733fa3c60ca94054826dd245) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(ui5-tooling-modules): restore rewriting of slashed qualified names in Web Component wrappers
+  
+  When `replaceDashes`/`removeScopePrefix`/`sanitizeNpmPackageName` is active, the generator now
+  emits sanitized slashed qualified names (e.g. `ui5/webcomponents_fiori`).  The post-processing
+  rewrite loop in `util.js` was only searching for the raw npm package name
+  (`@ui5/webcomponents-fiori`) in slashed positions, so `designtime` paths and
+  `@alias`/`@type module:` JSDoc comments were no longer prefixed with the project namespace.
+  
+  Adds a slashed-sanitized search pass (guarded against the no-sanitization default so output is
+  byte-identical when sanitization flags are off) ordered before the raw-name pass to prevent
+  double-prefixing.
+
 ## 3.41.0
 
 ### Minor Changes
