@@ -1757,12 +1757,30 @@ module.exports = function (log, projectInfo) {
 									]
 										.sort((a, b) => b.name.localeCompare(a.name))
 										.forEach((package) => {
+											// When sanitization is active (removeScopePrefix / replaceDashes) the
+											// generator emits slashed qualified names (e.g. "ui5/webcomponents_fiori")
+											// that differ from the raw npm name ("@ui5/webcomponents-fiori").  We need
+											// an extra pass for those slashed forms so that designtime paths and
+											// @alias/@type module: JSDoc are rewritten correctly.
+											// The pass must run BEFORE the raw package.name pass; otherwise the raw
+											// pass would turn "@ui5/webcomponents-fiori" into the already-prefixed
+											// "ui5/.../gen/ui5/webcomponents_fiori" which contains the slashed form
+											// as a substring — running the slashed pass afterwards would double-prefix.
+											const slashedQualifiedName = package.qualifiedName?.replace(/\./g, "/");
+											const addSlashed = package.qualifiedName && slashedQualifiedName !== package.name;
 											if (package.qualifiedName) {
 												modifiedCode = replaceModules(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+											}
+											// slashed sanitized form: designtime path, @alias/@type module: slashed refs
+											if (addSlashed) {
+												modifiedCode = replaceModules(modifiedCode, slashedQualifiedName, rewriteDep(package.name, bundleInfo));
 											}
 											modifiedCode = replaceModules(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
 											if (package.qualifiedName) {
 												modifiedCode = replaceJSDoc(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+											}
+											if (addSlashed) {
+												modifiedCode = replaceJSDoc(modifiedCode, slashedQualifiedName, rewriteDep(package.name, bundleInfo));
 											}
 											modifiedCode = replaceJSDoc(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
 										});
