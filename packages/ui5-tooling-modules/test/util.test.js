@@ -897,7 +897,7 @@ test.serial("Verify generation of @ui5/webcomponents/Button Wrapper UI5 Control"
 		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/Button");
-	t.deepEqual(module.retVal.name, "@ui5.webcomponents.dist.Button");
+	t.deepEqual(module.retVal.name, "ui5.webcomponents.dist.Button");
 	t.deepEqual(module.retVal.def.metadata.tag, "ui5-button");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
@@ -1024,6 +1024,36 @@ test.serial("Verify generation of subclass naming - webc-package/SubCustomAlertB
 	const module = await env.getModule("webc-package/SubCustomAlertButton");
 	t.deepEqual(module.retVal.name, "webc-package.SubCustomAlertButton");
 	t.deepEqual(module.retVal.def.metadata.tag, "sub-custom-alert-button");
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
+test.serial("Verify replaceDashes sanitization of dashed package name in generated UI5 control name", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(
+		["webc-package/CustomAlertButton"],
+		Object.assign({}, webcomponentsContext, {
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: webcContextModules,
+		}),
+		{
+			pluginOptions: {
+				webcomponents: {
+					scoping: false,
+					removeScopePrefix: true,
+					replaceDashes: true,
+					moduleBasePath: path.posix.join("ui5/ecosystem/demo/app", "thirdparty"),
+				},
+			},
+		},
+	);
+	const module = await env.getModule("webc-package/CustomAlertButton");
+	// dash in "webc-package" must be replaced with underscore when replaceDashes is enabled
+	t.deepEqual(module.retVal.name, "webc_package.CustomAlertButton");
+	t.deepEqual(module.retVal.def.metadata.tag, "custom-alert-button");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}

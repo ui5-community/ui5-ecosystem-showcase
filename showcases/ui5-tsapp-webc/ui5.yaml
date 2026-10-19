@@ -33,7 +33,8 @@ builder:
         debug: true
         sourcemap: true
         #addToNamespace: false
-        removeScopePrefix: true
+        #removeScopePrefix: true
+        #replaceDashes: true
         sanitizeNpmPackageName: true
         pluginOptions:
           webcomponents:

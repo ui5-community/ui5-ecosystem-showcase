@@ -70,6 +70,8 @@ class RegistryEntry {
 		frameworkVersion,
 		isOpenUI5OrSAPUI5Lib,
 		isUI5WebComponents,
+		removeScopePrefix,
+		replaceDashes,
 	}) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
@@ -80,16 +82,20 @@ class RegistryEntry {
 		// for the generated artifacts (class names, module paths, imports) can be remapped
 		// independently, e.g. "@ui5/html" -> "sap/ui/core/html/elements". It is normalized to the
 		// slash notation; defaults to the npm namespace so existing generation stays unchanged.
+		const hasExplicitUi5Namespace = typeof ui5Namespace === "string" && ui5Namespace.length > 0;
 		this.ui5Namespace = (ui5Namespace || this.namespace).replace(/\./g, "/");
 		// optional leading module path segment (e.g. the build output "dist") that is stripped
 		// from module paths so it does not leak into the generated UI5 names
 		this.stripModulePrefix = stripModulePrefix;
-		this.qualifiedNamespace = slash2dot(this.ui5Namespace);
-		//this.moduleBasePath = moduleBasePath;
-		//this.qualifiedNamespace = `${moduleBasePath ? slash2dot(this.moduleBasePath) + "." : ""}${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
-		// TODO: The following conversion of "-" to "_" is a workaround for testing the UI5 JSDoc build.
-		//       Only needed until we solve the escaping issue of segments like "@ui5" or "webcomponents-fiori".
-		// this.qualifiedNamespace = this.qualifiedNamespace.replace(/-/g, "_");
+		// Apply npm package name sanitization to the generated UI5 qualified namespace so generated
+		// control names (e.g. the .extend("...") call) match the rewritten module paths.
+		// Only applied when no explicit ui5Namespace remap was provided.
+		let baseNamespace = this.ui5Namespace;
+		if (!hasExplicitUi5Namespace) {
+			if (removeScopePrefix) baseNamespace = baseNamespace.replace(/^@/, "");
+			if (replaceDashes) baseNamespace = baseNamespace.replace(/-/g, "_");
+		}
+		this.qualifiedNamespace = slash2dot(baseNamespace);
 		this.version = version;
 		this.customJSDocTags = customJSDocTags;
 
@@ -1402,6 +1408,8 @@ const WebComponentRegistry = {
 	 * @param {string} options.scopeSuffix the scope suffix for the web component package
 	 * @param {string} options.npmPackagePath the npm package path of the web component package
 	 * @param {string} options.version the version of the web component package
+	 * @param {boolean} [options.removeScopePrefix] strip the leading @ scope-prefix from generated UI5 qualified names
+	 * @param {boolean} [options.replaceDashes] replace dashes with underscores in generated UI5 qualified names
 	 * @param {string} [options.customJSDocTags] list with additional JSDoc tags to add (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipDtsGeneration] whether to skip the *.d.ts generation (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipJSDoc] whether to skip the JSDoc generation (passed via the pluginOptions in ui5.yaml)
@@ -1419,6 +1427,8 @@ const WebComponentRegistry = {
 		scopeSuffix,
 		npmPackagePath,
 		version,
+		removeScopePrefix,
+		replaceDashes,
 		customJSDocTags = ["private"],
 		skipDtsGeneration = true,
 		skipJSDoc = true,
@@ -1442,6 +1452,8 @@ const WebComponentRegistry = {
 				frameworkVersion,
 				isOpenUI5OrSAPUI5Lib,
 				isUI5WebComponents,
+				removeScopePrefix,
+				replaceDashes,
 			});
 
 			// track all classes also via their module name,

@@ -19,7 +19,10 @@ const sanitize = require("sanitize-filename");
  * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
  * @param {boolean|string} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
- * @param {boolean} [parameters.options.configuration.removeScopePrefix] Remove the @ prefix for the scope in the namespace/path
+ * @param {boolean} [parameters.options.configuration.sanitizeNpmPackageName] Master flag: enables both removeScopePrefix and replaceDashes at once
+ * @param {boolean} [parameters.options.configuration.removeScopePrefix] Remove the @ scope-prefix in module paths and generated UI5 names
+ * @param {boolean} [parameters.options.configuration.removeScopePreceder] Alias for removeScopePrefix (deprecated)
+ * @param {boolean} [parameters.options.configuration.replaceDashes] Replace dashes with underscores in module paths and generated UI5 names
  * @param {boolean} [parameters.options.configuration.providedDependencies] List of provided dependencies which should not be processed
  * @param {object<string, string[]>} [parameters.options.configuration.includeAssets] Map of assets (key: npm package name, value: local paths) to be included (embedded)
  * @param {boolean|string[]} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
@@ -136,7 +139,14 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	// utility to rewrite dependency
 	const sanitizeNpmPackageName = config.sanitizeNpmPackageName;
 	const removeScopePrefix = sanitizeNpmPackageName || config.removeScopePrefix || config.removeScopePreceder;
-	const replaceDashes = sanitizeNpmPackageName;
+	const replaceDashes = sanitizeNpmPackageName || config.replaceDashes;
+
+	// forward the resolved sanitization flags into the webcomponents plugin options so the
+	// WebComponentRegistry applies the same name transformations to generated UI5 qualified names
+	// as rewriteDep applies to module paths. Explicit pluginOptions values win (??).
+	const wcOptions = config.pluginOptions.webcomponents;
+	wcOptions.removeScopePrefix = wcOptions.removeScopePrefix ?? removeScopePrefix;
+	wcOptions.replaceDashes = wcOptions.replaceDashes ?? replaceDashes;
 
 	// determine the NPM package name from a given source
 	const getNpmPackageName = (source) => {

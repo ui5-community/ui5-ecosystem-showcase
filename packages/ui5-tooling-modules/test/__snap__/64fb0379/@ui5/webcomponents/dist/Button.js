@@ -11,12 +11,12 @@ sap.ui.define(
   function (WebComponent, EnabledPropagator) {
     "use strict";
 
-    const Button = WebComponent.extend("@ui5.webcomponents.dist.Button", {
+    const Button = WebComponent.extend("ui5.webcomponents.dist.Button", {
       metadata: {
         namespace: "@ui5/webcomponents",
-        qualifiedNamespace: "@ui5.webcomponents",
+        qualifiedNamespace: "ui5.webcomponents",
         tag: "ui5-button",
-        interfaces: ["@ui5.webcomponents.dist.Button.IButton"],
+        interfaces: ["ui5.webcomponents.dist.Button.IButton"],
         properties: {
           accessibilityAttributes: {
             type: "any",
@@ -32,12 +32,12 @@ sap.ui.define(
             mapping: "property"
           },
           accessibleRole: {
-            type: "@ui5.webcomponents.dist.types.ButtonAccessibleRole",
+            type: "ui5.webcomponents.dist.types.ButtonAccessibleRole",
             mapping: "property",
             defaultValue: "Button"
           },
           design: {
-            type: "@ui5.webcomponents.dist.types.ButtonDesign",
+            type: "ui5.webcomponents.dist.types.ButtonDesign",
             mapping: "property",
             defaultValue: "Default"
           },
@@ -78,7 +78,7 @@ sap.ui.define(
             defaultValue: false
           },
           type: {
-            type: "@ui5.webcomponents.dist.types.ButtonType",
+            type: "ui5.webcomponents.dist.types.ButtonType",
             mapping: "property",
             defaultValue: "Button"
           },
@@ -97,7 +97,7 @@ sap.ui.define(
         },
         aggregations: {
           badge: {
-            type: "@ui5.webcomponents.dist.ButtonBadge",
+            type: "ui5.webcomponents.dist.ButtonBadge",
             multiple: true,
             slot: "badge"
           }
