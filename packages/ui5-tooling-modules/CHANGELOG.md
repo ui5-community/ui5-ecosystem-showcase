@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.41.0
+
+### Minor Changes
+
+- [#1466](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1466) [`fd8e7ff`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fd8e7ff219ad3e6f63ca0d81795ad70bde8be90c) Thanks [@petermuessig](https://github.com/petermuessig)! - feat: add `replaceDashes` option and consistently apply name-sanitization to generated UI5 qualified names
+  
+  Introduces a new standalone `replaceDashes` boolean option (task-only) that replaces dashes with underscores in module paths when using `addToNamespace`. The `sanitizeNpmPackageName` master flag now explicitly enables both `removeScopePrefix` **and** `replaceDashes`.
+  
+  Both flags are now forwarded into the Web Components plugin so the `WebComponentRegistry` applies the same transformations to the generated UI5 qualified names (`.extend("...")` calls) as `rewriteDep` applies to module paths — keeping class names and file paths in sync (e.g. `webc-package.MyControl` → `webc_package.MyControl`).
+  
+  The deprecated alias `removeScopePreceder` for `removeScopePrefix` continues to be accepted.
+
 ## 3.40.0
 
 ### Minor Changes
