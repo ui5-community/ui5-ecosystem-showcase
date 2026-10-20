@@ -219,3 +219,71 @@ test.serial("'_ui5mapping' hint is merged into the generated UI5 property mappin
 	t.deepEqual(mProperties.value.mapping, { type: "none", to: "value", syncOn: "change" }, "hint fully overrides the computed mapping");
 	t.deepEqual(mProperties.checked.mapping, { type: "property", to: "checked", syncOn: "change" }, "hint adds syncOn to an attribute-mapped property");
 });
+
+test.serial("'@extends' in JSDoc class header uses dot notation without 'module:' prefix", (t) => {
+	const customElementsMetadata = {
+		schemaVersion: "2.1.0",
+		modules: [
+			{
+				kind: "javascript-module",
+				path: "dist/BaseThing.js",
+				declarations: [
+					{
+						kind: "class",
+						name: "BaseThing",
+						tagName: "test-base-thing",
+						customElement: true,
+						superclass: { name: "UI5Element", package: "@ui5/webcomponents-base" },
+					},
+				],
+				exports: [
+					{
+						kind: "custom-element-definition",
+						name: "test-base-thing",
+						declaration: { name: "BaseThing", module: "dist/BaseThing.js" },
+					},
+				],
+			},
+			{
+				kind: "javascript-module",
+				path: "dist/SpecialThing.js",
+				declarations: [
+					{
+						kind: "class",
+						name: "SpecialThing",
+						tagName: "test-special-thing",
+						customElement: true,
+						superclass: { name: "BaseThing", module: "dist/BaseThing.js", package: "@test/jsdoc-extends" },
+					},
+				],
+				exports: [
+					{
+						kind: "custom-element-definition",
+						name: "test-special-thing",
+						declaration: { name: "SpecialThing", module: "dist/SpecialThing.js" },
+					},
+				],
+			},
+		],
+	};
+
+	const entry = WebComponentRegistry.register({
+		customElementsMetadata,
+		namespace: "@test/jsdoc-extends",
+		npmPackagePath: "/tmp/test-jsdoc-extends/custom-elements.json",
+		version: "0.0.0",
+	});
+
+	const baseDef = Object.values(entry.classes).find((c) => c.name === "BaseThing");
+	const specialDef = Object.values(entry.classes).find((c) => c.name === "SpecialThing");
+
+	// top-of-chain: @extends must remain dot notation, no "module:" prefix
+	t.true(baseDef._jsDoc.classHeader.includes("@extends sap.ui.core.webc.WebComponent"), "@extends for top-of-chain base uses dot notation");
+	t.false(baseDef._jsDoc.classHeader.includes("@extends module:"), "@extends for top-of-chain base does not use 'module:' prefix");
+
+	// wrapper-extends-wrapper: @extends must use dot notation, no "module:" prefix, no slashes
+	const expectedExtends = `@extends ${specialDef.superclass._ui5QualifiedName}`;
+	t.true(specialDef._jsDoc.classHeader.includes(expectedExtends), `@extends for wrapper-extends-wrapper uses dot notation (${expectedExtends})`);
+	t.false(specialDef._jsDoc.classHeader.includes("@extends module:"), "@extends for wrapper-extends-wrapper does not use 'module:' prefix");
+	t.false(/@ extends\s+\S*\/\S*/.test(specialDef._jsDoc.classHeader), "@extends for wrapper-extends-wrapper does not use slash notation");
+});

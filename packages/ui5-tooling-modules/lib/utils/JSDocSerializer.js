@@ -34,7 +34,7 @@ function _serializeClassHeader(classDef, jsdocTags) {
 		// we reached the very top of the inheritance chain
 		superclassName = "sap.ui.core.webc.WebComponent";
 	} else if (superclassName) {
-		superclassName = `module:${classDef.superclass._ui5QualifiedNameSlashes}`;
+		superclassName = classDef.superclass._ui5QualifiedName;
 	} else {
 		logger.warn(`Superclass for class ${classDef._ui5QualifiedName} has no property 'name'`);
 	}
