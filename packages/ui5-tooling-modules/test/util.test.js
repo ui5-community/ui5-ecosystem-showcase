@@ -1056,3 +1056,33 @@ test.serial("Verify replaceDashes sanitization of dashed package name in generat
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}
 });
+
+test.serial("Verify _ui5metadata.name is preserved as npm package name for dashed package with replaceDashes", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(
+		["@ui5/webcomponents/dist/CheckBox"],
+		Object.assign({}, webcomponentsContext, {
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: webcContextModules,
+		}),
+		{
+			pluginOptions: {
+				webcomponents: {
+					removeScopePrefix: true,
+					replaceDashes: true,
+					moduleBasePath: path.posix.join("ui5/ecosystem/demo/app", "thirdparty"),
+				},
+			},
+		},
+	);
+	// The library descriptor package module must preserve the original npm package name
+	// in _ui5metadata.name even when replaceDashes sanitizes class/module names
+	const pkgModule = await env.getModule("@ui5/webcomponents-base");
+	t.truthy(pkgModule?._ui5metadata || pkgModule?.retVal?._ui5metadata, "@ui5/webcomponents-base package module was generated");
+	const metadata = pkgModule?.retVal?._ui5metadata;
+	if (metadata) {
+		t.deepEqual(metadata.name, "@ui5/webcomponents-base", "_ui5metadata.name must keep the original npm package name, not the replaceDashes-sanitized form");
+	}
+});
