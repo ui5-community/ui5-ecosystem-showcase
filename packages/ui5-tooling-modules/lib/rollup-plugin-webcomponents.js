@@ -253,6 +253,36 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		// determine npm package
 		const npmPackage = getNpmPackageName(source);
 
+		// When the import uses only the bare package name (no sub-path), we must NOT
+		// resolve it as a specific Web Component class — even if the package's exports["."]
+		// happens to point directly at a single component file. Doing so would cause the
+		// substitute mechanism to claim the package-level module slot (e.g.
+		// "@ui5/webcomponents-geomap.js"), colliding with the UI5 library descriptor that
+		// buildPackage needs to emit there. The bare package name is the library descriptor's
+		// slot; consumers who want the specific class must use the explicit sub-path.
+		if (source === npmPackage) {
+			const registryEntry = loadNpmPackage(npmPackage, emitFile);
+			if (registryEntry?.isUI5WebComponents) {
+				// Check whether the main entry resolves to a registered custom element —
+				// that is the only case that would cause a substitute/library-descriptor
+				// collision. Internal bare-name imports for multi-component packages
+				// (e.g. @ui5/webcomponents, @ui5/webcomponents-base) do NOT resolve to a
+				// single custom element and must pass through silently.
+				let modulePath = resolveModule(source);
+				if (modulePath) {
+					modulePath = modulePath.substr(registryEntry.npmPackagePath.length + 1).replace(/\\/g, "/");
+					const moduleName = `${npmPackage}/${modulePath}`;
+					const clazz = WebComponentRegistry.getClassDefinition(moduleName);
+					if (clazz && WebComponentRegistryHelper.isCustomElement(clazz)) {
+						log.error(
+							`Importing the bare package name "${npmPackage}" is not supported for Web Component packages whose package.json "exports[\\".\\"]" resolves directly to a component module. Please import the specific module instead: "${npmPackage}/${clazz.module.slice(0, -3)}"`,
+						);
+					}
+				}
+			}
+			return undefined;
+		}
+
 		let clazz;
 		if (npmPackage !== UI5_ELEMENT_NAMESPACE && (clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
