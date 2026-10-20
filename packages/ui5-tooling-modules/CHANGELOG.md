@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.41.2
+
+### Patch Changes
+
+- [#1470](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1470) [`54d30db`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/54d30db9ecc767bc69f7eb179cdf544d662b9bbf) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(ui5-tooling-modules): use dot notation without `module:` prefix for `@extends` in generated JSDoc
+  
+  When a generated UI5 wrapper class extends another generated wrapper (not the top-of-chain
+  `sap.ui.core.webc.WebComponent` base), the `@extends` JSDoc tag was incorrectly produced as
+  `module:sap/ui/.../SomeControl` (slash notation with `module:` prefix). It now correctly uses
+  dot notation without any prefix, e.g. `sap.ui....SomeControl`, matching the JSDoc specification
+  and SDK tooling expectations.
+
 ## 3.41.1
 
 ### Patch Changes
