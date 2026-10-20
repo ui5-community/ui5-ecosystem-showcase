@@ -1,5 +1,21 @@
 # Change Log
 
+## 3.41.2
+
+### Patch Changes
+
+- [#1473](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1473) [`e0a104d`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e0a104dbf7b3cebf5e84aa727b80e83a7855752d) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(ui5-tooling-modules): prevent substitute collision when bare package name resolves directly to a component
+  
+  For Web Component packages whose `package.json` `exports["."]` (or `main`/`module`) points
+  directly at a single component file (e.g. `@ui5/webcomponents-geomap`), importing the bare
+  package name caused a collision: the substitute mechanism claimed the package-level module slot
+  (`@ui5/webcomponents-geomap.js`) before the UI5 library descriptor could be written there,
+  resulting in an empty/missing library descriptor and a confusing substitute warning.
+  
+  `lookupWebComponentsClass` now short-circuits when `source === npmPackage` (bare package name,
+  no sub-path), returning `undefined` so the package-level resolver handles the slot correctly.
+  An actionable error is logged telling the consumer which explicit sub-path to use instead.
+
 ## 3.41.1
 
 ### Patch Changes
