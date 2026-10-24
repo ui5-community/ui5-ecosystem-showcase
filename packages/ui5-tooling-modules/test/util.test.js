@@ -152,9 +152,7 @@ async function getModule(resourceName, ctx) {
 			return {
 				name: resourceName,
 				code: "<external>",
-				retVal: {
-					/* empty module */
-				},
+				retVal: {/* empty module */},
 			};
 		}
 	}
@@ -302,10 +300,10 @@ test.serial("Verify generation of jspdf", async (t) => {
 			log: t.context.log,
 			scope: {
 				navigator: {},
-				atob: function () {},
-				btoa: function () {},
-				TextEncoder: function () {},
-				TextDecoder: function () {},
+				atob: atob,
+				btoa: btoa,
+				TextEncoder: TextEncoder,
+				TextDecoder: TextDecoder,
 			},
 		},
 		{
@@ -369,17 +367,17 @@ test.serial("Verify generation of cmis", async (t) => {
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
 		scope: {
-			atob: function () {},
-			btoa: function () {},
-			fetch: function () {},
+			atob: atob,
+			btoa: btoa,
+			fetch: fetch,
 			XMLHttpRequest: function () {
 				return { open: function () {} };
 			},
 			location: {
 				host: "/",
 			},
-			TextEncoder: function () {},
-			TextDecoder: function () {},
+			TextEncoder: TextEncoder,
+			TextDecoder: TextDecoder,
 		},
 	});
 	const module = await env.getModule("cmis");
@@ -401,7 +399,7 @@ test.serial("Verify generation of ui5-app/bundledefs/firebase", async (t) => {
 		log: t.context.log,
 		scope: {
 			URL: URL,
-			fetch: function () {},
+			fetch: fetch,
 			XMLHttpRequest: function () {
 				return { open: function () {} };
 			},
@@ -438,7 +436,7 @@ test.serial("Verify generation of firebase/firestore", async (t) => {
 			log: t.context.log,
 			scope: {
 				URL: URL,
-				fetch: function () {},
+				fetch: fetch,
 				XMLHttpRequest: function () {
 					return { open: function () {} };
 				},
@@ -475,7 +473,7 @@ test.serial("Verify generation of @supabase/supabase-js", async (t) => {
 		scope: {
 			URL: URL,
 			WebSocket: function () {},
-			fetch: function () {},
+			fetch: fetch,
 		},
 	});
 	const module = await env.getModule("@supabase/supabase-js");
@@ -496,7 +494,7 @@ test.serial("Verify generation of @octokit/core", async (t) => {
 		log: t.context.log,
 		scope: {
 			URL: URL,
-			fetch: function () {},
+			fetch: fetch,
 			XMLHttpRequest: function () {
 				return { open: function () {} };
 			},
@@ -621,8 +619,12 @@ test.serial("Verify generation of pdfMake", async (t) => {
 		log: t.context.log,
 		scope: {
 			navigator: {},
-			TextEncoder: function () {},
-			TextDecoder: function () {},
+			atob: atob,
+			btoa: btoa,
+			TextEncoder: TextEncoder,
+			TextDecoder: TextDecoder,
+			Uint8Array: Uint8Array,
+			URL: URL,
 		},
 	});
 	const module = await env.getModule("pdfmake/build/pdfmake");
@@ -647,8 +649,8 @@ test.serial("Verify generation of xml-js", async (t) => {
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
 		scope: {
-			TextEncoder: function () {},
-			TextDecoder: function () {},
+			TextEncoder: TextEncoder,
+			TextDecoder: TextDecoder,
 		},
 	});
 	const module = await env.getModule("xml-js");
@@ -699,11 +701,7 @@ const webcomponentsContext = {
 		getComputedStyle: function () {
 			return {};
 		},
-		URLSearchParams: function () {
-			return {
-				forEach: function () {},
-			};
-		},
+		URLSearchParams: URLSearchParams,
 		URL: URL,
 	},
 	// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
@@ -941,7 +939,7 @@ test.serial("Verify generation of @opentelemetry", async (t) => {
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
 		scope: {
-			performance: {},
+			performance: performance,
 		},
 	});
 	const moduleOT_API = await env.getModule("@opentelemetry/api");

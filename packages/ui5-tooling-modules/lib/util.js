@@ -566,14 +566,15 @@ module.exports = function (log, projectInfo) {
 	 * find the dependencies of the current project and its transitive dependencies
 	 * (excluding devDependencies and providedDependencies)
 	 * @param {object} options options
-	 * @param {string} [options.cwd] current working directory
+	 * @param {string} [options.cwd] current working directory (changes as recursion descends into each dep)
+	 * @param {string} [options.rootCwd] original project root; used for all path resolutions so results match Node/resolveModule resolution from the app (defaults to cwd on the initial call)
 	 * @param {string[]} [options.depPaths] list of dependency paths
 	 * @param {boolean} [options.linkedOnly] find only the linked dependencies
 	 * @param {string[]} [options.additionalDeps] list of additional dependencies (e.g. dev dependencies to include)
 	 * @param {string[]} [knownDeps] list of known dependencies
 	 * @returns {string[]} array of dependency root directories
 	 */
-	function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
+	function findDependencies({ cwd = process.cwd(), rootCwd = cwd, depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
 		const pkgJson = getPackageJson(path.join(cwd, "package.json"));
 		let dependencies = [...Object.keys(pkgJson.dependencies || {}), ...Object.keys(pkgJson.optionalDependencies || {})];
 		if (additionalDeps?.length > 0) {
@@ -593,12 +594,13 @@ module.exports = function (log, projectInfo) {
 				continue;
 			}
 			knownDeps.push(npmPackage);
-			const depPath = findDependency(path.posix.join(npmPackage, "package.json"), cwd, depPaths);
+			// always resolve from rootCwd so the path matches what Node/resolveModule would find for the app
+			const depPath = findDependency(path.posix.join(npmPackage, "package.json"), rootCwd, depPaths);
 			let depRoot = depPath && path.dirname(depPath);
 			if (depRoot && depRoots.indexOf(depRoot) === -1) {
 				depRoots.push(depRoot);
 				// delay the dependency lookup to avoid finding transitive dependencies before local dependencies
-				findDeps.push({ cwd: depRoot, depPaths, linkedOnly, additionalDeps });
+				findDeps.push({ cwd: depRoot, rootCwd, depPaths, linkedOnly, additionalDeps });
 			}
 		}
 		// lookup the transitive dependencies
@@ -1375,7 +1377,7 @@ module.exports = function (log, projectInfo) {
 				],
 				onwarn: function ({ loc, frame, code, message }) {
 					// Skip certain warnings
-					const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS", "MODULE_LEVEL_DIRECTIVE"];
+					const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS", "MODULE_LEVEL_DIRECTIVE", "INVALID_ANNOTATION"];
 					if (skipWarnings.indexOf(code) !== -1) {
 						return;
 					}

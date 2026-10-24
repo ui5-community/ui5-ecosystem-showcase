@@ -1,9 +1,15 @@
 /**
- * Rollup plugin: replace server-only fetch packages with a Web Fetch shim.
+ * Rollup plugin: replace server-only fetch/form-data packages with browser shims.
  *
  * Intercepts `node-fetch`, `cross-fetch`, `isomorphic-fetch` (and any of
  * their subpath imports, e.g. `cross-fetch/polyfill`) and substitutes a tiny
  * virtual module that re-exports the browser's native Web Fetch API.
+ *
+ * Also intercepts `isomorphic-form-data`, which has a Node entry that pulls in
+ * `form-data` → `es-set-tostringtag` → `get-intrinsic` → `es-object-atoms` /
+ * `hasown`, none of which are resolvable from the UI5 application context in a
+ * pnpm isolated workspace. The browser entry of `isomorphic-form-data` is simply
+ * `module.exports = window.FormData`, so the shim re-exports `globalThis.FormData`.
  *
  * Why: those packages are designed for Node and drag in `node:net`,
  * `node:fs/promises`, `fetch-blob`, `formdata-polyfill`, and more — none of
@@ -13,7 +19,7 @@
  * before commonjs / polyfill-node ever see the import, so the entire
  * Node-only sub-graph drops out of the bundle.
  *
- * The shim re-exports `fetch`, `Headers`, `Request`, `Response`, `Blob`,
+ * The fetch shim re-exports `fetch`, `Headers`, `Request`, `Response`, `Blob`,
  * `File`, `FormData`, `AbortController`, and `AbortSignal` from
  * `globalThis`, plus inert `AbortError` / `FetchError` / `isRedirect` stubs
  * for compatibility. Node-only helpers (`blobFrom`, `fileFrom`, ...) are
@@ -21,8 +27,10 @@
  *
  * @param {object}   [options]
  * @param {string[]} [options.packages] override the default list of
- *        intercepted packages (default: `node-fetch`, `cross-fetch`,
+ *        intercepted fetch packages (default: `node-fetch`, `cross-fetch`,
  *        `isomorphic-fetch`)
+ * @param {string[]} [options.formDataPackages] override the default list of
+ *        intercepted form-data packages (default: `isomorphic-form-data`)
  * @param {{ verbose?: (msg: string) => void }} [options.log]
  *        optional logger; `verbose` is called for every interception
  * @returns {import('rollup').Plugin}
@@ -30,10 +38,17 @@
 
 const VIRTUAL_PREFIX = "\0fetch-shim:";
 
-// The list of packages we intercept. Subpath imports
-// (`<pkg>` or `<pkg>/...`) all funnel into the same shim — the shim only
-// re-exports the Web Fetch API, so the subpath is irrelevant to the result.
+// Fetch-like packages: default export is the fetch function.
 const SHIMMED_PACKAGES = ["node-fetch", "cross-fetch", "isomorphic-fetch"];
+
+// FormData-like packages: default export is the FormData constructor.
+const SHIMMED_FORM_DATA_PACKAGES = ["isomorphic-form-data"];
+
+const FORM_DATA_SHIM_SOURCE = `// isomorphic-form-data shim emitted by ui5-tooling-modules.
+// Re-exports the browser's native FormData. See rollup-plugin-fetch-shim.js
+// in ui5-tooling-modules for rationale.
+export default globalThis.FormData;
+`;
 
 const SHIM_SOURCE = `// node-fetch / cross-fetch / isomorphic-fetch shim emitted by ui5-tooling-modules.
 // Re-exports the browser's native Web Fetch API. See rollup-plugin-fetch-shim.js
@@ -98,8 +113,9 @@ export const fileFrom = _nodeOnly("fileFrom");
 export const fileFromSync = _nodeOnly("fileFromSync");
 `;
 
-module.exports = function fetchShim({ packages = SHIMMED_PACKAGES, log } = {}) {
+module.exports = function fetchShim({ packages = SHIMMED_PACKAGES, formDataPackages = SHIMMED_FORM_DATA_PACKAGES, log } = {}) {
 	const shimRegex = new RegExp(`^(${packages.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(?:/.*)?$`);
+	const formDataRegex = new RegExp(`^(${formDataPackages.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(?:/.*)?$`);
 
 	return {
 		name: "fetch-shim",
@@ -110,11 +126,18 @@ module.exports = function fetchShim({ packages = SHIMMED_PACKAGES, log } = {}) {
 				// every (pkg, subpath) variant in the graph.
 				return { id: `${VIRTUAL_PREFIX}index.js`, moduleSideEffects: false };
 			}
+			if (formDataRegex.test(importee)) {
+				log?.verbose?.(`fetch-shim: intercepted import "${importee}" -> globalThis.FormData shim`);
+				return { id: `${VIRTUAL_PREFIX}form-data.js`, moduleSideEffects: false };
+			}
 			return null;
 		},
 		load(id) {
-			if (id.startsWith(VIRTUAL_PREFIX)) {
+			if (id === `${VIRTUAL_PREFIX}index.js`) {
 				return SHIM_SOURCE;
+			}
+			if (id === `${VIRTUAL_PREFIX}form-data.js`) {
+				return FORM_DATA_SHIM_SOURCE;
 			}
 			return null;
 		},
@@ -122,3 +145,4 @@ module.exports = function fetchShim({ packages = SHIMMED_PACKAGES, log } = {}) {
 };
 
 module.exports.SHIMMED_PACKAGES = SHIMMED_PACKAGES;
+module.exports.SHIMMED_FORM_DATA_PACKAGES = SHIMMED_FORM_DATA_PACKAGES;
