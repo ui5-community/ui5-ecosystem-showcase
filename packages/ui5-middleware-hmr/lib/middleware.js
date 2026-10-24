@@ -442,7 +442,11 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 						html += injectTag;
 					}
 				}
-				res.setHeader("Content-Length", Buffer.byteLength(html));
+				// Only set Content-Length when headers haven't been sent yet
+				// (serveIndex may have already flushed them via an earlier write)
+				if (!res.headersSent) {
+					res.setHeader("Content-Length", Buffer.byteLength(html));
+				}
 				origWrite(html);
 				return origEnd(undefined, undefined, cb);
 			}
