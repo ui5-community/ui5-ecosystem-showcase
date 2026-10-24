@@ -1381,6 +1381,14 @@ module.exports = function (log, projectInfo) {
 					if (skipWarnings.indexOf(code) !== -1) {
 						return;
 					}
+					// MISSING_EXPORT from inject-esmodule proxies is harmless: the proxy imports
+					// `{ default as defExp }` from the real entry, but some packages (e.g. zod v4)
+					// export `default` via a namespace re-export alias whose source module does not
+					// itself carry a `default`. Rollup traces back to that source and warns, but the
+					// runtime value is correct because the proxy uses optional-chaining at line 3.
+					if (code === "MISSING_EXPORT" && loc?.file?.endsWith("?inject-esmodule")) {
+						return;
+					}
 					// console.warn everything else
 					if (loc) {
 						log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
