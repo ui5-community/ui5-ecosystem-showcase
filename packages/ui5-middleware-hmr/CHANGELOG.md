@@ -1,5 +1,11 @@
 # ui5-middleware-hmr
 
+## 0.1.1
+
+### Patch Changes
+
+- [#1476](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1476) [`36e4290`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/36e42903ff2a35098be10cd231831a311ad18d87) Thanks [@petermuessig](https://github.com/petermuessig)! - fix: guard Content-Length header assignment behind headersSent check to avoid errors when headers have already been flushed
+
 ## 0.1.0
 
 ### Minor Changes
