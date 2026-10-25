@@ -13,6 +13,7 @@ sap.ui.define(
     // export the UI5 metadata along with the package
     pkg["_ui5metadata"] = {
       name: "@ui5/webcomponents",
+      npmPackage: "@ui5/webcomponents",
       version: "2.28.1",
       dependencies: ["sap.ui.core"],
       types: [
