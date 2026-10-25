@@ -778,12 +778,34 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
   function replaceTemplate(template, data) {
-      return template.replace(PATTERN, (_, key) => {
-          const value = data[key];
-          return value != null ? String(value) : `<${key}?>`;
-      });
+      try {
+          let ptr = 0;
+          let result = '';
+          while (ptr < template.length) {
+              const start = template.indexOf('{$', ptr);
+              if (start === -1) {
+                  result += template.substring(ptr);
+                  break;
+              }
+              const end = template.indexOf('}', start + 2);
+              if (end === -1) {
+                  result += template.substring(ptr);
+                  break;
+              }
+              const key = template.substring(start + 2, end);
+              const value = data[key];
+              result +=
+                  template.substring(ptr, start) +
+                      (value != null ? String(value) : `<${key}?>`);
+              ptr = end + 1;
+          }
+          return result;
+      }
+      catch (e) {
+          // Should never happen, but fallback just in case
+          return template;
+      }
   }
-  const PATTERN = /\{\$([^}]+)}/g;
   /**
    * Deep equal two objects. Support Arrays and Objects.
    */
@@ -1827,7 +1849,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.14.13";
+  const version$1 = "0.16.2";
 
   /**
    * @license
@@ -1898,7 +1920,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name = "firebase";
-  const version = "12.14.0";
+  const version = "12.19.0";
 
   /**
    * @license
@@ -2127,7 +2149,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       ["no-app" /* AppError.NO_APP */]: "No Firebase App '{$appName}' has been created - " +
           'call initializeApp() first',
       ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}'",
-      ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different options or config",
+      ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different {$mismatchedParam}." +
+          " Existing: '{$oldValue}'. New: '{$newValue}'.",
       ["app-deleted" /* AppError.APP_DELETED */]: "Firebase App named '{$appName}' already deleted",
       ["server-app-deleted" /* AppError.SERVER_APP_DELETED */]: 'Firebase Server App has been deleted',
       ["no-options" /* AppError.NO_OPTIONS */]: 'Need to provide options, when not being deployed to hosting via source.',
@@ -2384,12 +2407,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       const existingApp = _apps.get(name);
       if (existingApp) {
           // return the existing app if options and config deep equal the ones in the existing app.
-          if (deepEqual(options, existingApp.options) &&
-              deepEqual(config, existingApp.config)) {
-              return existingApp;
+          if (!deepEqual(options, existingApp.options)) {
+              throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */, {
+                  appName: name,
+                  mismatchedParam: 'options',
+                  oldValue: JSON.stringify(existingApp.options),
+                  newValue: JSON.stringify(options)
+              });
+          }
+          else if (!deepEqual(config, existingApp.config)) {
+              throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */, {
+                  appName: name,
+                  mismatchedParam: 'config',
+                  oldValue: JSON.stringify(existingApp.config),
+                  newValue: JSON.stringify(config)
+              });
           }
           else {
-              throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */, { appName: name });
+              return existingApp;
           }
       }
       const container = new ComponentContainer(name);
@@ -2999,6 +3034,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @remarks This package coordinates the communication between the different Firebase components
    * @packageDocumentation
+   */
+  /**
+   * @license
+   * Copyright 2019 Google LLC
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *   http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
    */
   registerCoreComponents('');
 

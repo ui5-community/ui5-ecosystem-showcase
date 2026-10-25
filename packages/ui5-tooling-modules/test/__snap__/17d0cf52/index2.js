@@ -4,8 +4,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 	}
 
-	var react = {exports: {}};
-
 	var global$1 = (typeof global !== "undefined" ? global :
 	  typeof self !== "undefined" ? self :
 	  typeof window !== "undefined" ? window : {});
@@ -24,6 +22,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	var browser$1 = {
 	  emit: emit};
+
+	var react = {exports: {}};
 
 	var react_production = {};
 
@@ -44,6 +44,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		  REACT_MEMO_TYPE = Symbol.for("react.memo"),
 		  REACT_LAZY_TYPE = Symbol.for("react.lazy"),
 		  REACT_ACTIVITY_TYPE = Symbol.for("react.activity"),
+		  REACT_VIEW_TRANSITION_TYPE = Symbol.for("react.view_transition"),
 		  MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
 		function getIteratorFn(maybeIterable) {
 		  if (null === maybeIterable || "object" !== typeof maybeIterable) return null;
@@ -286,84 +287,125 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		}
 		function lazyInitializer(payload) {
 		  if (-1 === payload._status) {
-		    var ctor = payload._result;
-		    ctor = ctor();
-		    ctor.then(
+		    var ctor = payload._result,
+		      thenable = ctor();
+		    thenable.then(
 		      function (moduleObject) {
 		        if (0 === payload._status || -1 === payload._status)
-		          (payload._status = 1), (payload._result = moduleObject);
+		          (payload._status = 1),
+		            (payload._result = moduleObject),
+		            void 0 === thenable.status &&
+		              ((thenable.status = "fulfilled"),
+		              (thenable.value = moduleObject));
 		      },
 		      function (error) {
 		        if (0 === payload._status || -1 === payload._status)
-		          (payload._status = 2), (payload._result = error);
+		          (payload._status = 2),
+		            (payload._result = error),
+		            void 0 === thenable.status &&
+		              ((thenable.status = "rejected"), (thenable.reason = error));
 		      }
 		    );
-		    -1 === payload._status && ((payload._status = 0), (payload._result = ctor));
+		    -1 === payload._status &&
+		      ((payload._status = 0), (payload._result = thenable));
 		  }
 		  if (1 === payload._status) return payload._result.default;
 		  throw payload._result;
 		}
 		var reportGlobalError =
-		    "function" === typeof reportError
-		      ? reportError
-		      : function (error) {
-		          if (
-		            "object" === typeof window &&
-		            "function" === typeof window.ErrorEvent
-		          ) {
-		            var event = new window.ErrorEvent("error", {
-		              bubbles: true,
-		              cancelable: true,
-		              message:
-		                "object" === typeof error &&
-		                null !== error &&
-		                "string" === typeof error.message
-		                  ? String(error.message)
-		                  : String(error),
-		              error: error
-		            });
-		            if (!window.dispatchEvent(event)) return;
-		          } else if (
-		            "object" === typeof browser$1 &&
-		            "function" === typeof browser$1.emit
-		          ) {
-		            return;
-		          }
-		          console.error(error);
-		        },
-		  Children = {
-		    map: mapChildren,
-		    forEach: function (children, forEachFunc, forEachContext) {
-		      mapChildren(
-		        children,
-		        function () {
-		          forEachFunc.apply(this, arguments);
-		        },
-		        forEachContext
+		  "function" === typeof reportError
+		    ? reportError
+		    : function (error) {
+		        if (
+		          "object" === typeof window &&
+		          "function" === typeof window.ErrorEvent
+		        ) {
+		          var event = new window.ErrorEvent("error", {
+		            bubbles: true,
+		            cancelable: true,
+		            message:
+		              "object" === typeof error &&
+		              null !== error &&
+		              "string" === typeof error.message
+		                ? String(error.message)
+		                : String(error),
+		            error: error
+		          });
+		          if (!window.dispatchEvent(event)) return;
+		        } else if (
+		          "object" === typeof browser$1 &&
+		          "function" === typeof browser$1.emit
+		        ) {
+		          return;
+		        }
+		        console.error(error);
+		      };
+		function startTransition(scope) {
+		  var prevTransition = ReactSharedInternals.T,
+		    currentTransition = {};
+		  currentTransition.types =
+		    null !== prevTransition ? prevTransition.types : null;
+		  ReactSharedInternals.T = currentTransition;
+		  try {
+		    var returnValue = scope(),
+		      onStartTransitionFinish = ReactSharedInternals.S;
+		    null !== onStartTransitionFinish &&
+		      onStartTransitionFinish(currentTransition, returnValue);
+		    "object" === typeof returnValue &&
+		      null !== returnValue &&
+		      "function" === typeof returnValue.then &&
+		      returnValue.then(noop, reportGlobalError);
+		  } catch (error) {
+		    reportGlobalError(error);
+		  } finally {
+		    null !== prevTransition &&
+		      null !== currentTransition.types &&
+		      (prevTransition.types = currentTransition.types),
+		      (ReactSharedInternals.T = prevTransition);
+		  }
+		}
+		function addTransitionType(type) {
+		  var transition = ReactSharedInternals.T;
+		  if (null !== transition) {
+		    var transitionTypes = transition.types;
+		    null === transitionTypes
+		      ? (transition.types = [type])
+		      : -1 === transitionTypes.indexOf(type) && transitionTypes.push(type);
+		  } else startTransition(addTransitionType.bind(null, type));
+		}
+		var Children = {
+		  map: mapChildren,
+		  forEach: function (children, forEachFunc, forEachContext) {
+		    mapChildren(
+		      children,
+		      function () {
+		        forEachFunc.apply(this, arguments);
+		      },
+		      forEachContext
+		    );
+		  },
+		  count: function (children) {
+		    var n = 0;
+		    mapChildren(children, function () {
+		      n++;
+		    });
+		    return n;
+		  },
+		  toArray: function (children) {
+		    return (
+		      mapChildren(children, function (child) {
+		        return child;
+		      }) || []
+		    );
+		  },
+		  only: function (children) {
+		    if (!isValidElement(children))
+		      throw Error(
+		        "React.Children.only expected to receive a single React element child."
 		      );
-		    },
-		    count: function (children) {
-		      var n = 0;
-		      mapChildren(children, function () {
-		        n++;
-		      });
-		      return n;
-		    },
-		    toArray: function (children) {
-		      return (
-		        mapChildren(children, function (child) {
-		          return child;
-		        }) || []
-		      );
-		    },
-		    only: function (children) {
-		      if (!isValidElement(children))
-		        throw Error(
-		          "React.Children.only expected to receive a single React element child."
-		        );
-		      return children;
-		    }
-		  };
+		    return children;
+		  }
+		};
 		react_production.Activity = REACT_ACTIVITY_TYPE;
 		react_production.Children = Children;
 		react_production.Component = Component;
@@ -372,6 +414,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		react_production.PureComponent = PureComponent;
 		react_production.StrictMode = REACT_STRICT_MODE_TYPE;
 		react_production.Suspense = REACT_SUSPENSE_TYPE;
+		react_production.ViewTransition = REACT_VIEW_TRANSITION_TYPE;
 		react_production.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE =
 		  ReactSharedInternals;
 		react_production.__COMPILER_RUNTIME = {
@@ -380,6 +423,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    return ReactSharedInternals.H.useMemoCache(size);
 		  }
 		};
+		react_production.addTransitionType = addTransitionType;
 		react_production.cache = function (fn) {
 		  return function () {
 		    return fn.apply(null, arguments);
@@ -473,28 +517,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    compare: void 0 === compare ? null : compare
 		  };
 		};
-		react_production.startTransition = function (scope) {
-		  var prevTransition = ReactSharedInternals.T,
-		    currentTransition = {};
-		  ReactSharedInternals.T = currentTransition;
-		  try {
-		    var returnValue = scope(),
-		      onStartTransitionFinish = ReactSharedInternals.S;
-		    null !== onStartTransitionFinish &&
-		      onStartTransitionFinish(currentTransition, returnValue);
-		    "object" === typeof returnValue &&
-		      null !== returnValue &&
-		      "function" === typeof returnValue.then &&
-		      returnValue.then(noop, reportGlobalError);
-		  } catch (error) {
-		    reportGlobalError(error);
-		  } finally {
-		    null !== prevTransition &&
-		      null !== currentTransition.types &&
-		      (prevTransition.types = currentTransition.types),
-		      (ReactSharedInternals.T = prevTransition);
-		  }
-		};
+		react_production.startTransition = startTransition;
 		react_production.unstable_useCacheRefresh = function () {
 		  return ReactSharedInternals.H.useCacheRefresh();
 		};
@@ -561,7 +584,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		react_production.useTransition = function () {
 		  return ReactSharedInternals.H.useTransition();
 		};
-		react_production.version = "19.2.6";
+		react_production.version = "19.3.1";
 		return react_production;
 	}
 

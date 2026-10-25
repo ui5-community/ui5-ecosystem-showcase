@@ -26039,7 +26039,7 @@ sap.ui.define((function () { 'use strict';
 
   	/* TODO: these are hard-coded styles to satiate excel */
   	f = "styles.xml";
-  	zip_add_file(zip, f, write_styles_ods(wb, opts));
+  	zip_add_file(zip, f, write_styles_ods());
   	manifest.push([f, "text/xml"]);
   	rdf.push([f, "StylesFile"]);
 
@@ -29257,11 +29257,11 @@ sap.ui.define((function () { 'use strict';
   		case 'html': return write_string_type(sheet_to_html(wb.Sheets[wb.SheetNames[idx]], o), o);
   		case 'txt': return write_stxt_type(sheet_to_txt(wb.Sheets[wb.SheetNames[idx]], o), o);
   		case 'csv': return write_string_type(sheet_to_csv(wb.Sheets[wb.SheetNames[idx]], o), o, "\ufeff");
-  		case 'dif': return write_string_type(DIF.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+  		case 'dif': return write_string_type(DIF.from_sheet(wb.Sheets[wb.SheetNames[idx]]), o);
   		case 'dbf': return write_binary_type(DBF.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
-  		case 'prn': return write_string_type(PRN.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+  		case 'prn': return write_string_type(PRN.from_sheet(wb.Sheets[wb.SheetNames[idx]]), o);
   		case 'rtf': return write_string_type(sheet_to_rtf(wb.Sheets[wb.SheetNames[idx]]), o);
-  		case 'eth': return write_string_type(ETH.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+  		case 'eth': return write_string_type(ETH.from_sheet(wb.Sheets[wb.SheetNames[idx]]), o);
   		case 'fods': return write_string_type(write_ods(wb, o), o);
   		case 'wk1': return write_binary_type(WK_.sheet_to_wk1(wb.Sheets[wb.SheetNames[idx]], o), o);
   		case 'wk3': return write_binary_type(WK_.book_to_wk3(wb, o), o);

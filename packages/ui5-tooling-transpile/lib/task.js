@@ -91,7 +91,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 		const builderPkgJson = JSON.parse(fs.readFileSync(builderPkgJsonPath, "utf-8"));
 		// Walk the exports map: "./tasks/replaceVersion" matches the "./tasks/*" pattern → "./lib/tasks/*.js"
 		const replaceVersionExport = builderPkgJson?.exports?.["./tasks/*"];
-		const replaceVersionRelPath = replaceVersionExport?.replace("*", "replaceVersion");
+		const replaceVersionRelPath = replaceVersionExport?.replace(/\*/g, "replaceVersion");
 		const replaceVersionAbsPath = path.resolve(path.dirname(builderPkgJsonPath), replaceVersionRelPath);
 		const replaceVersion = (await import(pathToFileURL(replaceVersionAbsPath))).default;
 		// replace the versions for all supported file types
