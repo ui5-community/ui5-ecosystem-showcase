@@ -19,6 +19,7 @@ builder:
       configuration: &cfgTranspile
         debug: true
         generateTsInterfaces: true
+        injectSourceFolders: true
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:

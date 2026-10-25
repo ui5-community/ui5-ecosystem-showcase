@@ -83,6 +83,9 @@ npm install ui5-tooling-transpile --save-dev -rte
 - generateBabelConfig: `boolean|string` (*experimental feature*)
   this option allows to generate the babel config file for the current project when the babel config file doesn't exist - this option is useful when you are using babel generation within a different tooling (like a native babel execution inside e.g. jest) to use the same configuration like when running the task or middleware; if the value is a string the UI5 CLI extension will assume to generate a file with the provided name
 
+- injectSourceFolders: `boolean`
+  when an external Babel configuration file (`.babelrc`, `.babelrc.json`, `babel.config.js`, etc.) or an inline `babelConfig` in `ui5.yaml` is used, the auto-derived `sourceFolders` and `dependencies` options are normally **not** injected into the `transform-ui5` preset, which means UI5 class names fall back to the raw source folder as namespace prefix (e.g. `webapp.controller.App` instead of `ui5.ecosystem.demo.tsapp.controller.App`). Setting `injectSourceFolders: true` enables automatic injection of those options into the `transform-ui5` preset entry of the external config; any keys already present in the external config take precedence so existing explicit values are never overwritten
+
 The following configuration options will only be taken into account if no inline babel configuration is maintained in the `ui5.yaml` as `babelConfig` or no external babel configuration exists in any configuration file as described in [Babels configuration section](https://babeljs.io/docs/configuration):
 
 - targetBrowsers: `String` (default: [`"defaults"`](https://browsersl.ist/#q=defaults))

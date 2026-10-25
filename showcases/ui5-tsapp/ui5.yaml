@@ -12,6 +12,7 @@ customConfiguration:
     filePattern: .+(ts|tsx)
     generateDts: true
     omitTSFromBuildResult: true
+    injectSourceFolders: true
   config-ui5-tooling-modules: &cfgModules
     debug: true
     minify: true

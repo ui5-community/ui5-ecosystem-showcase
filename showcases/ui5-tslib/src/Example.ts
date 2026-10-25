@@ -66,7 +66,6 @@ interface LocalInterface {
  *
  * @constructor
  * @public
- * @name ui5.ecosystem.demo.tslib.Example
  */
 export default class Example extends Control {
 	// The following three lines were generated and should remain as-is to make TypeScript aware of the constructor signatures

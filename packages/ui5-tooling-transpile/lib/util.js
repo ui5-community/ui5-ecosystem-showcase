@@ -512,11 +512,40 @@ module.exports = function (log) {
 				coverage: config.coverage,
 				targetBrowsers: config.targetBrowsers,
 				removeConsoleStatements: config.removeConsoleStatements,
-				skipBabelPresetPluginResolve: config.skipBabelPresetPluginResolve
+				skipBabelPresetPluginResolve: config.skipBabelPresetPluginResolve,
+				injectSourceFolders: config.injectSourceFolders
 			};
 			config.debug &&
 				log.verbose(`Normalized configuration:\n${JSON.stringify(normalizedConfiguration, null, 2)}`);
 			return normalizedConfiguration;
+		},
+
+		/**
+		 * Inject auto-derived options (sourceFolders, dependencies) into the transform-ui5
+		 * preset entry of an externally-supplied babel config object (from a .babelrc file or
+		 * an inline babelConfig in ui5.yaml).  Only fills keys that the user has not already
+		 * set explicitly, so user-supplied values always win.
+		 *
+		 * @param {object} babelConfigOptions babel configuration object to patch (mutated in place)
+		 * @param {object} autoOpts options to inject, e.g. `{ sourceFolders, dependencies }`
+		 */
+		injectUI5PresetOptions: function injectUI5PresetOptions(babelConfigOptions, autoOpts) {
+			if (!babelConfigOptions?.presets?.length || !Object.keys(autoOpts).length) return;
+			const presets = babelConfigOptions.presets;
+			for (let i = 0; i < presets.length; i++) {
+				const entry = presets[i];
+				const name = Array.isArray(entry) ? entry[0] : entry;
+				if (typeof name === "string" && /transform.*ui5/i.test(name)) {
+					if (Array.isArray(entry)) {
+						// ["transform-ui5", { ...userOpts }] — merge, user opts win
+						entry[1] = Object.assign({}, autoOpts, entry[1] || {});
+					} else {
+						// "transform-ui5" — promote to array form with auto opts
+						presets[i] = [entry, Object.assign({}, autoOpts)];
+					}
+					break;
+				}
+			}
 		},
 
 		/**
@@ -591,6 +620,12 @@ module.exports = function (log) {
 					log.info(`Using inline Babel configuration from ui5.yaml...`);
 					warnAboutIgnoredConfig();
 				}
+				if (configuration?.injectSourceFolders) {
+					const autoOpts = {};
+					if (sourceFolders) autoOpts.sourceFolders = sourceFolders;
+					if (dependencies?.length) autoOpts.dependencies = dependencies;
+					_this.injectUI5PresetOptions(babelConfigOptions, autoOpts);
+				}
 				return await updateBabelConfigOptions(babelConfigOptions);
 			}
 
@@ -600,6 +635,12 @@ module.exports = function (log) {
 				if (configuration?.debug) {
 					log.info(`Using Babel configuration from ${config.configFile}...`);
 					warnAboutIgnoredConfig();
+				}
+				if (configuration?.injectSourceFolders) {
+					const autoOpts = {};
+					if (sourceFolders) autoOpts.sourceFolders = sourceFolders;
+					if (dependencies?.length) autoOpts.dependencies = dependencies;
+					_this.injectUI5PresetOptions(config.babelConfigOptions, autoOpts);
 				}
 				return await updateBabelConfigOptions(config.babelConfigOptions);
 			}
