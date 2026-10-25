@@ -21,8 +21,6 @@ import { MetadataOptions } from "sap/ui/core/webc/WebComponent";
  * @constructor
  * @private
  * @alias sap.ui.geomap.Geomap
- *
- * @namespace ui5.ecosystem.demo.webctsapp.control
  */
 export default class Button extends WebCButton {
 	static readonly metadata: MetadataOptions = {

@@ -5,9 +5,6 @@ import { createDeviceModel } from "./model/models";
 //import "@ui5/webcomponents/dist/Assets";
 //import "@ui5/webcomponents-fiori/dist/Assets";
 
-/**
- * @namespace ui5.ecosystem.demo.webctsapp
- */
 export default class Component extends UIComponent {
 	public static metadata = {
 		manifest: "json",

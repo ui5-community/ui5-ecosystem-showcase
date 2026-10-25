@@ -4,9 +4,6 @@
 import UIComponent from "sap/ui/core/UIComponent";
 import Device from "sap/ui/Device";
 
-/**
- * @namespace ui5.ecosystem.demo.tsapp
- */
 export default class Component extends UIComponent {
 	public static metadata = {
 		manifest: "json",

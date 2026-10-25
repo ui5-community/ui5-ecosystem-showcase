@@ -60,9 +60,6 @@ import("moment")
 		console.log("[DYNAMIC IMPORT] Failed to load Moment.js from application runtime environment!", ex);
 	});
 
-/**
- * @namespace ui5.ecosystem.demo.tsapp.controller
- */
 export default class Main extends Controller {
 	public onInit(): void {
 		// TODO: add and remove event handler
