@@ -92,7 +92,16 @@ The following configuration options will only be taken into account if no inline
   includes the Babel presets [`@babel/preset-typescript`](https://babeljs.io/docs/babel-preset-typescript) and [`babel-preset-transform-ui5`](https://github.com/ui5-community/babel-plugin-transform-modules-ui5) into Babels preset configuration (if `transformModulesToUI5` is explicitely set to `false` the `babel-preset-transform-ui5` will not be added to the presets); if the value is type of `Object` the configuration option is considered to be `true` and the configuration object will be used for the `@babel/preset-typescript`
 
 - transformModulesToUI5: `boolean|Object`
-  includes the [`babel-preset-transform-ui5`](https://github.com/ui5-community/babel-plugin-transform-modules-ui5) into Babels preset configuration (included implicitly when `transpileTypeScript` is set to `true` and this configuration option is omitted); if the value is type of `Object` the configuration option is considered to be `true` and the configuration object will be used for the `babel-preset-transform-ui5`; this preset ensures that ES module `import`s will be transpiled to UI5 classic `sap.ui.define` or `sap.ui.require` calls and ES UI5 classes to classic UI5 classes using the `extend` API
+  includes the [`babel-preset-transform-ui5`](https://github.com/ui5-community/babel-plugin-transform-modules-ui5) into Babels preset configuration (included implicitly when `transpileTypeScript` is set to `true` and this configuration option is omitted); if the value is type of `Object` the configuration option is considered to be `true` and the configuration object will be used for the `babel-preset-transform-ui5`; this preset ensures that ES module `import`s will be transpiled to UI5 classic `sap.ui.define` or `sap.ui.require` calls and ES UI5 classes to classic UI5 classes using the `extend` API; a `sourceFolders` map is automatically derived from the project type (see below) and injected into the preset — any keys supplied explicitly via this configuration object take final precedence
+
+- sourceFolders: `Object`
+  a map of source folder names to their dotted UI5 namespace prefix, e.g. `{ "src": "my.lib", "test": "my.lib.test" }` for libraries or `{ "webapp": "my.app" }` for applications; **automatically derived** from the project type and namespace when not set: for `library` projects `src` maps to the project namespace and `test` maps to `<namespace>.test`; for `application` projects `webapp` maps to the project namespace (the actual folder names follow the `resources.configuration.paths.*` settings in `ui5.yaml`, so non-default paths like `sources` or `app` are handled correctly); set this option to override the auto-derived value; individual keys in `transformModulesToUI5: { sourceFolders: {...} }` take final precedence over everything
+
+- dependencies: `Array`
+  an array of `{ sourceRoot, sourceFolders }` entries describing dependency projects; **auto-populated from the project's dependency graph** when running the middleware, so files from symlinked libraries (e.g. via npm workspaces) resolve the correct namespace even though they live outside the app's `sourceRoot`; override or extend via `transformModulesToUI5: { dependencies: [...] }` in `ui5.yaml`; each entry has the same structure as the primary `sourceRoot`/`sourceFolders` pair
+
+- pathAliases: `Object`
+  a map of path alias patterns to their target paths, using the same wildcard format as TypeScript `compilerOptions.paths` (e.g. `{ "@/*": ["webapp/*"] }`); used to produce a `modulesMap` function for `babel-preset-transform-ui5` that rewrites alias imports into their correct UI5 module paths before they land in `sap.ui.define([...])`. Targets are resolved relative to the project source root. When this option is set it takes precedence over any `modulesMap` already derived. Only wildcard entries (key and first target ending with `/*`) are mapped; exact-match entries are ignored. Entries whose target cannot be resolved to a sub-path of the source folder are skipped with a debug-level warning.
 
 - transformAsyncToPromise: `boolean` (old: `transpileAsync`)
   includes the [`babel-plugin-transform-async-to-promises`](https://www.npmjs.com/package/babel-plugin-transform-async-to-promises) into Babels presert configuration which transpiles `async/await` statements into `Promise`s; otherwise Babel uses `@babel/plugin-transform-regenerator` to transpile `async/await` with [`regenerator-runtime`](https://www.npmjs.com/package/regenerator-runtime) which isn't [CSP](https://en.wikipedia.org/wiki/Content_Security_Policy) compliant
@@ -191,6 +200,14 @@ server:
       transformAsyncToPromise: true
       removeConsoleStatements: true
 ```
+
+## TypeScript `moduleResolution` and `@ui5/ts-interface-generator`
+
+When using `generateTsInterfaces: true`, the `@ui5/ts-interface-generator` launches an internal TypeScript watch program using your project's `tsconfig.json`. This program must be able to fully resolve all types in the inheritance chain of your UI5 controls, including base classes from third-party packages.
+
+`"moduleResolution": "bundler"` is currently **not supported** by `@ui5/ts-interface-generator`: the interface generator fails to resolve base-class types when this mode is active, producing errors like _"Type 'Foo' referenced in … could not be resolved"_. Use `"moduleResolution": "node"` instead.
+
+> **TypeScript 6.x deprecation notice:** TypeScript 6 deprecates `"moduleResolution": "node"` (also known as `node10`) and will print a warning. To silence it without changing behaviour, add `"ignoreDeprecations": "6.0"` to your `compilerOptions`. The option will stop functioning in TypeScript 7.0, at which point `@ui5/ts-interface-generator` will need to gain support for `"bundler"` or `"node16"`/`"nodenext"` mode.
 
 ## Support
 

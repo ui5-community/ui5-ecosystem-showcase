@@ -239,6 +239,88 @@ function postprocessBabelConfigOptions(loadedBabelConfigOptions, fileToPresetOrP
 	fixFileRequest(loadedBabelConfigOptions?.plugins);
 }
 
+/**
+ * Derive a `modulesMap` function from TypeScript/JavaScript path aliases and the project's
+ * source folder / namespace mapping.
+ *
+ * Only wildcard entries (key ending with `/*`, first target ending with `/*` or bare `*`) are
+ * processed. Exact-match entries are silently skipped.
+ *
+ * @param {object} configuration normalized configuration (from createConfiguration)
+ * @param {object} [sourceFolders] map of source folder → dotted namespace (e.g. `{ webapp: "myapp" }`)
+ * @param {Function} [debugLog] optional debug logger (called with a string message)
+ * @returns {Function|undefined} modulesMap function, or undefined if no mappable aliases found
+ */
+function deriveModulesMap(configuration, sourceFolders, debugLog) {
+	const rawAliases = configuration.pathAliases;
+	if (!rawAliases || typeof rawAliases !== "object") {
+		return undefined;
+	}
+
+	// resolve the source folder and its namespace from sourceFolders
+	// we expect exactly one entry for applications (e.g. { webapp: "myapp" })
+	// for libraries we use the first (non-test) entry
+	const sourceFolderEntries = Object.entries(sourceFolders || {});
+	const [sourceFolder, namespaceDotted] = sourceFolderEntries[0] || [];
+	const namespacePrefix = namespaceDotted ? namespaceDotted.replace(/\./g, "/") : undefined;
+
+	const rules = [];
+	for (const [aliasKey, aliasTargets] of Object.entries(rawAliases)) {
+		// only handle wildcard entries: key must end with /*
+		if (!aliasKey.endsWith("/*")) {
+			debugLog?.(`autoMapPathAliases: skipping non-wildcard alias key "${aliasKey}"`);
+			continue;
+		}
+		const firstTarget = Array.isArray(aliasTargets) ? aliasTargets[0] : aliasTargets;
+		if (typeof firstTarget !== "string" || !firstTarget.endsWith("/*")) {
+			debugLog?.(`autoMapPathAliases: skipping alias "${aliasKey}" — target is not a wildcard string`);
+			continue;
+		}
+
+		const aliasPrefix = aliasKey.slice(0, -1); // strip trailing *  e.g. "@/"
+		// strip trailing /* and leading ./ from target  e.g. "./webapp/*" → "webapp"
+		const targetDir = firstTarget.slice(0, -2).replace(/^\.\//, "");
+
+		let ui5Prefix;
+		if (!targetDir || targetDir === sourceFolder) {
+			// target is the source root itself
+			ui5Prefix = namespacePrefix ? `${namespacePrefix}/` : "";
+		} else if (sourceFolder && targetDir.startsWith(`${sourceFolder}/`)) {
+			// target is a sub-path inside the source folder
+			const sub = targetDir.slice(sourceFolder.length + 1);
+			ui5Prefix = namespacePrefix ? `${namespacePrefix}/${sub}/` : `${sub}/`;
+		} else if (!sourceFolder) {
+			// no sourceFolders info — use target dir as-is
+			ui5Prefix = `${targetDir}/`;
+		} else {
+			debugLog?.(
+				`autoMapPathAliases: skipping alias "${aliasKey}" — target "${targetDir}" is outside source folder "${sourceFolder}"`
+			);
+			continue;
+		}
+
+		rules.push({ aliasPrefix, ui5Prefix });
+	}
+
+	if (rules.length === 0) {
+		return undefined;
+	}
+
+	debugLog?.(
+		`autoMapPathAliases: derived ${rules.length} mapping rule(s) from ui5.yaml pathAliases:\n` +
+			rules.map(({ aliasPrefix, ui5Prefix }) => `  "${aliasPrefix}*" → "${ui5Prefix}*"`).join("\n")
+	);
+
+	return function modulesMap(src) {
+		for (const { aliasPrefix, ui5Prefix } of rules) {
+			if (src.startsWith(aliasPrefix)) {
+				return ui5Prefix + src.slice(aliasPrefix.length);
+			}
+		}
+		return src;
+	};
+}
+
 module.exports = function (log) {
 	const _this = {
 		/**
@@ -249,6 +331,53 @@ module.exports = function (log) {
 		 * @returns {string} the absolute path of the node module
 		 */
 		resolveNodeModule,
+		/**
+		 * Derive the `sourceFolders` map for `babel-plugin-transform-modules-ui5` from the UI5
+		 * tooling project object and the project's dotted namespace.
+		 *
+		 * Returns an object like `{ src: "my.lib", test: "my.lib.test" }` for libraries or
+		 * `{ webapp: "my.app" }` for applications.  The source folder name is always read from
+		 * the project's configured source path so that non-default paths (set via
+		 * `resources.configuration.paths.*` in `ui5.yaml`) are handled correctly.
+		 *
+		 * Returns `undefined` when the project type is unknown or no namespace is available.
+		 *
+		 * @param {object} project UI5 tooling project interface (from taskUtil/middlewareUtil.getProject())
+		 * @param {string} [cwd] project root directory (defaults to process.cwd())
+		 * @returns {object|undefined} sourceFolders map or undefined
+		 */
+		deriveSourceFolders: function deriveSourceFolders(project, cwd = process.cwd()) {
+			const projectType = project.getType?.();
+			const rawNamespace = project.getNamespace?.();
+			if (!projectType || !rawNamespace) return undefined;
+			const projectNamespace = rawNamespace.replace(/\//g, ".");
+
+			// Resolve the actual source folder name from the project's configured source path.
+			// getSourcePath() returns the absolute FS path; we make it relative to cwd
+			// to get the folder name as the plugin will see it (e.g. "src", "webapp").
+			const sourcePath = project.getSourcePath?.();
+			const srcFolder = sourcePath ? path.relative(cwd, sourcePath) : undefined;
+
+			if (projectType === "application") {
+				if (!srcFolder) return undefined;
+				return { [srcFolder]: projectNamespace };
+			}
+
+			if (projectType === "library") {
+				if (!srcFolder) return undefined;
+				// The test folder name is not exposed publicly, so derive it from the
+				// custom configuration (resources.configuration.paths.test) when set,
+				// falling back to the conventional "test" name.
+				const customPaths = project.getCustomConfiguration?.()?.resources?.configuration?.paths;
+				const testFolder = customPaths?.test ?? "test";
+				return {
+					[srcFolder]: projectNamespace,
+					[testFolder]: `${projectNamespace}.test`
+				};
+			}
+
+			return undefined;
+		},
 		/**
 		 * Build the configuration for the task and the middleware.
 		 *
@@ -279,10 +408,15 @@ module.exports = function (log) {
 			const tsConfigFile = path.join(cwd, tsConfig);
 			const isTypeScriptProject = fs.existsSync(tsConfigFile);
 
+			// parse tsconfig.json once for transpileDependencies detection
+			let parsedTsConfig;
+			if (isTypeScriptProject) {
+				parsedTsConfig = JSONC.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));
+			}
+
 			// read tsconfig.json to determine whether to transpile dependencies or not
-			if (isTypeScriptProject && !config.transpileDependencies && fs.existsSync(tsConfigFile)) {
-				const tsConfigJson = JSONC.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));
-				const tsDeps = tsConfigJson?.compilerOptions?.types?.filter((typePkgName) => {
+			if (isTypeScriptProject && !config.transpileDependencies) {
+				const tsDeps = parsedTsConfig?.compilerOptions?.types?.filter((typePkgName) => {
 					try {
 						// if a type dependency includes a ui5.yaml we assume
 						// to support transpiling of dependencies - and in case
@@ -356,6 +490,7 @@ module.exports = function (log) {
 				debug: config.debug,
 				babelConfig: config.babelConfig,
 				generateBabelConfig: config.generateBabelConfig,
+				sourceFolders: config.sourceFolders,
 				includes,
 				excludes,
 				useGlobPatterns,
@@ -370,6 +505,7 @@ module.exports = function (log) {
 				transformAtStartup: config.transformAtStartup,
 				transformTypeScript,
 				tsConfigFile,
+				pathAliases: config.pathAliases,
 				transformModulesToUI5,
 				transformAsyncToPromise,
 				transformJSX,
@@ -397,7 +533,7 @@ module.exports = function (log) {
 		 * @returns {object} the babel plugins configuration
 		 */
 		createBabelConfig: async function createBabelConfig(
-			{ configuration, isMiddleware, preprocess, postprocess },
+			{ configuration, isMiddleware, preprocess, postprocess, sourceFolders, dependencies },
 			cwd = process.cwd()
 		) {
 			// Things to consider:
@@ -470,6 +606,13 @@ module.exports = function (log) {
 
 			// create configuration based on ui5.yaml configuration options
 			configuration?.debug && log.info(`Create Babel configuration based on ui5.yaml configuration options...`);
+			if (configuration?.debug) {
+				sourceFolders && log.info(`sourceFolders: ${JSON.stringify(sourceFolders)}`);
+				dependencies?.length &&
+					log.info(
+						`dependencies (${dependencies.length}):\n${dependencies.map((d) => `  ${d.sourceRoot} ${JSON.stringify(d.sourceFolders)}`).join("\n")}`
+					);
+			}
 
 			// create the babel configuration based on the ui5.yaml
 			babelConfigOptions = { plugins: [], presets: [] };
@@ -534,10 +677,32 @@ module.exports = function (log) {
 			// add the presets to enable transformation of ES modules to
 			// UI5 modules and ES classes to UI5 classes
 			if (configuration?.transformModulesToUI5) {
-				// if the configuration option transformModulesToUI5 is an object
-				// it contains the configuration options for the plugin
-				if (typeof configuration.transformModulesToUI5 === "object") {
-					babelConfigOptions.presets.push(["transform-ui5", configuration.transformModulesToUI5]);
+				const userOpts =
+					typeof configuration.transformModulesToUI5 === "object" ? configuration.transformModulesToUI5 : {};
+				// sourceFolders maps each source folder to its dotted namespace prefix so the
+				// plugin resolves the per-file namespace from the folder map directly.
+				// Injection priority (last-wins via Object.assign):
+				//   1. auto-derived base: sourceFolders from project type
+				//   2. explicit user opts from ui5.yaml (transformModulesToUI5: { ... }) always win
+				const autoOpts = sourceFolders ? { sourceFolders } : {};
+				if (dependencies?.length) autoOpts.dependencies = dependencies;
+				// derive modulesMap from explicit pathAliases in ui5.yaml,
+				// unless the user has already set modulesMap explicitly
+				if (!userOpts.modulesMap) {
+					const modulesMap = deriveModulesMap(
+						configuration,
+						sourceFolders,
+						configuration?.debug ? (msg) => log.info(msg) : undefined
+					);
+					if (modulesMap) {
+						autoOpts.modulesMap = modulesMap;
+					}
+				} else if (configuration?.debug) {
+					log.info(`pathAliases: skipping modulesMap derivation — modulesMap is already set explicitly`);
+				}
+				const presetOpts = Object.assign(autoOpts, userOpts);
+				if (Object.keys(presetOpts).length > 0) {
+					babelConfigOptions.presets.push(["transform-ui5", presetOpts]);
 				} else {
 					babelConfigOptions.presets.push("transform-ui5");
 				}
@@ -682,13 +847,16 @@ module.exports = function (log) {
 		 */
 		determineResourceFSPath: function determineResourceFSPath(resource, cwd = process.cwd()) {
 			let resourcePath = resource.getPath();
-			// specVersion 3.0 provides source metadata and only if the
-			// current work directory is the rootpath of the project resource
-			// it is a root resource which should be considered to be resolved
-			if (resource.getProject() && path.relative(cwd, resource.getProject().getRootPath()) === "") {
-				// npm dependencies don't have sourceMetadata applied to resource!
-				resourcePath = resource.getSourceMetadata()?.fsPath || resourcePath;
-			}
+			// Prefer the real FS path from source metadata whenever it is available.
+			// This covers both root-project resources and workspace-dependency resources
+			// (e.g. a library symlinked via npm workspaces): all FileSystem-adapter-backed
+			// resources have fsPath populated. Falling back to the virtual UI5 path
+			// (e.g. /resources/com/myorg/mylib/Example.ts) would prevent the
+			// babel-plugin-transform-modules-ui5 dependencies option from matching the file
+			// against any dep.sourceRoot, so the namespace would never be derived.
+			// The cwd parameter is kept for API compatibility but is no longer used here.
+			void cwd;
+			resourcePath = resource.getSourceMetadata()?.fsPath || resourcePath;
 			return resourcePath;
 		},
 
@@ -721,7 +889,8 @@ module.exports = function (log) {
 		normalizeBabelConfigOptions,
 		postprocessBabelConfigOptions,
 		resolvePresetOrPlugin,
-		normalizePresetOrPlugin
+		normalizePresetOrPlugin,
+		deriveModulesMap
 	};
 	return _this;
 };

@@ -24,6 +24,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 		resolveNodeModule,
 		createConfiguration,
 		createBabelConfig,
+		deriveSourceFolders,
 		normalizeLineFeeds,
 		determineResourceFSPath,
 		transformAsync,
@@ -33,7 +34,9 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
 	const config = createConfiguration({ configuration: options?.configuration || {}, isMiddleware: false }, cwd);
-	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false }, cwd);
+	// auto-derive sourceFolders from project type unless already set in ui5.yaml
+	const sourceFolders = config.sourceFolders ?? deriveSourceFolders(taskUtil.getProject(), cwd);
+	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false, sourceFolders }, cwd);
 
 	const { resourceFactory } = taskUtil;
 
@@ -77,19 +80,20 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 	// replace the version in all files handled by this task because this plugin handles additional file types
 	// which are not supported by the replaceVersion task of the UI5 CLI (hardcoded some selected file types)
 	// (HINT: do this a bit loosely coupled for now to avoid tight dependencies to UI5 CLI)
-	// Also check for @ui5/builder under @ui5/cli to avoid issues with the module resolution
 	try {
-		// dynamically require the replaceVersion task
-		// (using the absolute path to the module to avoid issues with the module resolution)
-		const replaceVersion = (
-			await import(
-				pathToFileURL(
-					require.resolve("@ui5/builder/tasks/replaceVersion", {
-						paths: [cwd, path.dirname(require.resolve("@ui5/cli/package.json"))]
-					})
-				)
-			)
-		).default;
+		// Resolve @ui5/builder relative to the running CLI binary (process.argv[1]) so that monorepos
+		// where node_modules lives at a higher level than cwd are handled correctly.
+		// We resolve package.json (always a plain file export) rather than the subpath export because
+		// require.resolve() does not honour ESM exports maps for wildcard patterns (./tasks/*).
+		const builderPkgJsonPath = require.resolve("@ui5/builder/package.json", {
+			paths: [process.argv[1], cwd]
+		});
+		const builderPkgJson = JSON.parse(fs.readFileSync(builderPkgJsonPath, "utf-8"));
+		// Walk the exports map: "./tasks/replaceVersion" matches the "./tasks/*" pattern → "./lib/tasks/*.js"
+		const replaceVersionExport = builderPkgJson?.exports?.["./tasks/*"];
+		const replaceVersionRelPath = replaceVersionExport?.replace("*", "replaceVersion");
+		const replaceVersionAbsPath = path.resolve(path.dirname(builderPkgJsonPath), replaceVersionRelPath);
+		const replaceVersion = (await import(pathToFileURL(replaceVersionAbsPath))).default;
 		// replace the versions for all supported file types
 		// using the central replaceVersion task of the UI5 CLI
 		await replaceVersion({
@@ -131,7 +135,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 					const result = await transformAsync(
 						source,
 						Object.assign({}, babelConfig, {
-							filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc
+							filename: determineResourceFSPath(resource), // necessary for source map <-> source assoc
+							sourceRoot: cwd // absolute project root so babel-plugin-transform-modules-ui5 resolves namespace correctly in nested builds
 						})
 					);
 
