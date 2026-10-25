@@ -26,6 +26,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const {
 		createConfiguration,
 		createBabelConfig,
+		deriveSourceFolders,
 		normalizeLineFeeds,
 		determineResourceFSPath,
 		transformAsync,
@@ -35,7 +36,6 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
 	const config = createConfiguration({ configuration: options?.configuration || {}, isMiddleware: true }, cwd);
-	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true }, cwd);
 
 	// in case of local development of framework dependencies, they are not listed as
 	// a framework dependency for the project and this should not be considered as
@@ -55,11 +55,31 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 				readers: [
 					resources.rootProject,
 					...(resources.dependencies?._readers || []).filter((reader) => {
-						return !isFrameworkProject(reader?._readers?.[0]?._project);
+						const project = reader?._readers?.[0]?._project;
+						return !isFrameworkProject(project);
 					})
 				]
 			})
 		: resources.rootProject;
+
+	// auto-derive sourceFolders from project type unless already set in ui5.yaml
+	const sourceFolders = config.sourceFolders ?? deriveSourceFolders(middlewareUtil.getProject(), cwd);
+	const dependencies = [];
+	for (const dep of middlewareUtil.getDependencies() || []) {
+		const depName = typeof dep === "string" ? dep : dep.name;
+		const depProject = middlewareUtil.getProject?.(depName);
+		if (!depProject || isFrameworkProject(depProject)) continue;
+		const depRoot = depProject.getRootPath?.();
+		if (!depRoot) continue;
+		const depSourceFolders = deriveSourceFolders(depProject, depRoot);
+		if (depSourceFolders) {
+			dependencies.push({ sourceRoot: depRoot, sourceFolders: depSourceFolders });
+		}
+	}
+	const babelConfig = await createBabelConfig(
+		{ configuration: config, isMiddleware: true, sourceFolders, dependencies },
+		cwd
+	);
 
 	const outputCache = {};
 	const transpileAsync = async (resource) => {

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./webapp",
+    "paths": {
+      "@/*": ["*"],
+      "@utils/*": ["utils/*"]
+    }
+  }
+}
