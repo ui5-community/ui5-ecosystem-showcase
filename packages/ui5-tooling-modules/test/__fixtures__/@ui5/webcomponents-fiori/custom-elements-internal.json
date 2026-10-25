@@ -115,11 +115,19 @@
                   }
                 ]
               },
-              "description": "Fires when the scan is completed successfuuly.",
+              "description": "Fires when the scan is completed successfully.",
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
               "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "string"
+                  },
+                  "name": "format",
+                  "_ui5privacy": "public",
+                  "description": "the format of the scanned barcode (e.g. \"QR_CODE\", \"EAN_13\", \"CODE_128\")"
+                },
                 {
                   "type": {
                     "text": "Object"
@@ -157,7 +165,7 @@
           },
           "tagName": "ui5-barcode-scanner-dialog",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.15",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public"
         }
       ],
@@ -176,6 +184,21 @@
           "declaration": {
             "name": "BarcodeScannerDialog",
             "module": "dist/BarcodeScannerDialog.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/BarcodeScannerDialogTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "BarcodeScannerDialogTemplate",
+            "module": "dist/BarcodeScannerDialogTemplate.js"
           }
         }
       ]
@@ -254,6 +277,24 @@
           "members": [
             {
               "kind": "field",
+              "name": "accessibilityAttributes",
+              "type": {
+                "text": "DynamicPageAccessibilityAttributes",
+                "references": [
+                  {
+                    "name": "DynamicPageAccessibilityAttributes",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/DynamicPage.js"
+                  }
+                ]
+              },
+              "default": "{}",
+              "description": "Defines additional accessibility attributes on different areas of the component.\n\nThe accessibilityAttributes object has the following fields,\nwhere each field is an object supporting one or more accessibility attributes:\n\n - **root**: `root.role` and `root.name`.\n - **header**: `header.role` and `header.name`.\n - **content**: `content.role` and `content.name`.\n - **footer**: `footer.role` and `footer.name`.\n\nThe accessibility attributes support the following values:\n\n- **role**: Defines the accessible ARIA landmark role of the area.\nAccepts the following values per section:\n`root` — `none`, `main`, `region`;\n`header` — `none`, `banner`, `region`;\n`content` — `none`, `main`, `region`, `form`;\n`footer` — `none`, `contentinfo`, `region`.\n\n- **name**: Defines the accessible ARIA name of the area.\nAccepts any string.",
+              "privacy": "public",
+              "_ui5since": "2.24.0"
+            },
+            {
+              "kind": "field",
               "name": "headerPinned",
               "type": {
                 "text": "boolean"
@@ -319,6 +360,15 @@
           ],
           "attributes": [
             {
+              "description": "Defines additional accessibility attributes on different areas of the component.\n\nThe accessibilityAttributes object has the following fields,\nwhere each field is an object supporting one or more accessibility attributes:\n\n - **root**: `root.role` and `root.name`.\n - **header**: `header.role` and `header.name`.\n - **content**: `content.role` and `content.name`.\n - **footer**: `footer.role` and `footer.name`.\n\nThe accessibility attributes support the following values:\n\n- **role**: Defines the accessible ARIA landmark role of the area.\nAccepts the following values per section:\n`root` — `none`, `main`, `region`;\n`header` — `none`, `banner`, `region`;\n`content` — `none`, `main`, `region`, `form`;\n`footer` — `none`, `contentinfo`, `region`.\n\n- **name**: Defines the accessible ARIA name of the area.\nAccepts any string.",
+              "name": "accessibility-attributes",
+              "default": "{}",
+              "fieldName": "accessibilityAttributes",
+              "type": {
+                "text": "DynamicPageAccessibilityAttributes"
+              }
+            },
+            {
               "description": "Defines if the header is pinned.",
               "name": "header-pinned",
               "default": "false",
@@ -363,7 +413,11 @@
           "tagName": "ui5-dynamic-page",
           "customElement": true,
           "_ui5since": "2.0.0",
-          "_ui5privacy": "public"
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "DynamicPageHeader",
+            "DynamicPageTitle"
+          ]
         }
       ],
       "exports": [
@@ -402,6 +456,30 @@
                 "text": "Array<HTMLElement>"
               },
               "_ui5privacy": "public"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the accessible ARIA label for the header region.\nOverrides the default \"Header Expanded\" / \"Header Snapped\" text.",
+              "privacy": "public",
+              "default": "undefined",
+              "_ui5since": "2.24.0"
+            }
+          ],
+          "attributes": [
+            {
+              "description": "Defines the accessible ARIA label for the header region.\nOverrides the default \"Header Expanded\" / \"Header Snapped\" text.",
+              "name": "accessible-name",
+              "default": "undefined",
+              "fieldName": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              }
             }
           ],
           "superclass": {
@@ -467,6 +545,51 @@
           "declaration": {
             "name": "DynamicPageHeaderActions",
             "module": "dist/DynamicPageHeaderActions.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/DynamicPageHeaderActionsTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "DynamicPageHeaderActionsTemplate",
+            "module": "dist/DynamicPageHeaderActionsTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/DynamicPageHeaderTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "DynamicPageHeaderTemplate",
+            "module": "dist/DynamicPageHeaderTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/DynamicPageTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "DynamicPageTemplate",
+            "module": "dist/DynamicPageTemplate.js"
           }
         }
       ]
@@ -595,6 +718,21 @@
           "declaration": {
             "name": "DynamicPageTitle",
             "module": "dist/DynamicPageTitle.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/DynamicPageTitleTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "DynamicPageTitleTemplate",
+            "module": "dist/DynamicPageTitleTemplate.js"
           }
         }
       ]
@@ -888,6 +1026,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/DynamicSideContentTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "DynamicSideContentTemplate",
+            "module": "dist/DynamicSideContentTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/FilterItem.js",
       "declarations": [
         {
@@ -960,7 +1113,7 @@
           },
           "tagName": "ui5-filter-item",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.16",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "_ui5abstract": true
         }
@@ -1041,7 +1194,7 @@
           },
           "tagName": "ui5-filter-item-option",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.16",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "_ui5abstract": true
         }
@@ -1461,7 +1614,7 @@
           },
           "tagName": "ui5-flexible-column-layout",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.8",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public"
         }
       ],
@@ -1480,6 +1633,21 @@
           "declaration": {
             "name": "FlexibleColumnLayout",
             "module": "dist/FlexibleColumnLayout.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/FlexibleColumnLayoutTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "FlexibleColumnLayoutTemplate",
+            "module": "dist/FlexibleColumnLayoutTemplate.js"
           }
         }
       ]
@@ -1775,6 +1943,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/HeroBannerTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "HeroBannerTemplate",
+            "module": "dist/HeroBannerTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/IllustratedMessage.js",
       "declarations": [
         {
@@ -1807,7 +1990,7 @@
             {
               "name": "subtitle",
               "description": "Defines the subtitle of the component.\n\n**Note:** Using this slot, the default subtitle text of illustration and the value of `subtitleText` property will be overwritten.",
-              "_ui5since": "1.0.0-rc.16",
+              "_ui5since": "1.0.0",
               "_ui5type": {
                 "text": "Array<HTMLElement>"
               },
@@ -1958,7 +2141,7 @@
           },
           "tagName": "ui5-illustrated-message",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.15",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public"
         }
       ],
@@ -1977,6 +2160,21 @@
           "declaration": {
             "name": "IllustratedMessage",
             "module": "dist/IllustratedMessage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/IllustratedMessageTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "IllustratedMessageTemplate",
+            "module": "dist/IllustratedMessageTemplate.js"
           }
         }
       ]
@@ -2193,7 +2391,10 @@
           "tagName": "ui5-media-gallery",
           "customElement": true,
           "_ui5since": "1.1.0",
-          "_ui5privacy": "public"
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "MediaGalleryItem"
+          ]
         }
       ],
       "exports": [
@@ -2349,6 +2550,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/MediaGalleryItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "MediaGalleryItemTemplate",
+            "module": "dist/MediaGalleryItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/MediaGalleryTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "MediaGalleryTemplate",
+            "module": "dist/MediaGalleryTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/NavigationLayout.js",
       "declarations": [
         {
@@ -2456,6 +2687,21 @@
           "declaration": {
             "name": "NavigationLayout",
             "module": "dist/NavigationLayout.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/NavigationLayoutTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "NavigationLayoutTemplate",
+            "module": "dist/NavigationLayoutTemplate.js"
           }
         }
       ]
@@ -2918,7 +3164,7 @@
               "default": "\"None\"",
               "description": "Defines the highlight state of the list items.\nAvailable options are: `\"None\"` (by default), `\"Positive\"`, `\"Critical\"`, `\"Information\"` and `\"Negative\"`.",
               "privacy": "public",
-              "_ui5since": "1.24"
+              "_ui5since": "1.24.0"
             },
             {
               "kind": "field",
@@ -3008,7 +3254,7 @@
                 ]
               },
               "default": "\"Active\"",
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "privacy": "public"
             }
           ],
@@ -3158,12 +3404,12 @@
               }
             },
             {
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "name": "type",
               "default": "\"Active\"",
               "fieldName": "type",
               "type": {
-                "text": "\"Navigation\" | \"Inactive\" | \"Active\" | \"Detail\""
+                "text": "\"Navigation\" | \"Inactive\" | \"InactiveSelectable\" | \"Active\" | \"Detail\""
               }
             }
           ],
@@ -3377,6 +3623,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/NavigationMenuItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "NavigationMenuItemTemplate",
+            "module": "dist/NavigationMenuItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/NavigationMenuTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "NavigationMenuTemplate",
+            "module": "dist/NavigationMenuTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/NotificationList.js",
       "declarations": [
         {
@@ -3518,7 +3794,11 @@
           "tagName": "ui5-notification-list",
           "customElement": true,
           "_ui5since": "2.0.0",
-          "_ui5privacy": "public"
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "NotificationListGroupItem",
+            "NotificationListItem"
+          ]
         }
       ],
       "exports": [
@@ -3604,7 +3884,7 @@
               "default": "false",
               "description": "Defines if a busy indicator would be displayed over the item.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.8"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -3754,7 +4034,7 @@
           },
           "tagName": "ui5-li-notification-group",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.8",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public"
         }
       ],
@@ -3773,6 +4053,21 @@
           "declaration": {
             "name": "NotificationListGroupItem",
             "module": "dist/NotificationListGroupItem.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/NotificationListGroupItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "NotificationListItemTemplate",
+            "module": "dist/NotificationListGroupItemTemplate.js"
           }
         }
       ]
@@ -3872,7 +4167,7 @@
               "description": "Defines the accessible name of the component.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -3883,7 +4178,7 @@
               "description": "Defines the IDs of the elements that label the component.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -3901,7 +4196,7 @@
               "default": "\"List\"",
               "description": "Defines the accessible role of the component.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -3929,7 +4224,7 @@
               "default": "\"None\"",
               "description": "Defines whether the component will have growing capability either by pressing a `More` button,\nor via user scroll. In both cases `load-more` event is fired.\n\n**Restrictions:** `growing=\"Scroll\"` is not supported for Internet Explorer,\non IE the component will fallback to `growing=\"Button\"`.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.13"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -3940,7 +4235,7 @@
               "description": "Defines the text that will be displayed inside the growing button.\n\n**Note:** If not specified a built-in text will be displayed.\n\n**Note:** This property takes effect if the `growing` property is set to the `Button`.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.24"
+              "_ui5since": "1.24.0"
             },
             {
               "kind": "field",
@@ -3990,7 +4285,7 @@
               "default": "false",
               "description": "Defines if the component would display a loading indicator over the list.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.6"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -4104,7 +4399,7 @@
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
-              "_ui5since": "1.0.0-rc.8",
+              "_ui5since": "1.0.0",
               "_ui5parameters": [
                 {
                   "type": {
@@ -4161,7 +4456,7 @@
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
-              "_ui5since": "1.0.0-rc.8",
+              "_ui5since": "1.0.0",
               "_ui5parameters": [
                 {
                   "type": {
@@ -4183,7 +4478,7 @@
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
-              "_ui5since": "1.0.0-rc.6"
+              "_ui5since": "1.0.0"
             },
             {
               "name": "move",
@@ -4589,7 +4884,7 @@
               "description": "Defines the accessible name of the component.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -4600,7 +4895,7 @@
               "description": "Defines the IDs of the elements that label the component.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -4618,7 +4913,7 @@
               "default": "\"List\"",
               "description": "Defines the accessible role of the component.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -4646,7 +4941,7 @@
               "default": "\"None\"",
               "description": "Defines whether the component will have growing capability either by pressing a `More` button,\nor via user scroll. In both cases `load-more` event is fired.\n\n**Restrictions:** `growing=\"Scroll\"` is not supported for Internet Explorer,\non IE the component will fallback to `growing=\"Button\"`.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.13"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -4657,7 +4952,7 @@
               "description": "Defines the text that will be displayed inside the growing button.\n\n**Note:** If not specified a built-in text will be displayed.\n\n**Note:** This property takes effect if the `growing` property is set to the `Button`.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.24"
+              "_ui5since": "1.24.0"
             },
             {
               "kind": "field",
@@ -4707,7 +5002,7 @@
               "default": "false",
               "description": "Defines if the component would display a loading indicator over the list.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.6"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -4821,7 +5116,7 @@
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
-              "_ui5since": "1.0.0-rc.8",
+              "_ui5since": "1.0.0",
               "_ui5parameters": [
                 {
                   "type": {
@@ -4878,7 +5173,7 @@
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
-              "_ui5since": "1.0.0-rc.8",
+              "_ui5since": "1.0.0",
               "_ui5parameters": [
                 {
                   "type": {
@@ -4900,7 +5195,7 @@
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
-              "_ui5since": "1.0.0-rc.6"
+              "_ui5since": "1.0.0"
             },
             {
               "name": "move",
@@ -5287,7 +5582,7 @@
               "default": "false",
               "description": "Defines if a busy indicator would be displayed over the item.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.8"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -5362,7 +5657,7 @@
               "default": "\"None\"",
               "description": "Defines if the `titleText` and `description` should wrap,\nthey truncate by default.\n\n**Note:** by default the `titleText` and `description`,\nand a `ShowMore/Less` button would be displayed.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             }
           ],
           "events": [
@@ -5505,7 +5800,7 @@
           },
           "tagName": "ui5-li-notification",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.8",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public"
         }
       ],
@@ -5546,7 +5841,7 @@
               "default": "false",
               "description": "Defines if a busy indicator would be displayed over the item.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.8"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -5623,7 +5918,7 @@
             "module": "dist/ListItemBase.js"
           },
           "customElement": true,
-          "_ui5since": "1.0.0-rc.8",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "events": [
             {
@@ -5665,6 +5960,36 @@
           "declaration": {
             "name": "NotificationListItemBase",
             "module": "dist/NotificationListItemBase.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/NotificationListItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "NotificationListItemTemplate",
+            "module": "dist/NotificationListItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/NotificationListTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "NotificationListTemplate",
+            "module": "dist/NotificationListTemplate.js"
           }
         }
       ]
@@ -5804,7 +6129,7 @@
           },
           "tagName": "ui5-page",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.12",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public"
         }
       ],
@@ -5823,6 +6148,21 @@
           "declaration": {
             "name": "Page",
             "module": "dist/Page.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/PageTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "PageTemplate",
+            "module": "dist/PageTemplate.js"
           }
         }
       ]
@@ -5866,8 +6206,11 @@
           },
           "tagName": "ui5-product-switch",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.5",
-          "_ui5privacy": "public"
+          "_ui5since": "1.0.0",
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "ProductSwitchItem"
+          ]
         }
       ],
       "exports": [
@@ -5928,7 +6271,7 @@
               "description": "Defines the subtitle of the component.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -5959,7 +6302,7 @@
               "description": "Defines the title of the component.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             }
           ],
           "events": [
@@ -6029,7 +6372,7 @@
           },
           "tagName": "ui5-product-switch-item",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.5",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "_ui5implements": [
             {
@@ -6061,12 +6404,48 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/ProductSwitchItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ProductSwitchItemTemplate",
+            "module": "dist/ProductSwitchItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/ProductSwitchTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ProductSwitchTemplate",
+            "module": "dist/ProductSwitchTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/Search.js",
       "declarations": [
         {
           "kind": "class",
           "description": "### Overview\n\nA `ui5-search` is an input with suggestions, used for user search.\n\nThe `ui5-search` consists of several elements parts:\n- Scope - displays a select in the beggining of the component, used for filtering results by their scope.\n- Input field - for user input value\n- Clear button - gives the possibility for deleting the entered value\n- Search button - a primary button for performing search, when the user has entered a search term\n- Suggestions - a list with available search suggestions\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents-fiori/dist/Search.js\";`",
           "name": "Search",
+          "cssParts": [
+            {
+              "description": "Used to style the suggestions popup",
+              "name": "popover"
+            }
+          ],
           "slots": [
             {
               "name": "action",
@@ -6222,7 +6601,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.\n\n**Note:** When `scopes` are defined and no custom placeholder is provided,\nthe placeholder automatically displays \"Search in: \\{selected scope name\\}\".\nSetting a custom placeholder will override this automatic behavior.",
               "default": "undefined",
               "privacy": "public"
             },
@@ -6388,7 +6767,7 @@
               }
             },
             {
-              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.\n\n**Note:** When `scopes` are defined and no custom placeholder is provided,\nthe placeholder automatically displays \"Search in: \\{selected scope name\\}\".\nSetting a custom placeholder will override this automatic behavior.",
               "name": "placeholder",
               "default": "undefined",
               "fieldName": "placeholder",
@@ -6433,7 +6812,14 @@
           "customElement": true,
           "_ui5experimental": true,
           "_ui5since": "2.9.0",
-          "_ui5privacy": "public"
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "SearchItem",
+            "SearchItemGroup",
+            "SearchItemShowMore",
+            "SearchMessageArea",
+            "SearchScope"
+          ]
         }
       ],
       "exports": [
@@ -6540,7 +6926,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.\n\n**Note:** When `scopes` are defined and no custom placeholder is provided,\nthe placeholder automatically displays \"Search in: \\{selected scope name\\}\".\nSetting a custom placeholder will override this automatic behavior.",
               "default": "undefined",
               "privacy": "public"
             },
@@ -6657,7 +7043,7 @@
               }
             },
             {
-              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.\n\n**Note:** When `scopes` are defined and no custom placeholder is provided,\nthe placeholder automatically displays \"Search in: \\{selected scope name\\}\".\nSetting a custom placeholder will override this automatic behavior.",
               "name": "placeholder",
               "default": "undefined",
               "fieldName": "placeholder",
@@ -6718,6 +7104,36 @@
           "declaration": {
             "name": "SearchField",
             "module": "dist/SearchField.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SearchFieldScopePopoverTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SearchFieldScopePopoverTemplate",
+            "module": "dist/SearchFieldScopePopoverTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SearchFieldTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SearchFieldTemplate",
+            "module": "dist/SearchFieldTemplate.js"
           }
         }
       ]
@@ -6950,16 +7366,6 @@
           "kind": "class",
           "description": "The `ui5-search-item-group` is type of suggestion item,\nthat can be used to split the `ui5-search-item` suggestions into groups.",
           "name": "SearchItemGroup",
-          "superclass": {
-            "name": "ListItemGroup",
-            "package": "@ui5/webcomponents",
-            "module": "dist/ListItemGroup.js"
-          },
-          "tagName": "ui5-search-item-group",
-          "customElement": true,
-          "_ui5experimental": true,
-          "_ui5since": "2.9.0",
-          "_ui5privacy": "public",
           "cssParts": [
             {
               "description": "Used to style the header item of the group",
@@ -6970,10 +7376,20 @@
               "name": "title"
             }
           ],
+          "superclass": {
+            "name": "ListItemGroup",
+            "package": "@ui5/webcomponents",
+            "module": "dist/ListItemGroup.js"
+          },
+          "tagName": "ui5-search-item-group",
+          "customElement": true,
+          "_ui5experimental": true,
+          "_ui5since": "2.9.0",
+          "_ui5privacy": "public",
           "slots": [
             {
               "name": "default",
-              "description": "Defines the items of the <code>ui5-li-group</code>.",
+              "description": "Defines the items of the group.",
               "_ui5propertyName": "items",
               "_ui5type": {
                 "text": "Array<ListItemBase>",
@@ -7020,7 +7436,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Defines the header text of the <code>ui5-li-group</code>.",
+              "description": "Defines the header text of the group.",
               "privacy": "public",
               "default": "undefined"
             },
@@ -7130,7 +7546,7 @@
               }
             },
             {
-              "description": "Defines the header text of the <code>ui5-li-group</code>.",
+              "description": "Defines the header text of the group.",
               "name": "header-text",
               "default": "undefined",
               "fieldName": "headerText",
@@ -7282,6 +7698,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/SearchItemShowMoreTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SearchItemShowMoreTemplate",
+            "module": "dist/SearchItemShowMoreTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SearchItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SearchItemTemplate",
+            "module": "dist/SearchItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/SearchMessageArea.js",
       "declarations": [
         {
@@ -7357,6 +7803,36 @@
           "declaration": {
             "name": "SearchMessageArea",
             "module": "dist/SearchMessageArea.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SearchMessageAreaTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SearchMessageAreaTemplate",
+            "module": "dist/SearchMessageAreaTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SearchPopoverTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SearchPopoverTemplate",
+            "module": "dist/SearchPopoverTemplate.js"
           }
         }
       ]
@@ -7452,6 +7928,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/SearchTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SearchTemplate",
+            "module": "dist/SearchTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/ShellBar.js",
       "declarations": [
         {
@@ -7525,7 +8016,7 @@
             {
               "name": "logo",
               "description": "Defines the logo of the `ui5-shellbar`.\nFor example, you can use `ui5-avatar` or `img` elements as logo.",
-              "_ui5since": "1.0.0-rc.8",
+              "_ui5since": "1.0.0",
               "_ui5type": {
                 "text": "Array<HTMLElement>"
               },
@@ -7534,7 +8025,7 @@
             {
               "name": "menuItems",
               "description": "Defines the items displayed in menu after a click on a start button.\n\n**Note:** You can use the  `<ui5-li></ui5-li>` and its ancestors.",
-              "_ui5since": "0.10",
+              "_ui5since": "1.0.0",
               "_ui5type": {
                 "text": "Array<ListItemBase>",
                 "references": [
@@ -7550,7 +8041,7 @@
             {
               "name": "profile",
               "description": "You can pass `ui5-avatar` to set the profile image/icon.\nIf no profile slot is set - profile will be excluded from actions.\n\n**Note:** We recommend not using the `size` attribute of `ui5-avatar` because\nit should have specific size by design in the context of `ui5-shellbar` profile.",
-              "_ui5since": "1.0.0-rc.6",
+              "_ui5since": "1.0.0",
               "_ui5type": {
                 "text": "Array<HTMLElement>"
               },
@@ -7658,7 +8149,7 @@
               "privacy": "public",
               "default": "null",
               "readonly": true,
-              "_ui5since": "1.0.0-rc.16"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -7680,7 +8171,7 @@
               "privacy": "public",
               "default": "null",
               "readonly": true,
-              "_ui5since": "1.0.0-rc.16"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -7692,7 +8183,7 @@
               "privacy": "public",
               "default": "null",
               "readonly": true,
-              "_ui5since": "1.0.0-rc.16"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -7714,7 +8205,7 @@
               "privacy": "public",
               "default": "null",
               "readonly": true,
-              "_ui5since": "1.0.0-rc.16"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -7726,7 +8217,7 @@
               "privacy": "public",
               "default": "null",
               "readonly": true,
-              "_ui5since": "1.0.0-rc.16"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -7816,7 +8307,7 @@
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": true,
-              "_ui5since": "0.10",
+              "_ui5since": "1.0.0",
               "_ui5parameters": [
                 {
                   "type": {
@@ -7845,7 +8336,7 @@
               "_ui5Cancelable": true,
               "_ui5allowPreventDefault": true,
               "_ui5Bubbles": true,
-              "_ui5since": "0.10",
+              "_ui5since": "1.0.0",
               "_ui5parameters": [
                 {
                   "type": {
@@ -8171,8 +8662,14 @@
           },
           "tagName": "ui5-shellbar",
           "customElement": true,
-          "_ui5since": "0.8.0",
-          "_ui5privacy": "public"
+          "_ui5since": "1.0.0",
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "ShellBarBranding",
+            "ShellBarItem",
+            "ShellBarSearch",
+            "ShellBarSpacer"
+          ]
         }
       ],
       "exports": [
@@ -8328,6 +8825,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/ShellBarBrandingTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ShellBarBrandingTemplate",
+            "module": "dist/ShellBarBrandingTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/ShellBarItem.js",
       "declarations": [
         {
@@ -8362,7 +8874,7 @@
               "description": "Defines the count displayed in badge.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.6"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -8484,6 +8996,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/ShellBarItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ShellBarItemTemplate",
+            "module": "dist/ShellBarItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/ShellBarSearch.js",
       "declarations": [
         {
@@ -8568,7 +9095,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.\n\n**Note:** When `scopes` are defined and no custom placeholder is provided,\nthe placeholder automatically displays \"Search in: \\{selected scope name\\}\".\nSetting a custom placeholder will override this automatic behavior.",
               "default": "undefined",
               "privacy": "public"
             },
@@ -8669,7 +9196,7 @@
               }
             },
             {
-              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.\n\n**Note:** When `scopes` are defined and no custom placeholder is provided,\nthe placeholder automatically displays \"Search in: \\{selected scope name\\}\".\nSetting a custom placeholder will override this automatic behavior.",
               "name": "placeholder",
               "default": "undefined",
               "fieldName": "placeholder",
@@ -8715,6 +9242,12 @@
           "_ui5experimental": true,
           "_ui5since": "2.10.0",
           "_ui5privacy": "public",
+          "cssParts": [
+            {
+              "description": "Used to style the suggestions popup",
+              "name": "popover"
+            }
+          ],
           "slots": [
             {
               "name": "action",
@@ -8899,6 +9432,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/ShellBarSearchPopoverTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ShellBarSearchPopoverTemplate",
+            "module": "dist/ShellBarSearchPopoverTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/ShellBarSearchTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ShellBarSearchTemplate",
+            "module": "dist/ShellBarSearchTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/ShellBarSpacer.js",
       "declarations": [
         {
@@ -8938,6 +9501,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/ShellBarTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ShellBarTemplate",
+            "module": "dist/ShellBarTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/SideNavigation.js",
       "declarations": [
         {
@@ -8962,6 +9540,15 @@
               "_ui5privacy": "public"
             },
             {
+              "name": "filterSection",
+              "description": "Defines the filter section of the `ui5-side-navigation`.\n\n**Note:** The filter section is displayed when the component is expanded - the property `collapsed` is false;",
+              "_ui5since": "2.28.0",
+              "_ui5type": {
+                "text": "Array<HTMLElement>"
+              },
+              "_ui5privacy": "public"
+            },
+            {
               "name": "fixedItems",
               "description": "Defines the fixed items at the bottom of the component.\n\n**Note:** In order to achieve the best user experience, it is recommended that you keep the fixed items \"flat\" (do not pass sub-items)",
               "_ui5type": {
@@ -8979,7 +9566,7 @@
             {
               "name": "header",
               "description": "Defines the header of the `ui5-side-navigation`.\n\n**Note:** The header is displayed when the component is expanded - the property `collapsed` is false;",
-              "_ui5since": "1.0.0-rc.11",
+              "_ui5since": "1.0.0",
               "_ui5type": {
                 "text": "Array<HTMLElement>"
               },
@@ -8999,6 +9586,28 @@
               "_ui5since": "2.9.0"
             },
             {
+              "kind": "method",
+              "name": "announceSearchMatchCount",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "count",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "The number of matching navigation items.",
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Announces the number of search matches found in the side navigation to assistive technologies.\n\nThis method uses an invisible live region message so screen readers can inform users\nabout the current number of search matches.",
+              "privacy": "public",
+              "_ui5since": "2.28.0"
+            },
+            {
               "kind": "field",
               "name": "collapsed",
               "type": {
@@ -9007,6 +9616,17 @@
               "default": "false",
               "description": "Defines whether the `ui5-side-navigation` is expanded or collapsed.\n\n**Note:** On small screens (screen width of 599px or less) the collapsed mode is not supported, and in\nexpanded mode the side navigation will take the whole width of the screen.\nThe `ui5-side-navigation` component is intended to be used within a `ui5-navigation-layout`\ncomponent to ensure proper responsive behavior. If you choose not to use the\n`ui5-navigation-layout`, you will need to implement the appropriate responsive patterns yourself,\nparticularly for smaller screens where the collapsed mode should not be used.",
               "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "highlightedText",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Specifies a term to be highlighted in the navigation items' text.\nWhen set, matching portions of item and group texts are visually emphasized during rendering.",
+              "privacy": "public",
+              "default": "undefined",
+              "_ui5since": "2.28.0"
             }
           ],
           "events": [
@@ -9043,6 +9663,42 @@
                   "name": "item",
                   "_ui5privacy": "public",
                   "description": "The clicked item."
+                }
+              ]
+            },
+            {
+              "name": "item-toggle",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<SideNavigationItemToggleEventDetail>",
+                "references": [
+                  {
+                    "name": "SideNavigationItemToggleEventDetail",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/SideNavigation.js"
+                  }
+                ]
+              },
+              "description": "Fired when a `ui5-side-navigation-item` or `ui5-side-navigation-group` is expanded or collapsed.\n\n**Note:** You can call `preventDefault()` on the event to suppress the expand/collapse.\nThe `expanded` state stays unchanged. This is handy, for example, if you want to\ndynamically load child items before allowing a parent item to expand.",
+              "_ui5Cancelable": true,
+              "_ui5allowPreventDefault": true,
+              "_ui5Bubbles": true,
+              "_ui5since": "2.26.0",
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "SideNavigationItemBase",
+                    "references": [
+                      {
+                        "name": "SideNavigationItemBase",
+                        "package": "@ui5/webcomponents-fiori",
+                        "module": "dist/SideNavigationItemBase.js"
+                      }
+                    ]
+                  },
+                  "name": "item",
+                  "_ui5privacy": "public",
+                  "description": "The toggled item."
                 }
               ]
             },
@@ -9100,6 +9756,15 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "description": "Specifies a term to be highlighted in the navigation items' text.\nWhen set, matching portions of item and group texts are visually emphasized during rendering.",
+              "name": "highlighted-text",
+              "default": "undefined",
+              "fieldName": "highlightedText",
+              "type": {
+                "text": "string | undefined"
+              }
             }
           ],
           "superclass": {
@@ -9109,8 +9774,13 @@
           },
           "tagName": "ui5-side-navigation",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.8",
-          "_ui5privacy": "public"
+          "_ui5since": "1.0.0",
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "SideNavigationGroup",
+            "SideNavigationItem",
+            "SideNavigationSubItem"
+          ]
         }
       ],
       "exports": [
@@ -9287,6 +9957,21 @@
           "declaration": {
             "name": "SideNavigationGroup",
             "module": "dist/SideNavigationGroup.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SideNavigationGroupTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SideNavigationGroupTemplate",
+            "module": "dist/SideNavigationGroupTemplate.js"
           }
         }
       ]
@@ -9587,7 +10272,7 @@
           },
           "tagName": "ui5-side-navigation-item",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.8",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "_ui5abstract": true,
           "events": [
@@ -9774,6 +10459,231 @@
           "declaration": {
             "name": "SideNavigationItemBase",
             "module": "dist/SideNavigationItemBase.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SideNavigationItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SideNavigationItemTemplate",
+            "module": "dist/SideNavigationItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SideNavigationPopoverTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SideNavigationTemplate",
+            "module": "dist/SideNavigationPopoverTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SideNavigationSearchField.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "### Overview\n\nA `ui5-side-navigation-search-field` is a search field,\nused to filter the items of a `ui5-side-navigation`.\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents-fiori/dist/SideNavigationSearchField.js\";`",
+          "name": "SideNavigationSearchField",
+          "members": [
+            {
+              "kind": "field",
+              "name": "accessibleDescriptionRef",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Receives id (or many ids) of the elements that describe the component.",
+              "privacy": "public",
+              "default": "undefined"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the accessible ARIA name of the component.",
+              "privacy": "public",
+              "default": "undefined"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Receives id (or many ids) of the elements that label the component.",
+              "privacy": "public",
+              "default": "undefined"
+            },
+            {
+              "kind": "field",
+              "name": "hideClearIcon",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the clear icon of the search will be hidden.\n\n**Note:** When not set, the clear icon is displayed while the component has a value.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "default": "undefined",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Defines the value of the component.\n\n**Note:** The property is updated upon typing.",
+              "privacy": "public"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when typing in input or clear icon is pressed.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
+              "_ui5Bubbles": true
+            },
+            {
+              "name": "search",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when the user has triggered search with Enter key or Search Button press.",
+              "_ui5Cancelable": true,
+              "_ui5allowPreventDefault": true,
+              "_ui5Bubbles": true
+            }
+          ],
+          "attributes": [
+            {
+              "description": "Receives id (or many ids) of the elements that describe the component.",
+              "name": "accessible-description-ref",
+              "default": "undefined",
+              "fieldName": "accessibleDescriptionRef",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines the accessible ARIA name of the component.",
+              "name": "accessible-name",
+              "default": "undefined",
+              "fieldName": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Receives id (or many ids) of the elements that label the component.",
+              "name": "accessible-name-ref",
+              "default": "undefined",
+              "fieldName": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines whether the clear icon of the search will be hidden.\n\n**Note:** When not set, the clear icon is displayed while the component has a value.",
+              "name": "hide-clear-icon",
+              "default": "false",
+              "fieldName": "hideClearIcon",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "Defines a short hint intended to aid the user with data entry when the\ncomponent has no value.",
+              "name": "placeholder",
+              "default": "undefined",
+              "fieldName": "placeholder",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines the value of the component.\n\n**Note:** The property is updated upon typing.",
+              "name": "value",
+              "default": "\"\"",
+              "fieldName": "value",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "UI5Element",
+            "package": "@ui5/webcomponents-base",
+            "module": "dist/UI5Element.js"
+          },
+          "tagName": "ui5-side-navigation-search-field",
+          "customElement": true,
+          "_ui5since": "2.28.0",
+          "_ui5privacy": "public"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SideNavigationSearchField",
+            "module": "dist/SideNavigationSearchField.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ui5-side-navigation-search-field",
+          "declaration": {
+            "name": "SideNavigationSearchField",
+            "module": "dist/SideNavigationSearchField.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SideNavigationSearchFieldTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SideNavigationSearchFieldTemplate",
+            "module": "dist/SideNavigationSearchFieldTemplate.js"
           }
         }
       ]
@@ -10257,7 +11167,7 @@
           },
           "tagName": "ui5-side-navigation-sub-item",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.8",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "_ui5abstract": true,
           "attributes": [
@@ -10438,6 +11348,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/SideNavigationSubItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SideNavigationSubItemTemplate",
+            "module": "dist/SideNavigationSubItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SideNavigationTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SideNavigationTemplate",
+            "module": "dist/SideNavigationTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/SortItem.js",
       "declarations": [
         {
@@ -10493,7 +11433,7 @@
           },
           "tagName": "ui5-sort-item",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.16",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "_ui5abstract": true
         }
@@ -10529,7 +11469,7 @@
         },
         {
           "kind": "class",
-          "description": "### Overview\n\nThe `ui5-timeline` component shows entries (such as objects, events, or posts) in chronological order.\nA common use case is to provide information about changes to an object, or events related to an object.\nThese entries can be generated by the system (for example, value XY changed from A to B), or added manually.\nThere are two distinct variants of the timeline: basic and social. The basic timeline is read-only,\nwhile the social timeline offers a high level of interaction and collaboration, and is integrated within SAP Jam.",
+          "description": "### Overview\n\nThe `ui5-timeline` component shows entries (such as objects, events, or posts) in chronological order.\nA common use case is to provide information about changes to an object, or events related to an object.\nThese entries can be generated by the system (for example, value XY changed from A to B), or added manually.\nThere are two distinct variants of the timeline: basic and social. The basic timeline is read-only,\nwhile the social timeline offers a high level of interaction and collaboration, and is integrated within SAP Jam.\n\n### Header and Info Bar Slots\n\nThe Timeline exposes two named slots above the items area:\n\n- `header` — for a controls bar (search field, filter trigger, sort toggle, etc.).\nThe most common pattern is to place a `ui5-toolbar` containing a search input and buttons that open\na filter dialog or toggle sort direction. The Timeline itself performs no filtering, sorting, or\nsearching — the application listens for events from its own controls and reorders, hides, or\nadds items in the default slot accordingly.\n\n- `infoBar` — for a status bar that reflects the result of the controls (active filters,\napplied sort, current search query). Typically contains tokens, labels, or a `ui5-bar`.\n\nThe Timeline itself does not filter, sort, or search — the application owns that logic.\nUse `stickyHeader` to pin both bars while the Timeline's items scroll. Give the Timeline\na constrained height in this mode so it owns its scrollbar.",
           "name": "Timeline",
           "slots": [
             {
@@ -10545,6 +11485,24 @@
                     "module": "dist/Timeline.js"
                   }
                 ]
+              },
+              "_ui5privacy": "public"
+            },
+            {
+              "name": "header",
+              "description": "Defines the content of the Timeline's header area, displayed above the items.\nTypically a `ui5-toolbar` with search, sort, and filter controls.",
+              "_ui5since": "2.24.0",
+              "_ui5type": {
+                "text": "Array<HTMLElement>"
+              },
+              "_ui5privacy": "public"
+            },
+            {
+              "name": "infoBar",
+              "description": "Defines the content of the Timeline's info bar area, displayed below the header\nand above the items. Use for status display (applied filters, sort direction, counts).",
+              "_ui5since": "2.24.0",
+              "_ui5type": {
+                "text": "Array<HTMLElement>"
               },
               "_ui5privacy": "public"
             }
@@ -10595,7 +11553,7 @@
               "default": "\"Vertical\"",
               "description": "Defines the items orientation.",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -10617,6 +11575,17 @@
               "default": "1000",
               "description": "Defines the delay in milliseconds, after which the loading indicator will show up for this component.",
               "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "stickyHeader",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the content of the `header` and `infoBar` slots remains visible when the user scrolls the Timeline.\n\n**Note:** The bars pin to the Timeline's own scrollport. Give the Timeline a\nconstrained height (for example `style=\"height: 32rem\"`) so its items scroll\ninside it. Placing the Timeline inside an externally scrolling ancestor while\nleaving the Timeline itself unsized is not supported in this mode — the bars\nwill scroll away with the ancestor.",
+              "privacy": "public",
+              "_ui5since": "2.24.0"
             }
           ],
           "events": [
@@ -10678,6 +11647,15 @@
               "type": {
                 "text": "number"
               }
+            },
+            {
+              "description": "Defines whether the content of the `header` and `infoBar` slots remains visible when the user scrolls the Timeline.\n\n**Note:** The bars pin to the Timeline's own scrollport. Give the Timeline a\nconstrained height (for example `style=\"height: 32rem\"`) so its items scroll\ninside it. Placing the Timeline inside an externally scrolling ancestor while\nleaving the Timeline itself unsized is not supported in this mode — the bars\nwill scroll away with the ancestor.",
+              "name": "sticky-header",
+              "default": "false",
+              "fieldName": "stickyHeader",
+              "type": {
+                "text": "boolean"
+              }
             }
           ],
           "superclass": {
@@ -10687,8 +11665,12 @@
           },
           "tagName": "ui5-timeline",
           "customElement": true,
-          "_ui5since": "0.8.0",
-          "_ui5privacy": "public"
+          "_ui5since": "1.0.0",
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "TimelineGroupItem",
+            "TimelineItem"
+          ]
         }
       ],
       "exports": [
@@ -10824,6 +11806,21 @@
           "declaration": {
             "name": "TimelineGroupItem",
             "module": "dist/TimelineGroupItem.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/TimelineGroupItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "TimelineGroupItemTemplate",
+            "module": "dist/TimelineGroupItemTemplate.js"
           }
         }
       ]
@@ -11044,6 +12041,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/TimelineItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "TimelineItemTemplate",
+            "module": "dist/TimelineItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/TimelineTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "TimelineTemplate",
+            "module": "dist/TimelineTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/UploadCollection.js",
       "declarations": [
         {
@@ -11086,7 +12113,7 @@
               "description": "Defines the accessible ARIA name of the component.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.16"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -11275,8 +12302,11 @@
           },
           "tagName": "ui5-upload-collection",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.7",
-          "_ui5privacy": "public"
+          "_ui5since": "1.0.0",
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "UploadCollectionItem"
+          ]
         }
       ],
       "exports": [
@@ -11491,7 +12521,7 @@
               "default": "\"None\"",
               "description": "Defines the highlight state of the list items.\nAvailable options are: `\"None\"` (by default), `\"Positive\"`, `\"Critical\"`, `\"Information\"` and `\"Negative\"`.",
               "privacy": "public",
-              "_ui5since": "1.24"
+              "_ui5since": "1.24.0"
             },
             {
               "kind": "field",
@@ -11539,7 +12569,7 @@
                 ]
               },
               "default": "\"Active\"",
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "privacy": "public"
             }
           ],
@@ -11766,12 +12796,12 @@
               }
             },
             {
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "name": "type",
               "default": "\"Active\"",
               "fieldName": "type",
               "type": {
-                "text": "\"Navigation\" | \"Inactive\" | \"Active\" | \"Detail\""
+                "text": "\"Navigation\" | \"Inactive\" | \"InactiveSelectable\" | \"Active\" | \"Detail\""
               }
             }
           ],
@@ -11782,7 +12812,7 @@
           },
           "tagName": "ui5-upload-collection-item",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.7",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public"
         }
       ],
@@ -11801,6 +12831,36 @@
           "declaration": {
             "name": "UploadCollectionItem",
             "module": "dist/UploadCollectionItem.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UploadCollectionItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UploadCollectionItemTemplate",
+            "module": "dist/UploadCollectionItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UploadCollectionTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UploadCollectionTemplate",
+            "module": "dist/UploadCollectionTemplate.js"
           }
         }
       ]
@@ -11853,9 +12913,29 @@
                 "text": "Array<HTMLElement>"
               },
               "_ui5privacy": "public"
+            },
+            {
+              "name": "infoArea",
+              "description": "Defines the content of the info area inside the User Menu's account block.\n\n**Note:** When empty, the User Menu renders unchanged.",
+              "_ui5since": "2.24.0",
+              "_ui5type": {
+                "text": "Array<HTMLElement>"
+              },
+              "_ui5privacy": "public"
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "avatarInteractive",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the avatar of the selected account is interactive (focusable and pressable).\n\nWhen `false` (default), the avatar is rendered as a non-interactive image\nand is not announced as a button by screen readers.\n\n**Note:** When `showEditButton` is set to `true`, the avatar is treated as interactive\nregardless of this property's value, to preserve the edit affordance.",
+              "privacy": "public",
+              "_ui5since": "2.24.0"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -12076,6 +13156,15 @@
           ],
           "attributes": [
             {
+              "description": "Defines whether the avatar of the selected account is interactive (focusable and pressable).\n\nWhen `false` (default), the avatar is rendered as a non-interactive image\nand is not announced as a button by screen readers.\n\n**Note:** When `showEditButton` is set to `true`, the avatar is treated as interactive\nregardless of this property's value, to preserve the edit affordance.",
+              "name": "avatar-interactive",
+              "default": "false",
+              "fieldName": "avatarInteractive",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
               "description": "Defines if the User Menu is opened.",
               "name": "open",
               "default": "false",
@@ -12138,7 +13227,12 @@
           "tagName": "ui5-user-menu",
           "customElement": true,
           "_ui5since": "2.5.0",
-          "_ui5privacy": "public"
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "UserMenuAccount",
+            "UserMenuItem",
+            "UserMenuItemGroup"
+          ]
         }
       ],
       "exports": [
@@ -12539,7 +13633,7 @@
               "default": "\"None\"",
               "description": "Defines the highlight state of the list items.\nAvailable options are: `\"None\"` (by default), `\"Positive\"`, `\"Critical\"`, `\"Information\"` and `\"Negative\"`.",
               "privacy": "public",
-              "_ui5since": "1.24"
+              "_ui5since": "1.24.0"
             },
             {
               "kind": "field",
@@ -12629,7 +13723,7 @@
                 ]
               },
               "default": "\"Active\"",
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "privacy": "public"
             }
           ],
@@ -12770,12 +13864,12 @@
               }
             },
             {
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "name": "type",
               "default": "\"Active\"",
               "fieldName": "type",
               "type": {
-                "text": "\"Navigation\" | \"Inactive\" | \"Active\" | \"Detail\""
+                "text": "\"Navigation\" | \"Inactive\" | \"InactiveSelectable\" | \"Active\" | \"Detail\""
               }
             }
           ],
@@ -13032,6 +14126,51 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/UserMenuItemGroupTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserMenuItemTemplate",
+            "module": "dist/UserMenuItemGroupTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserMenuItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserMenuItemTemplate",
+            "module": "dist/UserMenuItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserMenuTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserMenuTemplate",
+            "module": "dist/UserMenuTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/UserSettingsAccountView.js",
       "declarations": [
         {
@@ -13084,6 +14223,17 @@
               "default": "false",
               "description": "Defines whether the view is selected. There can be just one selected view at a time.",
               "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "showEditButton",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines if the User Settings Account View shows the edit button on the avatar.",
+              "privacy": "public",
+              "_ui5since": "2.26.0"
             },
             {
               "kind": "field",
@@ -13150,6 +14300,15 @@
               }
             },
             {
+              "description": "Defines if the User Settings Account View shows the edit button on the avatar.",
+              "name": "show-edit-button",
+              "default": "false",
+              "fieldName": "showEditButton",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
               "description": "Defines if the User Menu shows the `Manage Account` option.",
               "name": "show-manage-account",
               "default": "false",
@@ -13194,6 +14353,21 @@
           "declaration": {
             "name": "UserSettingsAccountView",
             "module": "dist/UserSettingsAccountView.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsAccountViewTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsAccountViewTemplate",
+            "module": "dist/UserSettingsAccountViewTemplate.js"
           }
         }
       ]
@@ -13361,6 +14535,16 @@
           "kind": "class",
           "description": "### Overview\n\nThe `ui5-user-settings-appearance-view-group` is a special list item group used to group appearance view items.\n\nThis is the item to use inside a `ui5-user-settings-appearance-view`.\n\n### ES6 Module Import\n`import \"@ui5/webcomponents-fiori/dist/UserSettingsAppearanceViewGroup.js\";`",
           "name": "UserSettingsAppearanceViewGroup",
+          "cssParts": [
+            {
+              "description": "Used to style the header item of the group",
+              "name": "header"
+            },
+            {
+              "description": "Used to style the title of the group header",
+              "name": "title"
+            }
+          ],
           "slots": [
             {
               "name": "default",
@@ -13403,16 +14587,6 @@
           "customElement": true,
           "_ui5since": "2.17.0",
           "_ui5privacy": "public",
-          "cssParts": [
-            {
-              "description": "Used to style the header item of the group",
-              "name": "header"
-            },
-            {
-              "description": "Used to style the title of the group header",
-              "name": "title"
-            }
-          ],
           "members": [
             {
               "kind": "field",
@@ -13430,7 +14604,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Defines the header text of the <code>ui5-li-group</code>.",
+              "description": "Defines the header text of the group.",
               "privacy": "public",
               "default": "undefined"
             },
@@ -13540,7 +14714,7 @@
               }
             },
             {
-              "description": "Defines the header text of the <code>ui5-li-group</code>.",
+              "description": "Defines the header text of the group.",
               "name": "header-text",
               "default": "undefined",
               "fieldName": "headerText",
@@ -13655,7 +14829,7 @@
               "description": "Defines the text alternative of the component.\n\n**Note**: If not provided a default text alternative will be set, if present.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -13691,7 +14865,7 @@
               "default": "\"None\"",
               "description": "Defines the highlight state of the list items.\nAvailable options are: `\"None\"` (by default), `\"Positive\"`, `\"Critical\"`, `\"Information\"` and `\"Negative\"`.",
               "privacy": "public",
-              "_ui5since": "1.24"
+              "_ui5since": "1.24.0"
             },
             {
               "kind": "field",
@@ -13750,7 +14924,7 @@
                 ]
               },
               "default": "\"Active\"",
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "privacy": "public"
             }
           ],
@@ -13864,12 +15038,12 @@
               }
             },
             {
-              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive` and `Detail` - will not.",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
               "name": "type",
               "default": "\"Active\"",
               "fieldName": "type",
               "type": {
-                "text": "\"Navigation\" | \"Inactive\" | \"Active\" | \"Detail\""
+                "text": "\"Navigation\" | \"Inactive\" | \"InactiveSelectable\" | \"Active\" | \"Detail\""
               }
             }
           ],
@@ -13999,6 +15173,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/UserSettingsAppearanceViewItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsAppearanceViewItemTemplate",
+            "module": "dist/UserSettingsAppearanceViewItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsAppearanceViewTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsAppearanceViewTemplate",
+            "module": "dist/UserSettingsAppearanceViewTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/UserSettingsDialog.js",
       "declarations": [
         {
@@ -14061,6 +15265,16 @@
             },
             {
               "kind": "field",
+              "name": "saveMode",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the dialog offers Save and Cancel actions in its footer.\n\nWhen true, the footer renders a Save (Emphasized) and a Cancel button\ninstead of the default Close button. Save and Cancel each fire a\ncorresponding event; the application is responsible for closing the\ndialog (typically after persisting or discarding the changes).",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
               "name": "showSearchField",
               "type": {
                 "text": "boolean"
@@ -14077,9 +15291,20 @@
               "type": {
                 "text": "CustomEvent"
               },
-              "description": "Fired before the settings dialog is closed.",
+              "description": "Fired before the settings dialog is closed.\n\n**Note:** This event is cancelable via `preventDefault()`, allowing the application to keep the\ndialog open — for example, to prompt the user about unsaved changes before dismissal.",
               "_ui5Cancelable": true,
               "_ui5allowPreventDefault": true,
+              "_ui5Bubbles": false
+            },
+            {
+              "name": "cancel",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when the Cancel button in the footer is clicked.\nThe dialog does not close automatically — the application is responsible\nfor closing it after discarding the changes.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
               "_ui5Bubbles": false
             },
             {
@@ -14088,7 +15313,7 @@
               "type": {
                 "text": "CustomEvent"
               },
-              "description": "Fired when a settings dialog is closed.",
+              "description": "Fired when the settings dialog is closed.",
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": false
@@ -14099,7 +15324,18 @@
               "type": {
                 "text": "CustomEvent"
               },
-              "description": "Fired when a settings dialog is open.",
+              "description": "Fired when the settings dialog is opened.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
+              "_ui5Bubbles": false
+            },
+            {
+              "name": "save",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when the Save button in the footer is clicked.\nThe dialog does not close automatically — the application is responsible\nfor closing it after persisting the changes.",
               "_ui5Cancelable": false,
               "_ui5allowPreventDefault": false,
               "_ui5Bubbles": false
@@ -14160,6 +15396,15 @@
               }
             },
             {
+              "description": "Defines whether the dialog offers Save and Cancel actions in its footer.\n\nWhen true, the footer renders a Save (Emphasized) and a Cancel button\ninstead of the default Close button. Save and Cancel each fire a\ncorresponding event; the application is responsible for closing the\ndialog (typically after persisting or discarding the changes).",
+              "name": "save-mode",
+              "default": "false",
+              "fieldName": "saveMode",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
               "description": "Defines if the Search Field would be displayed.\n\n**Note:** By default the Search Field is not displayed.",
               "name": "show-search-field",
               "default": "false",
@@ -14177,7 +15422,18 @@
           "tagName": "ui5-user-settings-dialog",
           "customElement": true,
           "_ui5since": "2.8.0",
-          "_ui5privacy": "public"
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "UserSettingsAccountView",
+            "UserSettingsAppearanceView",
+            "UserSettingsAppearanceViewGroup",
+            "UserSettingsAppearanceViewItem",
+            "UserSettingsItem",
+            "UserSettingsNotificationsView",
+            "UserSettingsNotificationsViewGroup",
+            "UserSettingsNotificationsViewItem",
+            "UserSettingsView"
+          ]
         }
       ],
       "exports": [
@@ -14195,6 +15451,21 @@
           "declaration": {
             "name": "UserSettingsDialog",
             "module": "dist/UserSettingsDialog.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsDialogTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsDialogTemplate",
+            "module": "dist/UserSettingsDialogTemplate.js"
           }
         }
       ]
@@ -14484,6 +15755,935 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/UserSettingsItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsItemTemplate",
+            "module": "dist/UserSettingsItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsNotificationsView.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "### Overview\n\nThe `ui5-user-settings-notifications-view` represents a view displayed in the\n`ui5-user-settings-item` that lists notification preferences. Individual settings\nare represented by `ui5-user-settings-notifications-view-item` elements, optionally\ngrouped by `ui5-user-settings-notifications-view-group`.\n\nWhen a navigable item is clicked, the view drills into a sibling secondary view of\nits parent `ui5-user-settings-item`. When an item's `item-key` matches a target\nview's `id`, that view is opened and keeps its own `text`. Otherwise the first\nsibling marked as `secondary` is opened and its `text` is set to the clicked\nitem's `text` so the drill-in header reflects the origin.\n\nApps can override this behavior by preventing the `item-click` event.\n\nApplications should listen to the item's `switch-change` event (which bubbles) to\nbe notified when a switch is toggled.\n\nAdditional content (e.g. an information message strip) can be placed via the\n`additionalContent` slot, which is rendered above the list.\n\n### ES6 Module Import\n`import \"@ui5/webcomponents-fiori/dist/UserSettingsNotificationsView.js\";`",
+          "name": "UserSettingsNotificationsView",
+          "slots": [
+            {
+              "name": "additionalContent",
+              "description": "Defines additional content displayed above the items list.",
+              "_ui5type": {
+                "text": "Array<HTMLElement>"
+              },
+              "_ui5privacy": "public"
+            },
+            {
+              "name": "default",
+              "description": "Defines the items of the component. Can be a mix of\n`ui5-user-settings-notifications-view-item` and\n`ui5-user-settings-notifications-view-group` elements.",
+              "_ui5propertyName": "items",
+              "_ui5type": {
+                "text": "Array<UserSettingsNotificationsViewGroup | UserSettingsNotificationsViewItem>"
+              },
+              "_ui5privacy": "public"
+            },
+            {
+              "name": "headerItems",
+              "description": "Defines header items rendered above the grouped items list.\nEach item is wrapped in a `role=\"form\"` landmark — a separate Tab stop.\nUse this slot for product-level toggles (e.g. \"Allow Notifications\") that appear\nabove the notification-type groups.",
+              "_ui5type": {
+                "text": "Array<UserSettingsNotificationsViewItem>",
+                "references": [
+                  {
+                    "name": "UserSettingsNotificationsViewItem",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/UserSettingsNotificationsViewItem.js"
+                  }
+                ]
+              },
+              "_ui5privacy": "public"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "secondary",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indicates whether the view is secondary. It is relevant only if the view is used in `pages` slot of `ui5-user-settings-item`\nand controls the visibility of the back button.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "selected",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the view is selected. There can be just one selected view at a time.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "text",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the title text of the user settings view.",
+              "privacy": "public",
+              "default": "undefined"
+            }
+          ],
+          "events": [
+            {
+              "name": "item-click",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<UserSettingsNotificationsViewItemClickEventDetail>",
+                "references": [
+                  {
+                    "name": "UserSettingsNotificationsViewItemClickEventDetail",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/UserSettingsNotificationsView.js"
+                  }
+                ]
+              },
+              "description": "Fired when a navigable item in the list is clicked.\n\nThe event is cancelable: preventing it skips the built-in drill-in to the\nparent's secondary view, allowing the application to take over.",
+              "_ui5Cancelable": true,
+              "_ui5allowPreventDefault": true,
+              "_ui5Bubbles": false,
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "UserSettingsNotificationsViewItem",
+                    "references": [
+                      {
+                        "name": "UserSettingsNotificationsViewItem",
+                        "package": "@ui5/webcomponents-fiori",
+                        "module": "dist/UserSettingsNotificationsViewItem.js"
+                      }
+                    ]
+                  },
+                  "name": "item",
+                  "_ui5privacy": "public",
+                  "description": "The clicked notifications view item."
+                }
+              ]
+            }
+          ],
+          "superclass": {
+            "name": "UserSettingsView",
+            "package": "@ui5/webcomponents-fiori",
+            "module": "dist/UserSettingsView.js"
+          },
+          "tagName": "ui5-user-settings-notifications-view",
+          "customElement": true,
+          "_ui5since": "2.27.0",
+          "_ui5privacy": "public",
+          "attributes": [
+            {
+              "description": "Indicates whether the view is secondary. It is relevant only if the view is used in `pages` slot of `ui5-user-settings-item`\nand controls the visibility of the back button.",
+              "name": "secondary",
+              "default": "false",
+              "fieldName": "secondary",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "Defines whether the view is selected. There can be just one selected view at a time.",
+              "name": "selected",
+              "default": "false",
+              "fieldName": "selected",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "Defines the title text of the user settings view.",
+              "name": "text",
+              "default": "undefined",
+              "fieldName": "text",
+              "type": {
+                "text": "string | undefined"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsNotificationsView",
+            "module": "dist/UserSettingsNotificationsView.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ui5-user-settings-notifications-view",
+          "declaration": {
+            "name": "UserSettingsNotificationsView",
+            "module": "dist/UserSettingsNotificationsView.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsNotificationsViewGroup.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "### Overview\n\nThe `ui5-user-settings-notifications-view-group` groups `ui5-user-settings-notifications-view-item`\nelements inside a `ui5-user-settings-notifications-view`. Its header renders as a plain bold\nsection title with a separator line below, per the notifications design spec.\n\n### ES6 Module Import\n`import \"@ui5/webcomponents-fiori/dist/UserSettingsNotificationsViewGroup.js\";`",
+          "name": "UserSettingsNotificationsViewGroup",
+          "slots": [
+            {
+              "name": "default",
+              "description": "Defines the items of the `ui5-user-settings-notifications-view-group`.",
+              "_ui5propertyName": "items",
+              "_ui5type": {
+                "text": "Array<UserSettingsNotificationsViewItem>",
+                "references": [
+                  {
+                    "name": "UserSettingsNotificationsViewItem",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/UserSettingsNotificationsViewItem.js"
+                  }
+                ]
+              },
+              "_ui5privacy": "public"
+            },
+            {
+              "name": "header",
+              "description": "Defines the header of the component.\n\n**Note:** Using this slot, the default header text of group and the value of `headerText` property will be overwritten.",
+              "_ui5type": {
+                "text": "Array<ListItemBase>",
+                "references": [
+                  {
+                    "name": "ListItemBase",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/ListItemBase.js"
+                  }
+                ]
+              },
+              "_ui5privacy": "public"
+            }
+          ],
+          "superclass": {
+            "name": "ListItemGroup",
+            "package": "@ui5/webcomponents",
+            "module": "dist/ListItemGroup.js"
+          },
+          "tagName": "ui5-user-settings-notifications-view-group",
+          "customElement": true,
+          "_ui5since": "2.27.0",
+          "_ui5privacy": "public",
+          "cssParts": [
+            {
+              "description": "Used to style the header item of the group",
+              "name": "header"
+            },
+            {
+              "description": "Used to style the title of the group header",
+              "name": "title"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "headerAccessibleName",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the accessible name of the header.",
+              "privacy": "public",
+              "default": "undefined"
+            },
+            {
+              "kind": "field",
+              "name": "headerText",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the header text of the group.",
+              "privacy": "public",
+              "default": "undefined"
+            },
+            {
+              "kind": "field",
+              "name": "wrappingType",
+              "type": {
+                "text": "WrappingType",
+                "references": [
+                  {
+                    "name": "WrappingType",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/WrappingType.js"
+                  }
+                ]
+              },
+              "default": "\"None\"",
+              "description": "Defines if the text of the component should wrap when it's too long.\nWhen set to \"Normal\", the content (title, description) will be wrapped\nusing the `ui5-expandable-text` component.<br/>\n\nThe text can wrap up to 100 characters on small screens (size S) and\nup to 300 characters on larger screens (size M and above). When text exceeds\nthese limits, it truncates with an ellipsis followed by a text expansion trigger.\n\nAvailable options are:\n- `None` (default) - The text will truncate with an ellipsis.\n- `Normal` - The text will wrap (without truncation).",
+              "privacy": "public",
+              "_ui5since": "2.15.0"
+            }
+          ],
+          "events": [
+            {
+              "name": "move",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<ListItemGroupMoveEventDetail>",
+                "references": [
+                  {
+                    "name": "ListItemGroupMoveEventDetail",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/ListItemGroup.js"
+                  }
+                ]
+              },
+              "description": "Fired when a movable list item is dropped onto a drop target.\n\n**Note:** `move` event is fired only if there was a preceding `move-over` with prevented default action.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
+              "_ui5Bubbles": true,
+              "_ui5since": "2.1.0",
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "object"
+                  },
+                  "name": "destination",
+                  "_ui5privacy": "public",
+                  "description": "Contains information about the destination of the moved element. Has `element` and `placement` properties."
+                },
+                {
+                  "type": {
+                    "text": "object"
+                  },
+                  "name": "source",
+                  "_ui5privacy": "public",
+                  "description": "Contains information about the moved element under `element` property."
+                }
+              ]
+            },
+            {
+              "name": "move-over",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<ListItemGroupMoveEventDetail>",
+                "references": [
+                  {
+                    "name": "ListItemGroupMoveEventDetail",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/ListItemGroup.js"
+                  }
+                ]
+              },
+              "description": "Fired when a movable list item is moved over a potential drop target during a dragging operation.\n\nIf the new position is valid, prevent the default action of the event using `preventDefault()`.",
+              "_ui5Cancelable": true,
+              "_ui5allowPreventDefault": true,
+              "_ui5Bubbles": true,
+              "_ui5since": "2.1.0",
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "object"
+                  },
+                  "name": "destination",
+                  "_ui5privacy": "public",
+                  "description": "Contains information about the destination of the moved element. Has `element` and `placement` properties."
+                },
+                {
+                  "type": {
+                    "text": "object"
+                  },
+                  "name": "source",
+                  "_ui5privacy": "public",
+                  "description": "Contains information about the moved element under `element` property."
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "description": "Defines the accessible name of the header.",
+              "name": "header-accessible-name",
+              "default": "undefined",
+              "fieldName": "headerAccessibleName",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines the header text of the group.",
+              "name": "header-text",
+              "default": "undefined",
+              "fieldName": "headerText",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines if the text of the component should wrap when it's too long.\nWhen set to \"Normal\", the content (title, description) will be wrapped\nusing the `ui5-expandable-text` component.<br/>\n\nThe text can wrap up to 100 characters on small screens (size S) and\nup to 300 characters on larger screens (size M and above). When text exceeds\nthese limits, it truncates with an ellipsis followed by a text expansion trigger.\n\nAvailable options are:\n- `None` (default) - The text will truncate with an ellipsis.\n- `Normal` - The text will wrap (without truncation).",
+              "name": "wrapping-type",
+              "default": "\"None\"",
+              "fieldName": "wrappingType",
+              "type": {
+                "text": "\"None\" | \"Normal\""
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsNotificationsViewGroup",
+            "module": "dist/UserSettingsNotificationsViewGroup.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ui5-user-settings-notifications-view-group",
+          "declaration": {
+            "name": "UserSettingsNotificationsViewGroup",
+            "module": "dist/UserSettingsNotificationsViewGroup.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsNotificationsViewItem.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "### Overview\n\nThe `ui5-user-settings-notifications-view-item` represents a single notification setting\nwithin the `ui5-user-settings-notifications-view`.\n\nIt displays a title and an optional byline. By default a trailing switch reflects\nthe `checked` state. Applications can override the trailing control by providing content\nin the `endContent` slot (e.g. a `ui5-select` for a value picker); the built-in switch and\nits `switch-change` event are then suppressed. Items can additionally be flagged as\n`navigable` to display a navigation arrow and behave as clickable list rows.\n\n**Note:** The default switch and the `endContent` slot are mutually exclusive.\nWhen any content is provided in `endContent`, the trailing switch is not rendered\nand no `switch-change` event is fired.\n\n### ES6 Module Import\n`import \"@ui5/webcomponents-fiori/dist/UserSettingsNotificationsViewItem.js\";`",
+          "name": "UserSettingsNotificationsViewItem",
+          "slots": [
+            {
+              "name": "endContent",
+              "description": "Defines custom content rendered at the trailing end of the item, replacing the\ndefault switch. Use this to place a `ui5-select`, `ui5-input`, or any other\ncontrol instead of a boolean toggle.",
+              "_ui5type": {
+                "text": "Array<HTMLElement>"
+              },
+              "_ui5privacy": "public"
+            },
+            {
+              "description": "Defines the content of the component.",
+              "name": "default",
+              "_ui5privacy": "public",
+              "_ui5type": {
+                "text": "Array<Node>"
+              }
+            },
+            {
+              "name": "deleteButton",
+              "description": "Defines the delete button, displayed in \"Delete\" mode.\n**Note:** While the slot allows custom buttons, to match\ndesign guidelines, please use the `ui5-button` component.\n**Note:** When the slot is not present, a built-in delete button will be displayed.",
+              "_ui5since": "1.9.0",
+              "_ui5type": {
+                "text": "Array<IButton>",
+                "references": [
+                  {
+                    "name": "IButton",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/Button.js"
+                  }
+                ]
+              },
+              "_ui5privacy": "public"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "bylineText",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Defines the byline text of the item, rendered below the title.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the trailing switch is on.\n\nIgnored when the `endContent` slot is used.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "itemKey",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Defines the unique identifier of the item.\n\nWhen the item is navigable, `itemKey` is also used to route to a matching sibling\n`secondary` view by id.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "navigable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the item is navigable. When true, a navigation arrow is rendered\nand the whole row becomes clickable (fires the parent view's `item-click` event).",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "text",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Defines the title text of the item.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "accessibilityAttributes",
+              "type": {
+                "text": "ListItemAccessibilityAttributes",
+                "references": [
+                  {
+                    "name": "ListItemAccessibilityAttributes",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/ListItem.js"
+                  }
+                ]
+              },
+              "default": "{}",
+              "description": "Defines the additional accessibility attributes that will be applied to the component.\nThe following fields are supported:\n\n- **ariaSetsize**: Defines the number of items in the current set  when not all items in the set are present in the DOM.\n**Note:** The value is an integer reflecting the number of items in the complete set. If the size of the entire set is unknown, set `-1`.\n\n\t- **ariaPosinset**: Defines an element's number or position in the current set when not all items are present in the DOM.\n\t**Note:** The value is an integer greater than or equal to 1, and less than or equal to the size of the set when that size is known.",
+              "privacy": "public",
+              "_ui5since": "1.15.0"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the text alternative of the component.\n\n**Note**: If not provided a default text alternative will be set, if present.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "1.0.0"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleRole",
+              "type": {
+                "text": "ListItemAccessibleRole | undefined",
+                "references": [
+                  {
+                    "name": "ListItemAccessibleRole",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/ListItemAccessibleRole.js"
+                  }
+                ]
+              },
+              "description": "Used to define the role of the list item.\n\n**Note:** If not set, the role is automatically inherited from the parent `ui5-list` based on its `accessible-role` property\n(e.g. `Menu` -> `MenuItem`, `Tree` -> `TreeItem`, `ListBox` -> `Option`).\nAn explicitly set `accessible-role` on the list item takes precedence over the inherited role.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.23.0"
+            },
+            {
+              "kind": "field",
+              "name": "highlight",
+              "type": {
+                "text": "Highlight",
+                "references": [
+                  {
+                    "name": "Highlight",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/Highlight.js"
+                  }
+                ]
+              },
+              "default": "\"None\"",
+              "description": "Defines the highlight state of the list items.\nAvailable options are: `\"None\"` (by default), `\"Positive\"`, `\"Critical\"`, `\"Information\"` and `\"Negative\"`.",
+              "privacy": "public",
+              "_ui5since": "1.24.0"
+            },
+            {
+              "kind": "field",
+              "name": "movable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines whether the item is movable.",
+              "privacy": "public",
+              "_ui5since": "2.0.0"
+            },
+            {
+              "kind": "field",
+              "name": "navigated",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "The navigated state of the list item.\nIf set to `true`, a navigation indicator is displayed at the end of the list item.",
+              "privacy": "public",
+              "_ui5since": "1.10.0"
+            },
+            {
+              "kind": "field",
+              "name": "selected",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Defines the selected state of the component.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the text of the tooltip that would be displayed for the list item.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "1.23.0"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "ListItemType",
+                "references": [
+                  {
+                    "name": "ListItemType",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/ListItemType.js"
+                  }
+                ]
+              },
+              "default": "\"Active\"",
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
+              "privacy": "public"
+            }
+          ],
+          "events": [
+            {
+              "name": "switch-change",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<UserSettingsNotificationsViewItemSwitchChangeEventDetail>",
+                "references": [
+                  {
+                    "name": "UserSettingsNotificationsViewItemSwitchChangeEventDetail",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/UserSettingsNotificationsViewItem.js"
+                  }
+                ]
+              },
+              "description": "Fired when the switch state changes.\n\nNot fired when the `endContent` slot is used to override the trailing control.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
+              "_ui5Bubbles": true,
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "boolean"
+                  },
+                  "name": "checked",
+                  "_ui5privacy": "public",
+                  "description": "The new checked state of the switch."
+                },
+                {
+                  "type": {
+                    "text": "UserSettingsNotificationsViewItem",
+                    "references": [
+                      {
+                        "name": "UserSettingsNotificationsViewItem",
+                        "package": "@ui5/webcomponents-fiori",
+                        "module": "dist/UserSettingsNotificationsViewItem.js"
+                      }
+                    ]
+                  },
+                  "name": "item",
+                  "_ui5privacy": "public",
+                  "description": "The item whose switch was toggled."
+                }
+              ]
+            },
+            {
+              "name": "click",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<ListItemBaseClickEventDetail>",
+                "references": [
+                  {
+                    "name": "ListItemBaseClickEventDetail",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/ListItemBase.js"
+                  }
+                ]
+              },
+              "description": "Fired when the component is activated either with a mouse/tap or by using the Enter or Space key.\n\n**Note:** The event will not be fired if the `disabled` property is set to `true`.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
+              "_ui5Bubbles": true,
+              "_ui5since": "2.23.0",
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "Event"
+                  },
+                  "name": "originalEvent",
+                  "_ui5privacy": "public",
+                  "description": "The original event from the user interaction."
+                }
+              ]
+            },
+            {
+              "name": "detail-click",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when the user clicks on the detail button when type is `Detail`.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
+              "_ui5Bubbles": true
+            }
+          ],
+          "attributes": [
+            {
+              "description": "Defines the byline text of the item, rendered below the title.",
+              "name": "byline-text",
+              "default": "\"\"",
+              "fieldName": "bylineText",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "description": "Defines whether the trailing switch is on.\n\nIgnored when the `endContent` slot is used.",
+              "name": "checked",
+              "default": "false",
+              "fieldName": "checked",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "Defines the unique identifier of the item.\n\nWhen the item is navigable, `itemKey` is also used to route to a matching sibling\n`secondary` view by id.",
+              "name": "item-key",
+              "default": "\"\"",
+              "fieldName": "itemKey",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "description": "Defines whether the item is navigable. When true, a navigation arrow is rendered\nand the whole row becomes clickable (fires the parent view's `item-click` event).",
+              "name": "navigable",
+              "default": "false",
+              "fieldName": "navigable",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "Defines the title text of the item.",
+              "name": "text",
+              "default": "\"\"",
+              "fieldName": "text",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "description": "Defines the additional accessibility attributes that will be applied to the component.\nThe following fields are supported:\n\n- **ariaSetsize**: Defines the number of items in the current set  when not all items in the set are present in the DOM.\n**Note:** The value is an integer reflecting the number of items in the complete set. If the size of the entire set is unknown, set `-1`.\n\n\t- **ariaPosinset**: Defines an element's number or position in the current set when not all items are present in the DOM.\n\t**Note:** The value is an integer greater than or equal to 1, and less than or equal to the size of the set when that size is known.",
+              "name": "accessibility-attributes",
+              "default": "{}",
+              "fieldName": "accessibilityAttributes",
+              "type": {
+                "text": "ListItemAccessibilityAttributes"
+              }
+            },
+            {
+              "description": "Defines the text alternative of the component.\n\n**Note**: If not provided a default text alternative will be set, if present.",
+              "name": "accessible-name",
+              "default": "undefined",
+              "fieldName": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Used to define the role of the list item.\n\n**Note:** If not set, the role is automatically inherited from the parent `ui5-list` based on its `accessible-role` property\n(e.g. `Menu` -> `MenuItem`, `Tree` -> `TreeItem`, `ListBox` -> `Option`).\nAn explicitly set `accessible-role` on the list item takes precedence over the inherited role.",
+              "name": "accessible-role",
+              "default": "undefined",
+              "fieldName": "accessibleRole",
+              "type": {
+                "text": "\"None\" | \"ListItem\" | \"MenuItem\" | \"TreeItem\" | \"Option\" | undefined"
+              }
+            },
+            {
+              "description": "Defines the highlight state of the list items.\nAvailable options are: `\"None\"` (by default), `\"Positive\"`, `\"Critical\"`, `\"Information\"` and `\"Negative\"`.",
+              "name": "highlight",
+              "default": "\"None\"",
+              "fieldName": "highlight",
+              "type": {
+                "text": "\"None\" | \"Positive\" | \"Critical\" | \"Negative\" | \"Information\""
+              }
+            },
+            {
+              "description": "Defines whether the item is movable.",
+              "name": "movable",
+              "default": "false",
+              "fieldName": "movable",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "The navigated state of the list item.\nIf set to `true`, a navigation indicator is displayed at the end of the list item.",
+              "name": "navigated",
+              "default": "false",
+              "fieldName": "navigated",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "Defines the selected state of the component.",
+              "name": "selected",
+              "default": "false",
+              "fieldName": "selected",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "description": "Defines the text of the tooltip that would be displayed for the list item.",
+              "name": "tooltip",
+              "default": "undefined",
+              "fieldName": "tooltip",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines the visual indication and behavior of the list items.\nAvailable options are `Active` (by default), `Inactive`, `InactiveSelectable`, `Detail` and `Navigation`.\n\n**Note:** When set to `Active` or `Navigation`, the item will provide visual response upon press and hover,\nwhile with type `Inactive`, `InactiveSelectable` and `Detail` - will not.\n\n**Note:** `InactiveSelectable` behaves like `Inactive` (no active press/hover feedback and the\n`item-click` event is not fired), but the item can still be selected. Clicking the item body,\npressing Space/Enter, or interacting with the selection component (checkbox in Multi mode, radio\nbutton in Single modes) toggles the selection when the list has a selection mode.",
+              "name": "type",
+              "default": "\"Active\"",
+              "fieldName": "type",
+              "type": {
+                "text": "\"Navigation\" | \"Inactive\" | \"InactiveSelectable\" | \"Active\" | \"Detail\""
+              }
+            }
+          ],
+          "superclass": {
+            "name": "ListItemCustom",
+            "package": "@ui5/webcomponents",
+            "module": "dist/ListItemCustom.js"
+          },
+          "tagName": "ui5-user-settings-notifications-view-item",
+          "customElement": true,
+          "_ui5since": "2.27.0",
+          "_ui5privacy": "public",
+          "cssParts": [
+            {
+              "description": "Used to style the checkbox rendered when the list item is in multiple selection mode",
+              "name": "checkbox"
+            },
+            {
+              "description": "Used to style the content area of the list item",
+              "name": "content"
+            },
+            {
+              "description": "Used to style the button rendered when the list item is in delete mode",
+              "name": "delete-button"
+            },
+            {
+              "description": "Used to style the button rendered when the list item is of type detail",
+              "name": "detail-button"
+            },
+            {
+              "description": "Used to style the main li tag of the list item",
+              "name": "native-li"
+            },
+            {
+              "description": "Used to style the radio button rendered when the list item is in single selection mode",
+              "name": "radio"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsNotificationsViewItem",
+            "module": "dist/UserSettingsNotificationsViewItem.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ui5-user-settings-notifications-view-item",
+          "declaration": {
+            "name": "UserSettingsNotificationsViewItem",
+            "module": "dist/UserSettingsNotificationsViewItem.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsNotificationsViewItemTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsNotificationsViewItemTemplate",
+            "module": "dist/UserSettingsNotificationsViewItemTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsNotificationsViewTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsNotificationsViewTemplate",
+            "module": "dist/UserSettingsNotificationsViewTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/UserSettingsView.js",
       "declarations": [
         {
@@ -14588,6 +16788,21 @@
           "declaration": {
             "name": "UserSettingsView",
             "module": "dist/UserSettingsView.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UserSettingsViewTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UserSettingsViewTemplate",
+            "module": "dist/UserSettingsViewTemplate.js"
           }
         }
       ]
@@ -15020,8 +17235,15 @@
           },
           "tagName": "ui5-view-settings-dialog",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.16",
-          "_ui5privacy": "public"
+          "_ui5since": "1.0.0",
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "FilterItem",
+            "FilterItemOption",
+            "GroupItem",
+            "SortItem",
+            "ViewSettingsDialogCustomTab"
+          ]
         }
       ],
       "exports": [
@@ -15155,6 +17377,36 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/ViewSettingsDialogCustomTabTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ViewSettingsDialogCustomTabTemplate",
+            "module": "dist/ViewSettingsDialogCustomTabTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/ViewSettingsDialogTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ViewSettingsDialogTemplate",
+            "module": "dist/ViewSettingsDialogTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/Wizard.js",
       "declarations": [
         {
@@ -15190,6 +17442,28 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the accessible ARIA name of the component.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.26.0"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Receives id(or many ids) of the elements that label the component.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.26.0"
+            },
             {
               "kind": "field",
               "name": "contentLayout",
@@ -15271,6 +17545,24 @@
           ],
           "attributes": [
             {
+              "description": "Defines the accessible ARIA name of the component.",
+              "name": "accessible-name",
+              "default": "undefined",
+              "fieldName": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Receives id(or many ids) of the elements that label the component.",
+              "name": "accessible-name-ref",
+              "default": "undefined",
+              "fieldName": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
               "description": "Defines how the content of the `ui5-wizard` would be visualized.",
               "name": "content-layout",
               "default": "\"MultipleSteps\"",
@@ -15287,8 +17579,11 @@
           },
           "tagName": "ui5-wizard",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.10",
-          "_ui5privacy": "public"
+          "_ui5since": "1.0.0",
+          "_ui5privacy": "public",
+          "_ui5subcomponents": [
+            "WizardStep"
+          ]
         }
       ],
       "exports": [
@@ -15306,6 +17601,21 @@
           "declaration": {
             "name": "Wizard",
             "module": "dist/Wizard.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/WizardPopoverTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "WizardPopoverTemplate",
+            "module": "dist/WizardPopoverTemplate.js"
           }
         }
       ]
@@ -15378,7 +17688,7 @@
               "description": "Defines the `subtitleText` of the step.\n\n**Note:** the text is displayed in the `ui5-wizard` navigation header.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             },
             {
               "kind": "field",
@@ -15389,7 +17699,7 @@
               "description": "Defines the `titleText` of the step.\n\n**Note:** The text is displayed in the `ui5-wizard` navigation header.",
               "default": "undefined",
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.15"
+              "_ui5since": "1.0.0"
             }
           ],
           "attributes": [
@@ -15455,7 +17765,7 @@
           },
           "tagName": "ui5-wizard-step",
           "customElement": true,
-          "_ui5since": "1.0.0-rc.10",
+          "_ui5since": "1.0.0",
           "_ui5privacy": "public",
           "_ui5abstract": true
         }
@@ -15512,6 +17822,36 @@
           "declaration": {
             "name": "WizardTab",
             "module": "dist/WizardTab.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/WizardTabTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "WizardTabTemplate",
+            "module": "dist/WizardTabTemplate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/WizardTemplate.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "WizardTemplate",
+            "module": "dist/WizardTemplate.js"
           }
         }
       ]
@@ -17986,7 +20326,7 @@
               "kind": "field",
               "static": true,
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.16",
+              "_ui5since": "1.0.0",
               "description": "Filter type",
               "default": "Filter",
               "name": "Filter",
@@ -18006,7 +20346,7 @@
               "kind": "field",
               "static": true,
               "privacy": "public",
-              "_ui5since": "1.0.0-rc.16",
+              "_ui5since": "1.0.0",
               "description": "Default type",
               "default": "Sort",
               "name": "Sort",

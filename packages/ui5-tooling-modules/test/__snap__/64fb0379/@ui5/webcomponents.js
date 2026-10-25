@@ -13,7 +13,7 @@ sap.ui.define(
     // export the UI5 metadata along with the package
     pkg["_ui5metadata"] = {
       name: "@ui5/webcomponents",
-      version: "2.23.1",
+      version: "2.28.1",
       dependencies: ["sap.ui.core"],
       types: [
         "ui5.webcomponents.dist.types.AvatarColorScheme",
@@ -80,6 +80,7 @@ sap.ui.define(
         "ui5.webcomponents.dist.types.TableSelectionMultiHeaderSelector",
         "ui5.webcomponents.dist.types.TagDesign",
         "ui5.webcomponents.dist.types.TagSize",
+        "ui5.webcomponents.dist.types.TextAreaCounterMode",
         "ui5.webcomponents.dist.types.TextEmptyIndicatorMode",
         "ui5.webcomponents.dist.types.TitleLevel",
         "ui5.webcomponents.dist.types.ToastPlacement",
@@ -102,6 +103,7 @@ sap.ui.define(
         "ui5.webcomponents.dist.MultiComboBox.IMultiComboBoxItem",
         "ui5.webcomponents.dist.SegmentedButton.ISegmentedButtonItem",
         "ui5.webcomponents.dist.Select.IOption",
+        "ui5.webcomponents.dist.Select.IOptionGroup",
         "ui5.webcomponents.dist.TabContainer.ITab",
         "ui5.webcomponents.dist.Table.ITableFeature",
         "ui5.webcomponents.dist.Table.ITableGrowing",
@@ -132,6 +134,7 @@ sap.ui.define(
         "ui5.webcomponents.dist.ColorPicker",
         "ui5.webcomponents.dist.ComboBox",
         "ui5.webcomponents.dist.ComboBoxItem",
+        "ui5.webcomponents.dist.ComboBoxItemCustom",
         "ui5.webcomponents.dist.ComboBoxItemGroup",
         "ui5.webcomponents.dist.DatePicker",
         "ui5.webcomponents.dist.DateRangePicker",
@@ -148,6 +151,7 @@ sap.ui.define(
         "ui5.webcomponents.dist.FormItem",
         "ui5.webcomponents.dist.Icon",
         "ui5.webcomponents.dist.Input",
+        "ui5.webcomponents.dist.InputIcon",
         "ui5.webcomponents.dist.Label",
         "ui5.webcomponents.dist.Link",
         "ui5.webcomponents.dist.List",
@@ -163,10 +167,13 @@ sap.ui.define(
         "ui5.webcomponents.dist.MonthPicker",
         "ui5.webcomponents.dist.MultiComboBox",
         "ui5.webcomponents.dist.MultiComboBoxItem",
+        "ui5.webcomponents.dist.MultiComboBoxItemCustom",
         "ui5.webcomponents.dist.MultiComboBoxItemGroup",
         "ui5.webcomponents.dist.MultiInput",
+        "ui5.webcomponents.dist.NumericInput",
         "ui5.webcomponents.dist.Option",
         "ui5.webcomponents.dist.OptionCustom",
+        "ui5.webcomponents.dist.OptionGroup",
         "ui5.webcomponents.dist.Panel",
         "ui5.webcomponents.dist.Popover",
         "ui5.webcomponents.dist.ProgressIndicator",
@@ -493,7 +500,7 @@ sap.ui.define(
       pkg["BackgroundDesign"]
     );
     /**
-     * ListItem accessible roles.
+     * Bar accessible roles.
      *
      * @enum {string}
      * @alias module:ui5/webcomponents/dist/types/BarAccessibleRole
@@ -1711,6 +1718,15 @@ sap.ui.define(
        */
       Inactive: "Inactive",
       /**
+       * Indicates the list item does not have any active feedback when item is pressed,
+       * but the item can still be selected when a selection mode is active
+       * (via the item body, Space/Enter, or the checkbox/radio).
+       * The &#x60;item-click&#x60; event is not fired for items of this type.
+       *
+       * @private
+       */
+      InactiveSelectable: "InactiveSelectable",
+      /**
        * Enables the type of navigation, which is specified to add an arrow at the end of the items and fires navigate-click event.
        *
        * @private
@@ -2609,6 +2625,42 @@ sap.ui.define(
     };
     registerEnum("ui5.webcomponents.dist.types.TagSize", pkg["TagSize"]);
     /**
+     * Determines when the character counter of `ui5-textarea` is displayed.
+     *
+     * @enum {string}
+     * @alias module:ui5/webcomponents/dist/types/TextAreaCounterMode
+     * @ui5-module-override @ui5/webcomponents dist.types.TextAreaCounterMode
+     * @private
+     */
+    pkg["TextAreaCounterMode"] = {
+      /**
+       * The character counter is always visible below the component. Characters exceeding
+       * the &#x60;maxlength&#x60; value are selected on paste and the counter displays their number.
+       *
+       * @private
+       */
+      Always: "Always",
+      /**
+       * The character counter is shown only when the component is focused, when the character
+       * limit is exceeded, or when &#x60;valueState&#x60; is &#x60;Critical&#x60; or &#x60;Negative&#x60;. Space for the
+       * counter is always reserved to prevent layout shifts.
+       *
+       * @private
+       */
+      Auto: "Auto",
+      /**
+       * The character counter is never shown. The &#x60;maxlength&#x60; property acts as a hard cap
+       * and the user is not allowed to enter more characters than allowed.
+       *
+       * @private
+       */
+      None: "None"
+    };
+    registerEnum(
+      "ui5.webcomponents.dist.types.TextAreaCounterMode",
+      pkg["TextAreaCounterMode"]
+    );
+    /**
      * Empty Indicator Mode.
      *
      * @enum {string}
@@ -2989,6 +3041,14 @@ sap.ui.define(
      * @private
      */
     /**
+     * Interface for group containers slotted inside `ui5-select`
+     *
+     * @interface
+     * @name module:ui5/webcomponents/dist/Select.IOptionGroup
+     * @ui5-module-override @ui5/webcomponents IOptionGroup
+     * @private
+     */
+    /**
      * Interface for components that may be slotted inside `ui5-tabcontainer` as items
      *
      * **Note:** Use directly `ui5-tab` or `ui5-tab-seprator`. Implementing the interface does not guarantee that the class can work as a tab.
@@ -3019,6 +3079,8 @@ sap.ui.define(
      * Interface for the slotted item in `ui5-toolbar-item`.
      *
      * It could be any HTMLElement or UI5 Web Component with option to specify custom overflow closing events and overflow behavior.
+     * Components that also implement `IToolbarArrowNavProvider` can report their internal navigation boundary
+     * state to the toolbar for caret-aware arrow-key handling.
      *
      * @interface
      * @name module:ui5/webcomponents/dist/ToolbarItem.IToolbarItemContent
