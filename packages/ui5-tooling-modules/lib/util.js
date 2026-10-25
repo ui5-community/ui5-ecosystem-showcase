@@ -1794,11 +1794,12 @@ module.exports = function (log, projectInfo) {
 											modifiedCode = replaceJSDoc(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
 										});
 									module.code = modifiedCode;
-									// After all rewriting passes, restore _ui5metadata.name to the original npm
-									// package name — the passes above may have sanitized it (e.g. dashes → underscores).
+									// After all rewriting passes, restore _ui5metadata.npmPackage to the original npm
+									// package name — the rewriting passes above replace all quoted occurrences of the
+									// npm name (including the npmPackage field value) with the UI5 module path.
 									const pkgMeta = output.$metadata.packages?.[module.name];
 									if (pkgMeta && module.code.indexOf(`pkg["_ui5metadata"] = {`) > -1) {
-										module.code = module.code.replace(/(pkg\["_ui5metadata"\]\s*=\s*\{[\s\S]*?(?:"name"|name):\s*")[^"]*(")/m, `$1${pkgMeta.name}$2`);
+										module.code = module.code.replace(/(pkg\["_ui5metadata"\]\s*=\s*\{[\s\S]*?(?:"npmPackage"|npmPackage):\s*")[^"]*(")/m, `$1${pkgMeta.name}$2`);
 									}
 								}
 							}

@@ -322,6 +322,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		// compile the library metadata
 		const metadataObject = {
 			name: namespace,
+			npmPackage: namespace,
 			version,
 			dependencies: ["sap.ui.core"],
 			types: Object.keys(package.enums).map((enumName) => package.enums[enumName]._ui5QualifiedName),
