@@ -1,5 +1,24 @@
 # Change Log
 
+## 3.41.3
+
+### Patch Changes
+
+- [#1478](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1478) [`d8a2663`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d8a26635d4f6926f43fa1e6b9834755a75ff48f1) Thanks [@petermuessig](https://github.com/petermuessig)! - fix: suppress harmless INVALID_ANNOTATION Rollup warnings from zod/pdfmake, and eliminate UNRESOLVED_IMPORT warnings for hasown/es-object-atoms by shimming isomorphic-form-data (a cmis transitive dep) to globalThis.FormData instead of bundling the Node-only form-data chain
+
+- [#1479](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1479) [`a5bdc50`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a5bdc50d5eb09787be3280606276d3c1c70d6279) Thanks [@petermuessig](https://github.com/petermuessig)! - fix: suppress harmless MISSING_EXPORT Rollup warning emitted by inject-esmodule proxy for zod v4
+
+- [#1475](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1475) [`a866071`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a866071b5ee5c493220ffe18677d8563f62d8093) Thanks [@petermuessig](https://github.com/petermuessig)! - fix(ui5-tooling-modules): add `npmPackage` to `_ui5metadata` with the original npm package name
+  
+  The `_ui5metadata.name` field holds the UI5 library namespace (e.g.
+  `"ui5/ecosystem/demo/app/thirdparty/webcomponents"`) — this is correct and needed by
+  the UI5 runtime. However, there was no way to trace a generated package module back to
+  its original npm package name.
+  
+  This fix adds an `npmPackage` property to `_ui5metadata` that always holds the original
+  npm package name (e.g. `"@ui5/webcomponents"`), even when `replaceDashes` or namespace
+  remapping rewrites all other occurrences of that string in the generated code.
+
 ## 3.41.2
 
 ### Patch Changes

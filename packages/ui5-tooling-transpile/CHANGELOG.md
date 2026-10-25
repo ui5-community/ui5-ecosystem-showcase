@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.14.0
+
+### Minor Changes
+
+- [#1481](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1481) [`c219bd0`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c219bd03e03dec6db3ec8edf200d17ecef2e988f) Thanks [@petermuessig](https://github.com/petermuessig)! - feat: forward dependency project source folders to the transform-ui5 preset so classes from symlinked dependency projects resolve the correct namespace
+
+- [#1480](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1480) [`9885b62`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9885b629d3c8111b6b13ae213d67d53ddd4edb1f) Thanks [@petermuessig](https://github.com/petermuessig)! - feat: add pathAliases option to map import aliases to UI5 module paths via modulesMap; bump babel-preset-transform-ui5 to 7.11.0; improve debug logging for sourceFolders, dependencies and path alias rules
+
 ## 3.13.1
 
 ### Patch Changes
