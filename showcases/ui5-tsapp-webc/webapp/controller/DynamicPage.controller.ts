@@ -67,9 +67,6 @@ function injectStyle() {
 	document.adoptedStyleSheets.push(sheet);
 }
 
-/**
- * @namespace ui5.ecosystem.demo.webctsapp.controller
- */
 export default class DynamicPage extends Controller {
 	public onInit(): void {
 		injectStyle();

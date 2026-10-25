@@ -2,9 +2,6 @@ import Control from "sap/ui/core/Control";
 import RenderManager from "sap/ui/core/RenderManager";
 import type { MetadataOptions } from "sap/ui/core/Element";
 
-/**
- * @namespace ui5.ecosystem.demo.simpletsapp.control
- */
 export default class OtherControl extends Control {
 	static readonly metadata: MetadataOptions = {
 		properties: {

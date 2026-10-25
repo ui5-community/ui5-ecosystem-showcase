@@ -1,9 +1,6 @@
 import type { MetadataOptions } from "sap/ui/core/Element";
 import OtherControl from "./OtherControl";
 
-/**
- * @namespace ui5.ecosystem.demo.simpletsapp.control
- */
 export default class SimpleControl extends OtherControl {
 	static readonly metadata: MetadataOptions = {
 		properties: {
