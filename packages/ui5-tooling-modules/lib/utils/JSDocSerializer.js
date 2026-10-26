@@ -215,7 +215,10 @@ const JSDocSerializer = {
 			const description = interfaceDef.description || interfaceDef.name;
 			interfaceDef._jsDoc = baseTemplate({
 				description: `${description}${description ? "\n" : ""}`,
-				alias: `@name module:${interfaceDef._ui5QualifiedNameSlashes}`,
+				// Slash-separated module path + dot-separated access path (e.g.
+				// "sap/ui/.../webcomponents.dist.Button.IButton"). An all-slashes name would make the
+				// JSDoc/TypeScript build treat the access path as nested modules, which does not match runtime.
+				alias: `@name module:${registryEntry.ui5Namespace}.${interfaceDef._derivedUi5ClassName}`,
 				entityType: "@interface",
 				// TODO: the override tag is not really correct, as the interface itself is not overridden but its implementing classes are. We might want to change this in the future.
 				override: `@ui5-module-override ${registryEntry.ui5Namespace} ${interfaceDef.name}`,
@@ -232,7 +235,11 @@ const JSDocSerializer = {
 				description: `${description}${description ? "\n" : ""}`, // append newline if description is not empty
 				entityType: "@enum {string}",
 				additionalTags: registryEntry.customJSDocTags.map((tag) => `@${tag}`).join("\n"),
-				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
+				// Slash-separated module path + dot-separated access path (mirrors the
+				// @ui5-module-override below), e.g. "sap/ui/.../webcomponents_geomap.dist.types.GeomapSelectionMode".
+				// An all-slashes name would make the JSDoc/TypeScript build emit nested modules/namespaces that do
+				// not match the runtime object (which is a plain access path on the single package module export).
+				alias: `@alias module:${registryEntry.ui5Namespace}.${enumDef._derivedUi5ClassName}`,
 				// TODO: the override tag is not really correct, as the enum itself is not overridden but its values are. We might want to change this in the future.
 				override: `@ui5-module-override ${registryEntry.ui5Namespace} ${enumDef._derivedUi5ClassName}`,
 			});

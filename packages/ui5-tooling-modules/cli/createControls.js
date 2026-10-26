@@ -176,6 +176,7 @@ function buildPackage({ package: pkg, template, outputDir, prettierOptions }) {
 		interfaces: pkg.interfaces,
 		hasEnums: Object.keys(pkg.enums).length > 0,
 		enums: pkg.enums,
+		enumNamespaceEnsures: pkg.enumNamespaceEnsures, // note: not used by sap.html lib, but passed for consistency with webc rollup plugin!
 		dependencies: pkg.dependencies?.map((dep) => `${rootPath}${dep}`),
 		// no bundler chunk and no monkey patches in the standalone scenario:
 		// native HTML packages don't ship a runtime Web Component package

@@ -193,6 +193,9 @@ class RegistryEntry {
 				const classNames = this.#deriveUi5ClassNames(interfaceDef);
 				interfaceDef._ui5QualifiedName = `${classNames._ui5QualifiedName}.${interfaceName}`;
 				interfaceDef._ui5QualifiedNameSlashes = `${classNames._ui5QualifiedNameSlashes}.${interfaceName}`;
+				// The dotted access path (e.g. "dist.Button.IButton") is needed for the JSDoc
+				// @name so the generated name mirrors the runtime module export instead of a nested module path.
+				interfaceDef._derivedUi5ClassName = `${classNames._derivedUi5ClassName}.${interfaceName}`;
 				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(interfaceDef);
 				this.interfaces[cacheKey] = interfaceDef;
 			}
@@ -397,12 +400,21 @@ class RegistryEntry {
 			return {
 				...base,
 				ui5Type: `${ui5names._ui5QualifiedName}.${typeInfo.name}`,
+				// Like enums, an interface is an access path inside the package module, not a
+				// module of its own. Use "module:<package-module-in-slashes>.<access-path-in-dots>" including the
+				// interface name (e.g. "module:sap/ui/.../webcomponents.dist.Button.IButton"). Unverified for geomap
+				// (no interface-typed properties); confirm with a library that has interfaces (e.g. sap.f).
+				moduleType: `module:${packageRef.ui5Namespace}.${ui5names._derivedUi5ClassName}.${typeInfo.name}`,
 				isInterface: true,
 			};
 		} else if (packageRef.enums[cacheKey]) {
 			return {
 				...base,
-				moduleType: `module:${ui5names._ui5QualifiedNameSlashes}`, //packageRef.prefixnsAsModule(type),
+				// An enum is not a module of its own - it lives as an access path inside the
+				// package module. Therefore the reference is "module:<package-module-in-slashes>.<access-path-in-dots>"
+				// (e.g. "module:sap/ui/.../webcomponents_geomap.dist.types.GeomapDisplayedFeatures"), matching the
+				// enum's @alias. The all-slashes form would wrongly point to a non-existent nested module.
+				moduleType: `module:${packageRef.ui5Namespace}.${ui5names._derivedUi5ClassName}`,
 				isEnum: true,
 			};
 		} else if (packageRef.classes[cacheKey]) {
@@ -991,7 +1003,10 @@ class RegistryEntry {
 				if (this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)]) {
 					interfaceDef = this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)];
 					ui5metadata.interfaces.push(interfaceDef._ui5QualifiedName);
-					jsdocInterfaces.push(`module:${interfaceDef._ui5QualifiedNameSlashes}`);
+					// Interface references use the dotted access path inside the package module
+					// (mirrors the interface @name), not an all-slashes module path. Unverified for geomap (no
+					// interfaces); confirm with a library that defines interfaces (e.g. sap.f).
+					jsdocInterfaces.push(`module:${this.ui5Namespace}.${interfaceDef._derivedUi5ClassName}`);
 				} else {
 					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
 					unknowInterfaces.add(interfaceDef.name);
@@ -1323,6 +1338,12 @@ class RegistryEntry {
 	 * Used in the respective HBS template.
 	 */
 	#prepareEnums() {
+		// Collect the unique parent namespace paths (e.g. "dist", "dist.types") that the
+		// package module has to materialise before assigning the enum objects. The package object is a shallow
+		// copy of the (frozen) web component package, so every sub-namespace along the path must be re-cloned
+		// to stay writable and to avoid mutating the shared bundle.
+		const namespacePaths = new Set();
+
 		Object.keys(this.enums).forEach((enumCacheKey) => {
 			const enumDef = this.enums[enumCacheKey];
 			const enumValues = [];
@@ -1339,6 +1360,16 @@ class RegistryEntry {
 			// derive correct names
 			const names = this.#deriveUi5ClassNames(enumDef);
 
+			// The access path mirrors the UI5 qualified name (e.g. "dist.types.GeomapSelectionMode")
+			// so the generated JS object path, the "registerEnum" name and the JSDoc @alias all agree. Previously the
+			// enum was stored flat under its raw CEM export name (e.g. pkg["Positions"]), which broke the generated
+			// TypeScript types as they are derived from the (deeper) JSDoc name and did not match the runtime object.
+			const accessSegments = names._derivedUi5ClassName.split(".");
+			for (let i = 0; i < accessSegments.length - 1; i++) {
+				namespacePaths.add(accessSegments.slice(0, i + 1).join("."));
+			}
+			const accessorExpr = ["pkg", ...accessSegments].join(".");
+
 			// prepare enum info object for HBS template later
 			this.enums[enumCacheKey] = {
 				name: enumDef.name,
@@ -1347,10 +1378,15 @@ class RegistryEntry {
 				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
 				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
 				_derivedUi5ClassName: names._derivedUi5ClassName,
+				_accessorExpr: accessorExpr,
 				description: this.enums[enumCacheKey].description || "",
 				values: enumValues,
 			};
 		});
+
+		// Materialise the parent namespaces shallowest-first so deeper paths build on the
+		// freshly cloned parent (e.g. clone pkg.dist, then clone pkg.dist.types). Consumed by UI5Package.hbs.
+		this.enumNamespaceEnsures = [...namespacePaths].sort((a, b) => a.split(".").length - b.split(".").length).map((path) => `pkg.${path} = Object.assign({}, pkg.${path});`);
 	}
 
 	/**
@@ -1367,6 +1403,7 @@ class RegistryEntry {
 				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
 				_ui5QualifiedNameSlashes: interfaceDef._ui5QualifiedNameSlashes,
+				_derivedUi5ClassName: interfaceDef._derivedUi5ClassName,
 				description: this.interfaces[interfaceCacheKey].description || "",
 			};
 		});
