@@ -347,6 +347,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			interfaces: package.interfaces,
 			hasEnums: Object.keys(package.enums).length > 0,
 			enums: package.enums,
+			enumNamespaceEnsures: package.enumNamespaceEnsures,
 			dependencies: package.dependencies?.map((dep) => `${rootPath}${dep}`),
 			monkeyPatches: isBaseLib ? webcTmplMonkeyPatches.join("\n") : "",
 			webcPackage,

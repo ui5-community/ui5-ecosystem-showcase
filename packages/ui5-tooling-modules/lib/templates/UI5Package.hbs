@@ -23,15 +23,21 @@ sap.ui.define([{{#if webcPackage}}
 	pkg["_ui5metadata"] = {{{metadata}}};
 
 	// Enums
+  {{! Enums are placed at their derived access path (e.g. pkg.dist.types.GeomapSelectionMode) }}
+  {{! so the JS object path matches the UI5 qualified name, the registerEnum call and the JSDoc @alias. The }}
+  {{! parent namespaces are re-cloned first because "pkg" is a shallow copy of the frozen web component bundle. }}
+  {{#each enumNamespaceEnsures}}
+  {{{this}}}
+  {{/each}}
   {{#each enums}}
   {{{this._jsDoc}}}
-  pkg["{{this.name}}"] = {
+  {{{this._accessorExpr}}} = {
   {{#each this.values}}
     {{this._jsDoc}}
     "{{this.name}}": "{{this.value}}",
   {{/each}}
   };
-  registerEnum("{{this._ui5QualifiedName}}", pkg["{{this.name}}"]);
+  registerEnum("{{this._ui5QualifiedName}}", {{{this._accessorExpr}}});
   {{/each}}
 
   // Interfaces
