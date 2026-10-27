@@ -11,7 +11,7 @@ import Button from "@ui5/webcomponents/dist/Button";
 import DatePicker from "@ui5/webcomponents/dist/DatePicker";
 import Input from "@ui5/webcomponents/dist/Input";
 // @ts-ignore (needed for default import, which is normally not present in packages with only named exports)
-import { default as pkg, _ui5metadata, AvatarSize } from "@ui5/webcomponents";
+import { default as pkg, _ui5metadata, dist } from "@ui5/webcomponents";
 import Token from "@ui5/webcomponents/dist/Token";
 
 import UserMenu from "@ui5/webcomponents-fiori/dist/UserMenu";
@@ -24,7 +24,7 @@ import MultiInput, { MultiInput$TokenDeleteEvent } from "@ui5/webcomponents/dist
 
 console.log(pkg);
 console.log(_ui5metadata);
-console.log(AvatarSize);
+console.log(dist.types.AvatarSize);
 
 function injectStyle() {
 	const sheet = new CSSStyleSheet();
@@ -50,10 +50,10 @@ export default class Main extends Controller {
 
 		// test dynamic import of webcomponents package (the default export is needed for re-exporting purposes)
 		// @ts-ignore (needed for default import, which is normally not present in packages with only named exports)
-		import("@ui5/webcomponents").then(({ default: pkg, _ui5metadata, AvatarSize: AvatarSize1 }) => {
+		import("@ui5/webcomponents").then(({ default: pkg, _ui5metadata, dist: dist1 }) => {
 			console.log(pkg);
 			console.log(_ui5metadata);
-			console.log(AvatarSize1);
+			console.log(dist1.types.AvatarSize);
 		});
 
 		const button = new Button({ text: "👻", click: this.onBoo });

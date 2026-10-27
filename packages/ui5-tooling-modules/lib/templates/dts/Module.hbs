@@ -1,18 +1,22 @@
 declare module "{{registryEntry.namespace}}" {
 
-	{{#each registryEntry.enums}}
+	{{#each registryEntry.dtsEnumGroups}}
 	{{#if @first}}
 	/**
 	 * Declaration of enums
 	 */
 	{{/if}}
-		{{{generateApiDocumentation this.description}}}
-		export enum {{this.name}} {
-			{{#each this.values}}
-				{{{generateApiDocumentation this.description}}}
-				{{{this.name}}} = "{{{this.name}}}",
-			{{/each}}
-		}
+		{{{this.open}}}
+		{{#each this.enums}}
+			{{{generateApiDocumentation this.description}}}
+			enum {{this._dtsLeafName}} {
+				{{#each this.values}}
+					{{{generateApiDocumentation this.description}}}
+					{{{this.name}}} = "{{{this.name}}}",
+				{{/each}}
+			}
+		{{/each}}
+		{{{this.close}}}
 	{{/each}}
 
 	{{#each registryEntry.interfaces}}

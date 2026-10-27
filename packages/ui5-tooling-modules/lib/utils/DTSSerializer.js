@@ -423,7 +423,16 @@ const DTSSerializer = {
 				type.dedicatedTypes.forEach((type) => {
 					// Adds import statements for types that are from external packages.
 					if (type.packageName && type.dtsType !== classDef.name) {
-						writeImports(type.packageName, type.dtsType, { default: type.isClass, global: type.globalImport });
+						// Enums are nested inside the package module's namespace (e.g. dist.types.X). The class
+						// references them via the first-level namespace binding ("dist") imported from the package
+						// root, aliased when that binding would collide across packages. Everything else imports by
+						// its own d.ts type name.
+						const namedImport = type.isEnum && type.importName ? type.importName : type.dtsType;
+						writeImports(type.packageName, namedImport, {
+							default: type.isClass,
+							global: type.globalImport,
+							alternativeImportName: type.alternativeImportName,
+						});
 					}
 				});
 			});
