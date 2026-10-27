@@ -72,6 +72,7 @@ class RegistryEntry {
 		isUI5WebComponents,
 		removeScopePrefix,
 		replaceDashes,
+		legacyEnumExport,
 	}) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
@@ -103,6 +104,10 @@ class RegistryEntry {
 		this.frameworkVersion = frameworkVersion || "0.0.0";
 		this.isOpenUI5OrSAPUI5Lib = !!isOpenUI5OrSAPUI5Lib;
 		this.isUI5WebComponents = !!isUI5WebComponents;
+		// compat switch (pluginOptions/webcomponents/compat/legacyEnumExport): when enabled the package module
+		// additionally re-exports each enum under its original flat key (the raw CEM export name) so consumers
+		// written against the pre-nesting API keep working at runtime. Off by default; OpenUI5 master never sets it.
+		this.legacyEnumExport = !!legacyEnumExport;
 
 		this.customElements = {};
 		this.classes = {};
@@ -408,12 +413,26 @@ class RegistryEntry {
 				isInterface: true,
 			};
 		} else if (packageRef.enums[cacheKey]) {
+			// An enum is not a module of its own - it lives as an access path inside the
+			// package module. Therefore the reference is "module:<package-module-in-slashes>.<access-path-in-dots>"
+			// (e.g. "module:sap/ui/.../webcomponents_geomap.dist.types.GeomapDisplayedFeatures"), matching the
+			// enum's @alias. The all-slashes form would wrongly point to a non-existent nested module.
+			//
+			// For the generated *.d.ts the enum is nested under its namespace path (e.g. dist.types.X), so a
+			// class references it via the package's first-level namespace binding ("dist") imported from the
+			// package root. That binding is identical for every package and therefore collides when a class
+			// references enums from more than one package -> alias the binding for foreign packages.
+			const accessSegments = ui5names._derivedUi5ClassName.split(".");
+			const importName = accessSegments[0];
+			const isForeign = packageRef !== this;
+			const nsBinding = isForeign ? `${packageRef.namespace.replace(/[^a-zA-Z0-9_$]/g, "_").replace(/^_+/, "")}_${importName}` : importName;
 			return {
 				...base,
-				// An enum is not a module of its own - it lives as an access path inside the
-				// package module. Therefore the reference is "module:<package-module-in-slashes>.<access-path-in-dots>"
-				// (e.g. "module:sap/ui/.../webcomponents_geomap.dist.types.GeomapDisplayedFeatures"), matching the
-				// enum's @alias. The all-slashes form would wrongly point to a non-existent nested module.
+				// qualified access path used verbatim in the generated class *.d.ts (e.g. "dist.types.X")
+				dtsType: [nsBinding, ...accessSegments.slice(1)].join("."),
+				// the named import to pull from the package root (the first-level namespace, aliased for foreign packages)
+				importName,
+				alternativeImportName: isForeign ? nsBinding : undefined,
 				moduleType: `module:${packageRef.ui5Namespace}.${ui5names._derivedUi5ClassName}`,
 				isEnum: true,
 			};
@@ -1379,6 +1398,9 @@ class RegistryEntry {
 				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
 				_derivedUi5ClassName: names._derivedUi5ClassName,
 				_accessorExpr: accessorExpr,
+				// the plain enum name for the generated *.d.ts declaration (leaf of the access path, e.g.
+				// "GeomapMapControlPosition"), NOT the raw CEM export name which may differ (e.g. "Positions").
+				_dtsLeafName: accessSegments[accessSegments.length - 1],
 				description: this.enums[enumCacheKey].description || "",
 				values: enumValues,
 			};
@@ -1387,6 +1409,39 @@ class RegistryEntry {
 		// Materialise the parent namespaces shallowest-first so deeper paths build on the
 		// freshly cloned parent (e.g. clone pkg.dist, then clone pkg.dist.types). Consumed by UI5Package.hbs.
 		this.enumNamespaceEnsures = [...namespacePaths].sort((a, b) => a.split(".").length - b.split(".").length).map((path) => `pkg.${path} = Object.assign({}, pkg.${path});`);
+
+		// Group enums by their namespace path (all segments except the leaf) so the generated *.d.ts can emit
+		// one nested "export namespace dist { export namespace types { ... } }" block per path, mirroring how
+		// UI5 libraries declare sub-namespaced enums (e.g. sap/ui/core/library -> dnd.DropEffect). Consumed by
+		// the dts Module.hbs template.
+		const enumGroups = new Map();
+		Object.keys(this.enums).forEach((enumCacheKey) => {
+			const enumDef = this.enums[enumCacheKey];
+			const segments = enumDef._derivedUi5ClassName.split(".");
+			const nsSegments = segments.slice(0, -1); // parent namespaces (may be empty for a top-level enum)
+			const nsPath = nsSegments.join(".");
+			if (!enumGroups.has(nsPath)) {
+				enumGroups.set(nsPath, {
+					open: nsSegments.map((s) => `export namespace ${s} {`).join(" "),
+					close: nsSegments.map(() => "}").join(" "),
+					enums: [],
+				});
+			}
+			enumGroups.get(nsPath).enums.push(enumDef);
+		});
+		this.dtsEnumGroups = [...enumGroups.values()];
+
+		// Compat switch: additionally re-export each enum under its original flat key (the raw CEM export name,
+		// e.g. "Positions" for the enum whose module is dist/types/GeomapMapControlPosition.js) pointing at the
+		// same nested object. This restores the pre-nesting runtime API for consumers that upgrade the tooling on
+		// an older UI5 version. Reference assignment -> single object, registerEnum identity unaffected. Consumed
+		// by UI5Package.hbs; empty (and omitted) when the flag is off.
+		this.enumLegacyExports = this.legacyEnumExport
+			? Object.keys(this.enums).map((enumCacheKey) => {
+					const enumDef = this.enums[enumCacheKey];
+					return `pkg[${JSON.stringify(enumDef.name)}] = ${enumDef._accessorExpr};`;
+				})
+			: [];
 	}
 
 	/**
@@ -1450,6 +1505,7 @@ const WebComponentRegistry = {
 	 * @param {string} [options.customJSDocTags] list with additional JSDoc tags to add (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipDtsGeneration] whether to skip the *.d.ts generation (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipJSDoc] whether to skip the JSDoc generation (passed via the pluginOptions in ui5.yaml)
+	 * @param {boolean} [options.legacyEnumExport] compat switch: also re-export enums under their original flat key (passed via pluginOptions/webcomponents/compat/legacyEnumExport in ui5.yaml)
 	 * @returns the final WebComponentRegistryEntry for the given namespace
 	 */
 	register({
@@ -1469,6 +1525,7 @@ const WebComponentRegistry = {
 		customJSDocTags = ["private"],
 		skipDtsGeneration = true,
 		skipJSDoc = true,
+		legacyEnumExport = false,
 	}) {
 		checkSerializerPluginActivation({
 			skipDtsGeneration,
@@ -1491,6 +1548,7 @@ const WebComponentRegistry = {
 				isUI5WebComponents,
 				removeScopePrefix,
 				replaceDashes,
+				legacyEnumExport,
 			});
 
 			// track all classes also via their module name,

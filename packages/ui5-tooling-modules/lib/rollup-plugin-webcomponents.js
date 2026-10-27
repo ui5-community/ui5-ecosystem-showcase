@@ -73,6 +73,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		skipDtsGeneration,
 		customJSDocTags,
 		removeCLDRData,
+		compat,
 	} = Object.assign(
 		{
 			skip: false,
@@ -85,6 +86,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			skipDtsGeneration: true,
 			customJSDocTags: ["private"],
 			removeCLDRData: true,
+			compat: {},
 		},
 		options,
 	);
@@ -227,6 +229,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 							skipJSDoc,
 							customJSDocTags,
 							version: packageJson.version,
+							legacyEnumExport: !!compat.legacyEnumExport,
 						});
 
 						// assign the dependencies
@@ -348,6 +351,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			hasEnums: Object.keys(package.enums).length > 0,
 			enums: package.enums,
 			enumNamespaceEnsures: package.enumNamespaceEnsures,
+			enumLegacyExports: package.enumLegacyExports,
 			dependencies: package.dependencies?.map((dep) => `${rootPath}${dep}`),
 			monkeyPatches: isBaseLib ? webcTmplMonkeyPatches.join("\n") : "",
 			webcPackage,

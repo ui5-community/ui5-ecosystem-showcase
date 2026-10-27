@@ -39,6 +39,13 @@ sap.ui.define([{{#if webcPackage}}
   };
   registerEnum("{{this._ui5QualifiedName}}", {{{this._accessorExpr}}});
   {{/each}}
+  {{#if enumLegacyExports}}
+  {{! Compat (pluginOptions/webcomponents/compat/legacyEnumExport): re-export each enum under its original }}
+  {{! flat key pointing at the same nested object, so pre-nesting consumers keep working at runtime. }}
+  {{#each enumLegacyExports}}
+  {{{this}}}
+  {{/each}}
+  {{/if}}
 
   // Interfaces
   {{#each interfaces}}
