@@ -2670,11 +2670,11 @@ sap.ui.define(
      * Determines when the character counter of `ui5-textarea` is displayed.
      *
      * @enum {string}
-     * @alias module:@ui5/webcomponents/dist/types/TextAreaCounterMode
+     * @alias module:@ui5/webcomponents.dist.types.TextAreaCounterMode
      * @ui5-module-override @ui5/webcomponents dist.types.TextAreaCounterMode
      * @private
      */
-    pkg["TextAreaCounterMode"] = {
+    pkg.dist.types.TextAreaCounterMode = {
       /**
        * The character counter is always visible below the component. Characters exceeding
        * the &#x60;maxlength&#x60; value are selected on paste and the counter displays their number.
@@ -2700,7 +2700,7 @@ sap.ui.define(
     };
     registerEnum(
       "@ui5.webcomponents.dist.types.TextAreaCounterMode",
-      pkg["TextAreaCounterMode"]
+      pkg.dist.types.TextAreaCounterMode
     );
     /**
      * Empty Indicator Mode.
@@ -3089,7 +3089,7 @@ sap.ui.define(
      * Interface for group containers slotted inside `ui5-select`
      *
      * @interface
-     * @name module:@ui5/webcomponents/dist/Select.IOptionGroup
+     * @name module:@ui5/webcomponents.dist.Select.IOptionGroup
      * @ui5-module-override @ui5/webcomponents IOptionGroup
      * @private
      */
