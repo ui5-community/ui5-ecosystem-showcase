@@ -244,15 +244,17 @@ sap.ui.define(
     };
 
     // Enums
+    pkg.dist = Object.assign({}, pkg.dist);
+    pkg.dist.types = Object.assign({}, pkg.dist.types);
     /**
      * Different types of AvatarColorScheme.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/AvatarColorScheme
+     * @alias module:@ui5/webcomponents.dist.types.AvatarColorScheme
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarColorScheme
      * @private
      */
-    pkg["AvatarColorScheme"] = {
+    pkg.dist.types.AvatarColorScheme = {
       /**
        * Accent1
        *
@@ -334,17 +336,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.AvatarColorScheme",
-      pkg["AvatarColorScheme"]
+      pkg.dist.types.AvatarColorScheme
     );
     /**
      * Different types of AvatarGroupType.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/AvatarGroupType
+     * @alias module:@ui5/webcomponents.dist.types.AvatarGroupType
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarGroupType
      * @private
      */
-    pkg["AvatarGroupType"] = {
+    pkg.dist.types.AvatarGroupType = {
       /**
        * The avatars are displayed as partially overlapped on top of each other and the entire group has one click or tap area.
        *
@@ -360,17 +362,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.AvatarGroupType",
-      pkg["AvatarGroupType"]
+      pkg.dist.types.AvatarGroupType
     );
     /**
      * Different Avatar modes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/AvatarMode
+     * @alias module:@ui5/webcomponents.dist.types.AvatarMode
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarMode
      * @private
      */
-    pkg["AvatarMode"] = {
+    pkg.dist.types.AvatarMode = {
       /**
        * Decorative mode.
        * Configures the component to internally render role&#x3D;&quot;presentation&quot; and aria-hidden&#x3D;&quot;true&quot;,
@@ -395,16 +397,19 @@ sap.ui.define(
        */
       Interactive: "Interactive"
     };
-    registerEnum("ui5.webcomponents.dist.types.AvatarMode", pkg["AvatarMode"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.AvatarMode",
+      pkg.dist.types.AvatarMode
+    );
     /**
      * Different types of AvatarShape.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/AvatarShape
+     * @alias module:@ui5/webcomponents.dist.types.AvatarShape
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarShape
      * @private
      */
-    pkg["AvatarShape"] = {
+    pkg.dist.types.AvatarShape = {
       /**
        * Circular shape.
        *
@@ -420,17 +425,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.AvatarShape",
-      pkg["AvatarShape"]
+      pkg.dist.types.AvatarShape
     );
     /**
      * Different types of AvatarSize.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/AvatarSize
+     * @alias module:@ui5/webcomponents.dist.types.AvatarSize
      * @ui5-module-override @ui5/webcomponents dist.types.AvatarSize
      * @private
      */
-    pkg["AvatarSize"] = {
+    pkg.dist.types.AvatarSize = {
       /**
        * component size - 5rem
        * font size - 2.5rem
@@ -467,16 +472,19 @@ sap.ui.define(
        */
       XS: "XS"
     };
-    registerEnum("ui5.webcomponents.dist.types.AvatarSize", pkg["AvatarSize"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.AvatarSize",
+      pkg.dist.types.AvatarSize
+    );
     /**
      * Defines background designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BackgroundDesign
+     * @alias module:@ui5/webcomponents.dist.types.BackgroundDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BackgroundDesign
      * @private
      */
-    pkg["BackgroundDesign"] = {
+    pkg.dist.types.BackgroundDesign = {
       /**
        * A solid background color dependent on the theme.
        *
@@ -498,17 +506,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.BackgroundDesign",
-      pkg["BackgroundDesign"]
+      pkg.dist.types.BackgroundDesign
     );
     /**
      * Bar accessible roles.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BarAccessibleRole
+     * @alias module:@ui5/webcomponents.dist.types.BarAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.BarAccessibleRole
      * @private
      */
-    pkg["BarAccessibleRole"] = {
+    pkg.dist.types.BarAccessibleRole = {
       /**
        * Represents the ARIA role &quot;none&quot;.
        *
@@ -524,17 +532,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.BarAccessibleRole",
-      pkg["BarAccessibleRole"]
+      pkg.dist.types.BarAccessibleRole
     );
     /**
      * Different types of Bar design
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BarDesign
+     * @alias module:@ui5/webcomponents.dist.types.BarDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BarDesign
      * @private
      */
-    pkg["BarDesign"] = {
+    pkg.dist.types.BarDesign = {
       /**
        * Floating Footer type - there is visible border on all sides
        *
@@ -560,16 +568,19 @@ sap.ui.define(
        */
       Subheader: "Subheader"
     };
-    registerEnum("ui5.webcomponents.dist.types.BarDesign", pkg["BarDesign"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.BarDesign",
+      pkg.dist.types.BarDesign
+    );
     /**
      * Defines border designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BorderDesign
+     * @alias module:@ui5/webcomponents.dist.types.BorderDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BorderDesign
      * @private
      */
-    pkg["BorderDesign"] = {
+    pkg.dist.types.BorderDesign = {
       /**
        * Specifies no border.
        *
@@ -585,17 +596,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.BorderDesign",
-      pkg["BorderDesign"]
+      pkg.dist.types.BorderDesign
     );
     /**
      * Different  Breadcrumbs designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BreadcrumbsDesign
+     * @alias module:@ui5/webcomponents.dist.types.BreadcrumbsDesign
      * @ui5-module-override @ui5/webcomponents dist.types.BreadcrumbsDesign
      * @private
      */
-    pkg["BreadcrumbsDesign"] = {
+    pkg.dist.types.BreadcrumbsDesign = {
       /**
        * All items are displayed as links.
        *
@@ -612,17 +623,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.BreadcrumbsDesign",
-      pkg["BreadcrumbsDesign"]
+      pkg.dist.types.BreadcrumbsDesign
     );
     /**
      * Different Breadcrumbs separators.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BreadcrumbsSeparator
+     * @alias module:@ui5/webcomponents.dist.types.BreadcrumbsSeparator
      * @ui5-module-override @ui5/webcomponents dist.types.BreadcrumbsSeparator
      * @private
      */
-    pkg["BreadcrumbsSeparator"] = {
+    pkg.dist.types.BreadcrumbsSeparator = {
       /**
        * The separator appears as &quot;\&quot;.
        *
@@ -662,17 +673,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.BreadcrumbsSeparator",
-      pkg["BreadcrumbsSeparator"]
+      pkg.dist.types.BreadcrumbsSeparator
     );
     /**
      * Different BusyIndicator sizes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BusyIndicatorSize
+     * @alias module:@ui5/webcomponents.dist.types.BusyIndicatorSize
      * @ui5-module-override @ui5/webcomponents dist.types.BusyIndicatorSize
      * @private
      */
-    pkg["BusyIndicatorSize"] = {
+    pkg.dist.types.BusyIndicatorSize = {
       /**
        * large size
        *
@@ -694,17 +705,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.BusyIndicatorSize",
-      pkg["BusyIndicatorSize"]
+      pkg.dist.types.BusyIndicatorSize
     );
     /**
      * Different BusyIndicator text placements.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/BusyIndicatorTextPlacement
+     * @alias module:@ui5/webcomponents.dist.types.BusyIndicatorTextPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.BusyIndicatorTextPlacement
      * @private
      */
-    pkg["BusyIndicatorTextPlacement"] = {
+    pkg.dist.types.BusyIndicatorTextPlacement = {
       /**
        * The text will be displayed at the bottom of the busy indicator.
        *
@@ -720,17 +731,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.BusyIndicatorTextPlacement",
-      pkg["BusyIndicatorTextPlacement"]
+      pkg.dist.types.BusyIndicatorTextPlacement
     );
     /**
      * Button accessible roles.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ButtonAccessibleRole
+     * @alias module:@ui5/webcomponents.dist.types.ButtonAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonAccessibleRole
      * @private
      */
-    pkg["ButtonAccessibleRole"] = {
+    pkg.dist.types.ButtonAccessibleRole = {
       /**
        * Represents Default (button) ARIA role.
        *
@@ -746,17 +757,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ButtonAccessibleRole",
-      pkg["ButtonAccessibleRole"]
+      pkg.dist.types.ButtonAccessibleRole
     );
     /**
      * Determines where the badge will be placed and how it will be styled.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ButtonBadgeDesign
+     * @alias module:@ui5/webcomponents.dist.types.ButtonBadgeDesign
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonBadgeDesign
      * @private
      */
-    pkg["ButtonBadgeDesign"] = {
+    pkg.dist.types.ButtonBadgeDesign = {
       /**
        * The badge is displayed as an attention dot.
        *
@@ -780,17 +791,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ButtonBadgeDesign",
-      pkg["ButtonBadgeDesign"]
+      pkg.dist.types.ButtonBadgeDesign
     );
     /**
      * Different Button designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ButtonDesign
+     * @alias module:@ui5/webcomponents.dist.types.ButtonDesign
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonDesign
      * @private
      */
-    pkg["ButtonDesign"] = {
+    pkg.dist.types.ButtonDesign = {
       /**
        * attention type
        *
@@ -830,17 +841,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ButtonDesign",
-      pkg["ButtonDesign"]
+      pkg.dist.types.ButtonDesign
     );
     /**
      * Determines if the button has special form-related functionality.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ButtonType
+     * @alias module:@ui5/webcomponents.dist.types.ButtonType
      * @ui5-module-override @ui5/webcomponents dist.types.ButtonType
      * @private
      */
-    pkg["ButtonType"] = {
+    pkg.dist.types.ButtonType = {
       /**
        * The button does not do anything special when inside a form
        *
@@ -860,16 +871,19 @@ sap.ui.define(
        */
       Submit: "Submit"
     };
-    registerEnum("ui5.webcomponents.dist.types.ButtonType", pkg["ButtonType"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.ButtonType",
+      pkg.dist.types.ButtonType
+    );
     /**
      * Enum for calendar legend items' types.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/CalendarLegendItemType
+     * @alias module:@ui5/webcomponents.dist.types.CalendarLegendItemType
      * @ui5-module-override @ui5/webcomponents dist.types.CalendarLegendItemType
      * @private
      */
-    pkg["CalendarLegendItemType"] = {
+    pkg.dist.types.CalendarLegendItemType = {
       /**
        * Set when no type is set.
        *
@@ -1011,17 +1025,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.CalendarLegendItemType",
-      pkg["CalendarLegendItemType"]
+      pkg.dist.types.CalendarLegendItemType
     );
     /**
      * Different Calendar selection mode.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/CalendarSelectionMode
+     * @alias module:@ui5/webcomponents.dist.types.CalendarSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.CalendarSelectionMode
      * @private
      */
-    pkg["CalendarSelectionMode"] = {
+    pkg.dist.types.CalendarSelectionMode = {
       /**
        * Several dates can be selected
        *
@@ -1043,7 +1057,7 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.CalendarSelectionMode",
-      pkg["CalendarSelectionMode"]
+      pkg.dist.types.CalendarSelectionMode
     );
     /**
      * The <code>CalendarWeekNumbering</code> enum defines how to calculate calendar weeks. Each
@@ -1052,11 +1066,11 @@ sap.ui.define(
      * - The first week of the year.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/CalendarWeekNumbering
+     * @alias module:@ui5/webcomponents.dist.types.CalendarWeekNumbering
      * @ui5-module-override @ui5/webcomponents dist.types.CalendarWeekNumbering
      * @private
      */
-    pkg["CalendarWeekNumbering"] = {
+    pkg.dist.types.CalendarWeekNumbering = {
       /**
        * The default calendar week numbering:
        *
@@ -1092,17 +1106,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.CalendarWeekNumbering",
-      pkg["CalendarWeekNumbering"]
+      pkg.dist.types.CalendarWeekNumbering
     );
     /**
      * Different Carousel arrows placement.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/CarouselArrowsPlacement
+     * @alias module:@ui5/webcomponents.dist.types.CarouselArrowsPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.CarouselArrowsPlacement
      * @private
      */
-    pkg["CarouselArrowsPlacement"] = {
+    pkg.dist.types.CarouselArrowsPlacement = {
       /**
        * Carousel arrows are placed on the sides of the current Carousel page.
        *
@@ -1118,17 +1132,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.CarouselArrowsPlacement",
-      pkg["CarouselArrowsPlacement"]
+      pkg.dist.types.CarouselArrowsPlacement
     );
     /**
      * Different Carousel page indicator types.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/CarouselPageIndicatorType
+     * @alias module:@ui5/webcomponents.dist.types.CarouselPageIndicatorType
      * @ui5-module-override @ui5/webcomponents dist.types.CarouselPageIndicatorType
      * @private
      */
-    pkg["CarouselPageIndicatorType"] = {
+    pkg.dist.types.CarouselPageIndicatorType = {
       /**
        * The page indicator will be visualized as dots if there are fewer than 9 pages.
        * If there are more pages, the page indicator will switch to displaying the current page and the total number of pages. (e.g. X of Y)
@@ -1145,17 +1159,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.CarouselPageIndicatorType",
-      pkg["CarouselPageIndicatorType"]
+      pkg.dist.types.CarouselPageIndicatorType
     );
     /**
      * Different filtering types of the ComboBox.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ComboBoxFilter
+     * @alias module:@ui5/webcomponents.dist.types.ComboBoxFilter
      * @ui5-module-override @ui5/webcomponents dist.types.ComboBoxFilter
      * @private
      */
-    pkg["ComboBoxFilter"] = {
+    pkg.dist.types.ComboBoxFilter = {
       /**
        * Defines contains filtering.
        *
@@ -1183,17 +1197,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ComboBoxFilter",
-      pkg["ComboBoxFilter"]
+      pkg.dist.types.ComboBoxFilter
     );
     /**
      * Overflow Mode.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ExpandableTextOverflowMode
+     * @alias module:@ui5/webcomponents.dist.types.ExpandableTextOverflowMode
      * @ui5-module-override @ui5/webcomponents dist.types.ExpandableTextOverflowMode
      * @private
      */
-    pkg["ExpandableTextOverflowMode"] = {
+    pkg.dist.types.ExpandableTextOverflowMode = {
       /**
        * Overflowing text is appended in-place.
        *
@@ -1209,7 +1223,7 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ExpandableTextOverflowMode",
-      pkg["ExpandableTextOverflowMode"]
+      pkg.dist.types.ExpandableTextOverflowMode
     );
     /**
      * Accessibility modes of the Form.
@@ -1222,11 +1236,11 @@ sap.ui.define(
      * - "Edit" mode should be used when the form consists of editable (e.g. input fields) form items.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/FormAccessibleMode
+     * @alias module:@ui5/webcomponents.dist.types.FormAccessibleMode
      * @ui5-module-override @ui5/webcomponents dist.types.FormAccessibleMode
      * @private
      */
-    pkg["FormAccessibleMode"] = {
+    pkg.dist.types.FormAccessibleMode = {
       /**
        * Display mode.
        *
@@ -1242,17 +1256,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.FormAccessibleMode",
-      pkg["FormAccessibleMode"]
+      pkg.dist.types.FormAccessibleMode
     );
     /**
      * Different spacing of the form items.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/FormItemSpacing
+     * @alias module:@ui5/webcomponents.dist.types.FormItemSpacing
      * @ui5-module-override @ui5/webcomponents dist.types.FormItemSpacing
      * @private
      */
-    pkg["FormItemSpacing"] = {
+    pkg.dist.types.FormItemSpacing = {
       /**
        * Large spacing (larger vertical space between form items).
        *
@@ -1268,17 +1282,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.FormItemSpacing",
-      pkg["FormItemSpacing"]
+      pkg.dist.types.FormItemSpacing
     );
     /**
      * Different types of Highlight .
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/Highlight
+     * @alias module:@ui5/webcomponents.dist.types.Highlight
      * @ui5-module-override @ui5/webcomponents dist.types.Highlight
      * @private
      */
-    pkg["Highlight"] = {
+    pkg.dist.types.Highlight = {
       /**
        * Critical
        *
@@ -1310,16 +1324,19 @@ sap.ui.define(
        */
       Positive: "Positive"
     };
-    registerEnum("ui5.webcomponents.dist.types.Highlight", pkg["Highlight"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.Highlight",
+      pkg.dist.types.Highlight
+    );
     /**
      * Different Icon semantic designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/IconDesign
+     * @alias module:@ui5/webcomponents.dist.types.IconDesign
      * @ui5-module-override @ui5/webcomponents dist.types.IconDesign
      * @private
      */
-    pkg["IconDesign"] = {
+    pkg.dist.types.IconDesign = {
       /**
        * Contrast design
        *
@@ -1369,16 +1386,19 @@ sap.ui.define(
        */
       Positive: "Positive"
     };
-    registerEnum("ui5.webcomponents.dist.types.IconDesign", pkg["IconDesign"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.IconDesign",
+      pkg.dist.types.IconDesign
+    );
     /**
      * Different Icon modes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/IconMode
+     * @alias module:@ui5/webcomponents.dist.types.IconMode
      * @ui5-module-override @ui5/webcomponents dist.types.IconMode
      * @private
      */
-    pkg["IconMode"] = {
+    pkg.dist.types.IconMode = {
       /**
        * Decorative mode.
        * Configures the component to internally render role&#x3D;&quot;presentation&quot; and aria-hidden&#x3D;&quot;true&quot;,
@@ -1403,16 +1423,19 @@ sap.ui.define(
        */
       Interactive: "Interactive"
     };
-    registerEnum("ui5.webcomponents.dist.types.IconMode", pkg["IconMode"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.IconMode",
+      pkg.dist.types.IconMode
+    );
     /**
      * Different filtering types of the Input.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/InputSuggestionsFilter
+     * @alias module:@ui5/webcomponents.dist.types.InputSuggestionsFilter
      * @ui5-module-override @ui5/webcomponents dist.types.InputSuggestionsFilter
      * @private
      */
-    pkg["InputSuggestionsFilter"] = {
+    pkg.dist.types.InputSuggestionsFilter = {
       /**
        * Defines contains filtering.
        *
@@ -1440,17 +1463,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.InputSuggestionsFilter",
-      pkg["InputSuggestionsFilter"]
+      pkg.dist.types.InputSuggestionsFilter
     );
     /**
      * Different input types.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/InputType
+     * @alias module:@ui5/webcomponents.dist.types.InputType
      * @ui5-module-override @ui5/webcomponents dist.types.InputType
      * @private
      */
-    pkg["InputType"] = {
+    pkg.dist.types.InputType = {
       /**
        * Used for input fields that must contain an e-mail address.
        *
@@ -1494,16 +1517,19 @@ sap.ui.define(
        */
       URL: "URL"
     };
-    registerEnum("ui5.webcomponents.dist.types.InputType", pkg["InputType"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.InputType",
+      pkg.dist.types.InputType
+    );
     /**
      * Defines the area size around the component that the user can select.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/InteractiveAreaSize
+     * @alias module:@ui5/webcomponents.dist.types.InteractiveAreaSize
      * @ui5-module-override @ui5/webcomponents dist.types.InteractiveAreaSize
      * @private
      */
-    pkg["InteractiveAreaSize"] = {
+    pkg.dist.types.InteractiveAreaSize = {
       /**
        * Enlarged target area size (up to 24px in height) provides users with an enhanced dedicated space to interact with the component.
        *
@@ -1519,17 +1545,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.InteractiveAreaSize",
-      pkg["InteractiveAreaSize"]
+      pkg.dist.types.InteractiveAreaSize
     );
     /**
      * Link accessible roles.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/LinkAccessibleRole
+     * @alias module:@ui5/webcomponents.dist.types.LinkAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.LinkAccessibleRole
      * @private
      */
-    pkg["LinkAccessibleRole"] = {
+    pkg.dist.types.LinkAccessibleRole = {
       /**
        * Represents the ARIA role &quot;button&quot;.
        *
@@ -1545,17 +1571,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.LinkAccessibleRole",
-      pkg["LinkAccessibleRole"]
+      pkg.dist.types.LinkAccessibleRole
     );
     /**
      * Different link designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/LinkDesign
+     * @alias module:@ui5/webcomponents.dist.types.LinkDesign
      * @ui5-module-override @ui5/webcomponents dist.types.LinkDesign
      * @private
      */
-    pkg["LinkDesign"] = {
+    pkg.dist.types.LinkDesign = {
       /**
        * default type (no special styling)
        *
@@ -1575,16 +1601,19 @@ sap.ui.define(
        */
       Subtle: "Subtle"
     };
-    registerEnum("ui5.webcomponents.dist.types.LinkDesign", pkg["LinkDesign"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.LinkDesign",
+      pkg.dist.types.LinkDesign
+    );
     /**
      * List accessible roles.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ListAccessibleRole
+     * @alias module:@ui5/webcomponents.dist.types.ListAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.ListAccessibleRole
      * @private
      */
-    pkg["ListAccessibleRole"] = {
+    pkg.dist.types.ListAccessibleRole = {
       /**
        * Represents the ARIA role &quot;list&quot;. (by default)
        *
@@ -1612,17 +1641,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ListAccessibleRole",
-      pkg["ListAccessibleRole"]
+      pkg.dist.types.ListAccessibleRole
     );
     /**
      * Different list growing modes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ListGrowingMode
+     * @alias module:@ui5/webcomponents.dist.types.ListGrowingMode
      * @ui5-module-override @ui5/webcomponents dist.types.ListGrowingMode
      * @private
      */
-    pkg["ListGrowingMode"] = {
+    pkg.dist.types.ListGrowingMode = {
       /**
        * Component&#x27;s &quot;load-more&quot; is fired upon pressing a &quot;More&quot; button.
        * at the bottom.
@@ -1645,17 +1674,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ListGrowingMode",
-      pkg["ListGrowingMode"]
+      pkg.dist.types.ListGrowingMode
     );
     /**
      * ListItem accessible roles.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ListItemAccessibleRole
+     * @alias module:@ui5/webcomponents.dist.types.ListItemAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.ListItemAccessibleRole
      * @private
      */
-    pkg["ListItemAccessibleRole"] = {
+    pkg.dist.types.ListItemAccessibleRole = {
       /**
        * Represents the ARIA role &quot;listitem&quot;. (by default)
        *
@@ -1689,17 +1718,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ListItemAccessibleRole",
-      pkg["ListItemAccessibleRole"]
+      pkg.dist.types.ListItemAccessibleRole
     );
     /**
      * Different list item types.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ListItemType
+     * @alias module:@ui5/webcomponents.dist.types.ListItemType
      * @ui5-module-override @ui5/webcomponents dist.types.ListItemType
      * @private
      */
-    pkg["ListItemType"] = {
+    pkg.dist.types.ListItemType = {
       /**
        * Indicates that the item is clickable via active feedback when item is pressed.
        *
@@ -1736,17 +1765,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ListItemType",
-      pkg["ListItemType"]
+      pkg.dist.types.ListItemType
     );
     /**
      * Different list selection modes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ListSelectionMode
+     * @alias module:@ui5/webcomponents.dist.types.ListSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.ListSelectionMode
      * @private
      */
-    pkg["ListSelectionMode"] = {
+    pkg.dist.types.ListSelectionMode = {
       /**
        * Delete mode (only one list item can be deleted via provided delete button)
        *
@@ -1794,17 +1823,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ListSelectionMode",
-      pkg["ListSelectionMode"]
+      pkg.dist.types.ListSelectionMode
     );
     /**
      * Different types of list items separators.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ListSeparator
+     * @alias module:@ui5/webcomponents.dist.types.ListSeparator
      * @ui5-module-override @ui5/webcomponents dist.types.ListSeparator
      * @private
      */
-    pkg["ListSeparator"] = {
+    pkg.dist.types.ListSeparator = {
       /**
        * Separators between the items including the last and the first one.
        *
@@ -1827,17 +1856,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ListSeparator",
-      pkg["ListSeparator"]
+      pkg.dist.types.ListSeparator
     );
     /**
      * Menu item group check modes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/MenuItemGroupCheckMode
+     * @alias module:@ui5/webcomponents.dist.types.MenuItemGroupCheckMode
      * @ui5-module-override @ui5/webcomponents dist.types.MenuItemGroupCheckMode
      * @private
      */
-    pkg["MenuItemGroupCheckMode"] = {
+    pkg.dist.types.MenuItemGroupCheckMode = {
       /**
        * Multiple items check mode (multiple items in a group can be checked at a time)
        *
@@ -1859,17 +1888,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.MenuItemGroupCheckMode",
-      pkg["MenuItemGroupCheckMode"]
+      pkg.dist.types.MenuItemGroupCheckMode
     );
     /**
      * MessageStrip designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/MessageStripDesign
+     * @alias module:@ui5/webcomponents.dist.types.MessageStripDesign
      * @ui5-module-override @ui5/webcomponents dist.types.MessageStripDesign
      * @private
      */
-    pkg["MessageStripDesign"] = {
+    pkg.dist.types.MessageStripDesign = {
       /**
        * Message uses custom color set 1
        *
@@ -1909,17 +1938,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.MessageStripDesign",
-      pkg["MessageStripDesign"]
+      pkg.dist.types.MessageStripDesign
     );
     /**
      * Different notification list growing modes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/NotificationListGrowingMode
+     * @alias module:@ui5/webcomponents.dist.types.NotificationListGrowingMode
      * @ui5-module-override @ui5/webcomponents dist.types.NotificationListGrowingMode
      * @private
      */
-    pkg["NotificationListGrowingMode"] = {
+    pkg.dist.types.NotificationListGrowingMode = {
       /**
        * Component&#x27;s &quot;load-more&quot; is fired upon pressing a &quot;More&quot; button.
        * at the bottom.
@@ -1936,17 +1965,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.NotificationListGrowingMode",
-      pkg["NotificationListGrowingMode"]
+      pkg.dist.types.NotificationListGrowingMode
     );
     /**
      * Tabs overflow mode in TabContainer.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/OverflowMode
+     * @alias module:@ui5/webcomponents.dist.types.OverflowMode
      * @ui5-module-override @ui5/webcomponents dist.types.OverflowMode
      * @private
      */
-    pkg["OverflowMode"] = {
+    pkg.dist.types.OverflowMode = {
       /**
        * End type is used if there should be only one overflow with hidden the tabs at the end of the tab container.
        *
@@ -1962,17 +1991,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.OverflowMode",
-      pkg["OverflowMode"]
+      pkg.dist.types.OverflowMode
     );
     /**
      * Panel accessible roles.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/PanelAccessibleRole
+     * @alias module:@ui5/webcomponents.dist.types.PanelAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.PanelAccessibleRole
      * @private
      */
-    pkg["PanelAccessibleRole"] = {
+    pkg.dist.types.PanelAccessibleRole = {
       /**
        * Represents the ARIA role &quot;complementary&quot;.
        * A section of the page, designed to be complementary to the main content at a similar level in the DOM hierarchy.
@@ -1997,17 +2026,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.PanelAccessibleRole",
-      pkg["PanelAccessibleRole"]
+      pkg.dist.types.PanelAccessibleRole
     );
     /**
      * Popover horizontal align types.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/PopoverHorizontalAlign
+     * @alias module:@ui5/webcomponents.dist.types.PopoverHorizontalAlign
      * @ui5-module-override @ui5/webcomponents dist.types.PopoverHorizontalAlign
      * @private
      */
-    pkg["PopoverHorizontalAlign"] = {
+    pkg.dist.types.PopoverHorizontalAlign = {
       /**
        * Popover is centered.
        *
@@ -2035,17 +2064,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.PopoverHorizontalAlign",
-      pkg["PopoverHorizontalAlign"]
+      pkg.dist.types.PopoverHorizontalAlign
     );
     /**
      * Popover placements.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/PopoverPlacement
+     * @alias module:@ui5/webcomponents.dist.types.PopoverPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.PopoverPlacement
      * @private
      */
-    pkg["PopoverPlacement"] = {
+    pkg.dist.types.PopoverPlacement = {
       /**
        * Popover will be placed at the bottom of the reference element.
        *
@@ -2073,17 +2102,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.PopoverPlacement",
-      pkg["PopoverPlacement"]
+      pkg.dist.types.PopoverPlacement
     );
     /**
      * Popover vertical align types.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/PopoverVerticalAlign
+     * @alias module:@ui5/webcomponents.dist.types.PopoverVerticalAlign
      * @ui5-module-override @ui5/webcomponents dist.types.PopoverVerticalAlign
      * @private
      */
-    pkg["PopoverVerticalAlign"] = {
+    pkg.dist.types.PopoverVerticalAlign = {
       /**
        * Popover will be placed at the bottom of the reference control.
        *
@@ -2111,17 +2140,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.PopoverVerticalAlign",
-      pkg["PopoverVerticalAlign"]
+      pkg.dist.types.PopoverVerticalAlign
     );
     /**
      * Popup accessible roles.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/PopupAccessibleRole
+     * @alias module:@ui5/webcomponents.dist.types.PopupAccessibleRole
      * @ui5-module-override @ui5/webcomponents dist.types.PopupAccessibleRole
      * @private
      */
-    pkg["PopupAccessibleRole"] = {
+    pkg.dist.types.PopupAccessibleRole = {
       /**
        * Represents the ARIA role &quot;alertdialog&quot;.
        *
@@ -2143,17 +2172,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.PopupAccessibleRole",
-      pkg["PopupAccessibleRole"]
+      pkg.dist.types.PopupAccessibleRole
     );
     /**
      * Different types of Priority.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/Priority
+     * @alias module:@ui5/webcomponents.dist.types.Priority
      * @ui5-module-override @ui5/webcomponents dist.types.Priority
      * @private
      */
-    pkg["Priority"] = {
+    pkg.dist.types.Priority = {
       /**
        * High priority.
        *
@@ -2179,17 +2208,20 @@ sap.ui.define(
        */
       None: "None"
     };
-    registerEnum("ui5.webcomponents.dist.types.Priority", pkg["Priority"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.Priority",
+      pkg.dist.types.Priority
+    );
     /**
      * Types of icon sizes used in the RatingIndicator.
      * Provides predefined size categories to ensure consistent scaling and spacing of icons.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/RatingIndicatorSize
+     * @alias module:@ui5/webcomponents.dist.types.RatingIndicatorSize
      * @ui5-module-override @ui5/webcomponents dist.types.RatingIndicatorSize
      * @private
      */
-    pkg["RatingIndicatorSize"] = {
+    pkg.dist.types.RatingIndicatorSize = {
       /**
        * Large size for prominent or spacious layouts.
        *
@@ -2212,17 +2244,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.RatingIndicatorSize",
-      pkg["RatingIndicatorSize"]
+      pkg.dist.types.RatingIndicatorSize
     );
     /**
      * Different SegmentedButton selection modes.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/SegmentedButtonSelectionMode
+     * @alias module:@ui5/webcomponents.dist.types.SegmentedButtonSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.SegmentedButtonSelectionMode
      * @private
      */
-    pkg["SegmentedButtonSelectionMode"] = {
+    pkg.dist.types.SegmentedButtonSelectionMode = {
       /**
        * Multiple items can be selected at a time. All items can be deselected.
        *
@@ -2238,17 +2270,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.SegmentedButtonSelectionMode",
-      pkg["SegmentedButtonSelectionMode"]
+      pkg.dist.types.SegmentedButtonSelectionMode
     );
     /**
      * Defines the separator types for Select component two-column layout.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/SelectTextSeparator
+     * @alias module:@ui5/webcomponents.dist.types.SelectTextSeparator
      * @ui5-module-override @ui5/webcomponents dist.types.SelectTextSeparator
      * @private
      */
-    pkg["SelectTextSeparator"] = {
+    pkg.dist.types.SelectTextSeparator = {
       /**
        * Will show bullet(·) as separator on two columns layout when Select is in read-only mode.
        *
@@ -2270,17 +2302,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.SelectTextSeparator",
-      pkg["SelectTextSeparator"]
+      pkg.dist.types.SelectTextSeparator
     );
     /**
      * Different types of SemanticColor.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/SemanticColor
+     * @alias module:@ui5/webcomponents.dist.types.SemanticColor
      * @ui5-module-override @ui5/webcomponents dist.types.SemanticColor
      * @private
      */
-    pkg["SemanticColor"] = {
+    pkg.dist.types.SemanticColor = {
       /**
        * Critical color
        *
@@ -2314,17 +2346,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.SemanticColor",
-      pkg["SemanticColor"]
+      pkg.dist.types.SemanticColor
     );
     /**
      * Different types of Switch designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/SwitchDesign
+     * @alias module:@ui5/webcomponents.dist.types.SwitchDesign
      * @ui5-module-override @ui5/webcomponents dist.types.SwitchDesign
      * @private
      */
-    pkg["SwitchDesign"] = {
+    pkg.dist.types.SwitchDesign = {
       /**
        * Defines the Switch as Graphical
        *
@@ -2340,17 +2372,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.SwitchDesign",
-      pkg["SwitchDesign"]
+      pkg.dist.types.SwitchDesign
     );
     /**
      * Tab layout of TabContainer.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TabLayout
+     * @alias module:@ui5/webcomponents.dist.types.TabLayout
      * @ui5-module-override @ui5/webcomponents dist.types.TabLayout
      * @private
      */
-    pkg["TabLayout"] = {
+    pkg.dist.types.TabLayout = {
       /**
        * Inline type, the tab &quot;main text&quot; and &quot;additionalText&quot; are displayed horizotally.
        *
@@ -2364,16 +2396,19 @@ sap.ui.define(
        */
       Standard: "Standard"
     };
-    registerEnum("ui5.webcomponents.dist.types.TabLayout", pkg["TabLayout"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.TabLayout",
+      pkg.dist.types.TabLayout
+    );
     /**
      * Alignment of the &lt;ui5-table-cell&gt; component.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TableCellHorizontalAlign
+     * @alias module:@ui5/webcomponents.dist.types.TableCellHorizontalAlign
      * @ui5-module-override @ui5/webcomponents dist.types.TableCellHorizontalAlign
      * @private
      */
-    pkg["TableCellHorizontalAlign"] = {
+    pkg.dist.types.TableCellHorizontalAlign = {
       /**
        * Center
        *
@@ -2407,17 +2442,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.TableCellHorizontalAlign",
-      pkg["TableCellHorizontalAlign"]
+      pkg.dist.types.TableCellHorizontalAlign
     );
     /**
      * Growing mode of the &lt;ui5-table&gt; component.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TableGrowingMode
+     * @alias module:@ui5/webcomponents.dist.types.TableGrowingMode
      * @ui5-module-override @ui5/webcomponents dist.types.TableGrowingMode
      * @private
      */
-    pkg["TableGrowingMode"] = {
+    pkg.dist.types.TableGrowingMode = {
       /**
        * Renders a growing button, which can be pressed to load more data.
        *
@@ -2435,17 +2470,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.TableGrowingMode",
-      pkg["TableGrowingMode"]
+      pkg.dist.types.TableGrowingMode
     );
     /**
      * Overflow mode of the `ui5-table` component.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TableOverflowMode
+     * @alias module:@ui5/webcomponents.dist.types.TableOverflowMode
      * @ui5-module-override @ui5/webcomponents dist.types.TableOverflowMode
      * @private
      */
-    pkg["TableOverflowMode"] = {
+    pkg.dist.types.TableOverflowMode = {
       /**
        * Pops in columns, that do not fit into the table anymore.
        *
@@ -2461,17 +2496,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.TableOverflowMode",
-      pkg["TableOverflowMode"]
+      pkg.dist.types.TableOverflowMode
     );
     /**
      * Selection behavior of the `ui5-table` selection components.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TableSelectionBehavior
+     * @alias module:@ui5/webcomponents.dist.types.TableSelectionBehavior
      * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionBehavior
      * @private
      */
-    pkg["TableSelectionBehavior"] = {
+    pkg.dist.types.TableSelectionBehavior = {
       /**
        * Rows can only be selected by clicking directly on the row, as the row selector column is hidden.
        *
@@ -2489,17 +2524,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.TableSelectionBehavior",
-      pkg["TableSelectionBehavior"]
+      pkg.dist.types.TableSelectionBehavior
     );
     /**
      * Selection modes of the &lt;ui5-table&gt; component.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TableSelectionMode
+     * @alias module:@ui5/webcomponents.dist.types.TableSelectionMode
      * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionMode
      * @private
      */
-    pkg["TableSelectionMode"] = {
+    pkg.dist.types.TableSelectionMode = {
       /**
        * Multi selection mode (more than one table row can be selected).
        *
@@ -2521,17 +2556,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.TableSelectionMode",
-      pkg["TableSelectionMode"]
+      pkg.dist.types.TableSelectionMode
     );
     /**
      * Selectors of the table header row in multi-selection scenarios.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TableSelectionMultiHeaderSelector
+     * @alias module:@ui5/webcomponents.dist.types.TableSelectionMultiHeaderSelector
      * @ui5-module-override @ui5/webcomponents dist.types.TableSelectionMultiHeaderSelector
      * @private
      */
-    pkg["TableSelectionMultiHeaderSelector"] = {
+    pkg.dist.types.TableSelectionMultiHeaderSelector = {
       /**
        * Renders an icon in the table header row that removes the selection of all rows.
        *
@@ -2547,17 +2582,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.TableSelectionMultiHeaderSelector",
-      pkg["TableSelectionMultiHeaderSelector"]
+      pkg.dist.types.TableSelectionMultiHeaderSelector
     );
     /**
      * Defines tag design types.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TagDesign
+     * @alias module:@ui5/webcomponents.dist.types.TagDesign
      * @ui5-module-override @ui5/webcomponents dist.types.TagDesign
      * @private
      */
-    pkg["TagDesign"] = {
+    pkg.dist.types.TagDesign = {
       /**
        * Critical design
        *
@@ -2601,16 +2636,19 @@ sap.ui.define(
        */
       Set2: "Set2"
     };
-    registerEnum("ui5.webcomponents.dist.types.TagDesign", pkg["TagDesign"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.TagDesign",
+      pkg.dist.types.TagDesign
+    );
     /**
      * Predefined sizes for the tag.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TagSize
+     * @alias module:@ui5/webcomponents.dist.types.TagSize
      * @ui5-module-override @ui5/webcomponents dist.types.TagSize
      * @private
      */
-    pkg["TagSize"] = {
+    pkg.dist.types.TagSize = {
       /**
        * Large size of the tag
        *
@@ -2624,7 +2662,10 @@ sap.ui.define(
        */
       S: "S"
     };
-    registerEnum("ui5.webcomponents.dist.types.TagSize", pkg["TagSize"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.TagSize",
+      pkg.dist.types.TagSize
+    );
     /**
      * Determines when the character counter of `ui5-textarea` is displayed.
      *
@@ -2665,11 +2706,11 @@ sap.ui.define(
      * Empty Indicator Mode.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TextEmptyIndicatorMode
+     * @alias module:@ui5/webcomponents.dist.types.TextEmptyIndicatorMode
      * @ui5-module-override @ui5/webcomponents dist.types.TextEmptyIndicatorMode
      * @private
      */
-    pkg["TextEmptyIndicatorMode"] = {
+    pkg.dist.types.TextEmptyIndicatorMode = {
       /**
        * Empty indicator is never rendered.
        *
@@ -2685,17 +2726,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.TextEmptyIndicatorMode",
-      pkg["TextEmptyIndicatorMode"]
+      pkg.dist.types.TextEmptyIndicatorMode
     );
     /**
      * Different types of Title level.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/TitleLevel
+     * @alias module:@ui5/webcomponents.dist.types.TitleLevel
      * @ui5-module-override @ui5/webcomponents dist.types.TitleLevel
      * @private
      */
-    pkg["TitleLevel"] = {
+    pkg.dist.types.TitleLevel = {
       /**
        * Renders &#x60;h1&#x60; tag.
        *
@@ -2733,16 +2774,19 @@ sap.ui.define(
        */
       H6: "H6"
     };
-    registerEnum("ui5.webcomponents.dist.types.TitleLevel", pkg["TitleLevel"]);
+    registerEnum(
+      "ui5.webcomponents.dist.types.TitleLevel",
+      pkg.dist.types.TitleLevel
+    );
     /**
      * Toast placement.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ToastPlacement
+     * @alias module:@ui5/webcomponents.dist.types.ToastPlacement
      * @ui5-module-override @ui5/webcomponents dist.types.ToastPlacement
      * @private
      */
-    pkg["ToastPlacement"] = {
+    pkg.dist.types.ToastPlacement = {
       /**
        * Toast is placed at the &#x60;BottomCenter&#x60; position of its container.
        * Default placement (no selection)
@@ -2801,17 +2845,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ToastPlacement",
-      pkg["ToastPlacement"]
+      pkg.dist.types.ToastPlacement
     );
     /**
      * Defines which direction the items of ui5-toolbar will be aligned.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ToolbarAlign
+     * @alias module:@ui5/webcomponents.dist.types.ToolbarAlign
      * @ui5-module-override @ui5/webcomponents dist.types.ToolbarAlign
      * @private
      */
-    pkg["ToolbarAlign"] = {
+    pkg.dist.types.ToolbarAlign = {
       /**
        * Toolbar items are situated at the &#x60;end&#x60; of the Toolbar
        *
@@ -2827,17 +2871,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ToolbarAlign",
-      pkg["ToolbarAlign"]
+      pkg.dist.types.ToolbarAlign
     );
     /**
      * Defines the available toolbar designs.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ToolbarDesign
+     * @alias module:@ui5/webcomponents.dist.types.ToolbarDesign
      * @ui5-module-override @ui5/webcomponents dist.types.ToolbarDesign
      * @private
      */
-    pkg["ToolbarDesign"] = {
+    pkg.dist.types.ToolbarDesign = {
       /**
        * The toolbar and its content will be displayed with solid background.
        *
@@ -2853,17 +2897,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ToolbarDesign",
-      pkg["ToolbarDesign"]
+      pkg.dist.types.ToolbarDesign
     );
     /**
      * Defines the priority of the toolbar item to go inside overflow popover.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/ToolbarItemOverflowBehavior
+     * @alias module:@ui5/webcomponents.dist.types.ToolbarItemOverflowBehavior
      * @ui5-module-override @ui5/webcomponents dist.types.ToolbarItemOverflowBehavior
      * @private
      */
-    pkg["ToolbarItemOverflowBehavior"] = {
+    pkg.dist.types.ToolbarItemOverflowBehavior = {
       /**
        * When set, the item will be always part of the overflow part of ui5-toolbar.
        *
@@ -2885,17 +2929,17 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.ToolbarItemOverflowBehavior",
-      pkg["ToolbarItemOverflowBehavior"]
+      pkg.dist.types.ToolbarItemOverflowBehavior
     );
     /**
      * Different types of wrapping.
      *
      * @enum {string}
-     * @alias module:ui5/webcomponents/dist/types/WrappingType
+     * @alias module:@ui5/webcomponents.dist.types.WrappingType
      * @ui5-module-override @ui5/webcomponents dist.types.WrappingType
      * @private
      */
-    pkg["WrappingType"] = {
+    pkg.dist.types.WrappingType = {
       /**
        * The text will be truncated with an ellipsis.
        *
@@ -2911,7 +2955,7 @@ sap.ui.define(
     };
     registerEnum(
       "ui5.webcomponents.dist.types.WrappingType",
-      pkg["WrappingType"]
+      pkg.dist.types.WrappingType
     );
 
     // Interfaces
@@ -2919,7 +2963,7 @@ sap.ui.define(
      * Interface for components that represent an avatar and may be slotted in numerous higher-order components such as `ui5-avatar-group`
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/AvatarGroup.IAvatarGroupItem
+     * @name module:@ui5/webcomponents.dist.AvatarGroup.IAvatarGroupItem
      * @ui5-module-override @ui5/webcomponents IAvatarGroupItem
      * @private
      */
@@ -2927,7 +2971,7 @@ sap.ui.define(
      * Interface for components that may be used as a button inside numerous higher-order components
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Button.IButton
+     * @name module:@ui5/webcomponents.dist.Button.IButton
      * @ui5-module-override @ui5/webcomponents IButton
      * @private
      */
@@ -2937,7 +2981,7 @@ sap.ui.define(
      * **Note:** Use with `ui5-date` or `ui5-date-range` as calendar date selection types.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Calendar.ICalendarSelectedDates
+     * @name module:@ui5/webcomponents.dist.Calendar.ICalendarSelectedDates
      * @ui5-module-override @ui5/webcomponents ICalendarSelectedDates
      * @private
      */
@@ -2945,7 +2989,7 @@ sap.ui.define(
      * Interface for components that may be used inside a `ui5-color-palette` or `ui5-color-palette-popover`
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/ColorPalette.IColorPaletteItem
+     * @name module:@ui5/webcomponents.dist.ColorPalette.IColorPaletteItem
      * @ui5-module-override @ui5/webcomponents IColorPaletteItem
      * @private
      */
@@ -2953,7 +2997,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside a `ui5-combobox`
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/ComboBox.IComboBoxItem
+     * @name module:@ui5/webcomponents.dist.ComboBox.IComboBoxItem
      * @ui5-module-override @ui5/webcomponents IComboBoxItem
      * @private
      */
@@ -2979,7 +3023,7 @@ sap.ui.define(
      * - `isValidString(value: string): boolean`: Validates whether a given string is a valid representation of the dynamic date range value.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/DynamicDateRange.IDynamicDateRangeOption
+     * @name module:@ui5/webcomponents.dist.DynamicDateRange.IDynamicDateRangeOption
      * @ui5-module-override @ui5/webcomponents IDynamicDateRangeOption
      * @private
      */
@@ -2987,7 +3031,7 @@ sap.ui.define(
      * Interface for components that can be slotted inside `ui5-form` as items.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Form.IFormItem
+     * @name module:@ui5/webcomponents.dist.Form.IFormItem
      * @ui5-module-override @ui5/webcomponents IFormItem
      * @private
      */
@@ -2995,7 +3039,7 @@ sap.ui.define(
      * Interface for components that represent an icon, usable in numerous higher-order components
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Icon.IIcon
+     * @name module:@ui5/webcomponents.dist.Icon.IIcon
      * @ui5-module-override @ui5/webcomponents IIcon
      * @private
      */
@@ -3003,7 +3047,7 @@ sap.ui.define(
      * Interface for components that represent a suggestion item, usable in `ui5-input`
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Input.IInputSuggestionItem
+     * @name module:@ui5/webcomponents.dist.Input.IInputSuggestionItem
      * @ui5-module-override @ui5/webcomponents IInputSuggestionItem
      * @private
      */
@@ -3013,7 +3057,7 @@ sap.ui.define(
      * **Note:** Use with `ui5-menu-item` or `ui5-menu-separator`. Implementing the interface does not guarantee that any other classes can work with the `ui5-menu`.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Menu.IMenuItem
+     * @name module:@ui5/webcomponents.dist.Menu.IMenuItem
      * @ui5-module-override @ui5/webcomponents IMenuItem
      * @private
      */
@@ -3021,7 +3065,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside a `ui5-multi-combobox` as items
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/MultiComboBox.IMultiComboBoxItem
+     * @name module:@ui5/webcomponents.dist.MultiComboBox.IMultiComboBoxItem
      * @ui5-module-override @ui5/webcomponents IMultiComboBoxItem
      * @private
      */
@@ -3029,7 +3073,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside `ui5-segmented-button` as items
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/SegmentedButton.ISegmentedButtonItem
+     * @name module:@ui5/webcomponents.dist.SegmentedButton.ISegmentedButtonItem
      * @ui5-module-override @ui5/webcomponents ISegmentedButtonItem
      * @private
      */
@@ -3037,7 +3081,7 @@ sap.ui.define(
      * Interface for components that may be slotted inside `ui5-select` as options
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Select.IOption
+     * @name module:@ui5/webcomponents.dist.Select.IOption
      * @ui5-module-override @ui5/webcomponents IOption
      * @private
      */
@@ -3055,7 +3099,7 @@ sap.ui.define(
      * **Note:** Use directly `ui5-tab` or `ui5-tab-seprator`. Implementing the interface does not guarantee that the class can work as a tab.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/TabContainer.ITab
+     * @name module:@ui5/webcomponents.dist.TabContainer.ITab
      * @ui5-module-override @ui5/webcomponents ITab
      * @private
      */
@@ -3063,7 +3107,7 @@ sap.ui.define(
      * Interface for components that can be slotted inside the `features` slot of the `ui5-table`.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Table.ITableFeature
+     * @name module:@ui5/webcomponents.dist.Table.ITableFeature
      * @ui5-module-override @ui5/webcomponents ITableFeature
      * @private
      */
@@ -3072,7 +3116,7 @@ sap.ui.define(
      * and provide growing/data loading functionality.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/Table.ITableGrowing
+     * @name module:@ui5/webcomponents.dist.Table.ITableGrowing
      * @ui5-module-override @ui5/webcomponents ITableGrowing
      * @private
      */
@@ -3084,7 +3128,7 @@ sap.ui.define(
      * state to the toolbar for caret-aware arrow-key handling.
      *
      * @interface
-     * @name module:ui5/webcomponents/dist/ToolbarItem.IToolbarItemContent
+     * @name module:@ui5/webcomponents.dist.ToolbarItem.IToolbarItemContent
      * @ui5-module-override @ui5/webcomponents IToolbarItemContent
      * @private
      */
