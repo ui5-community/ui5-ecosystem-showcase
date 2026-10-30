@@ -220,8 +220,6 @@ const JSDocSerializer = {
 				// JSDoc/TypeScript build treat the access path as nested modules, which does not match runtime.
 				alias: `@name module:${registryEntry.ui5Namespace}.${interfaceDef._derivedUi5ClassName}`,
 				entityType: "@interface",
-				// TODO: the override tag is not really correct, as the interface itself is not overridden but its implementing classes are. We might want to change this in the future.
-				override: `@ui5-module-override ${registryEntry.ui5Namespace} ${interfaceDef.name}`,
 				additionalTags: registryEntry.customJSDocTags.map((tag) => `@${tag}`).join("\n"),
 			});
 		});
@@ -240,8 +238,6 @@ const JSDocSerializer = {
 				// An all-slashes name would make the JSDoc/TypeScript build emit nested modules/namespaces that do
 				// not match the runtime object (which is a plain access path on the single package module export).
 				alias: `@alias module:${registryEntry.ui5Namespace}.${enumDef._derivedUi5ClassName}`,
-				// TODO: the override tag is not really correct, as the enum itself is not overridden but its values are. We might want to change this in the future.
-				override: `@ui5-module-override ${registryEntry.ui5Namespace} ${enumDef._derivedUi5ClassName}`,
 			});
 			enumDef.values.forEach((value) => {
 				const description = value.description || value.name;
