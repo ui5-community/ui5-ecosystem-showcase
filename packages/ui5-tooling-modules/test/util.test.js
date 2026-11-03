@@ -261,6 +261,52 @@ test("Resolve browser mapping for the selected package entry", (t) => {
 	t.is(util.resolveModule("browser-entry-test", { cwd, depPaths: [path.join(t.context.tmpDir, "node_modules")] }), path.join(packageRoot, "lib/index-browser.es.js"));
 });
 
+test("Resolve Node subpath import (#specifier) to the browser target", (t) => {
+	// a package using Node.js "subpath imports": the dist code imports
+	// "#platform" and package.json maps it to a browser vs node target.
+	// https://nodejs.org/api/packages.html#subpath-imports
+	const packageRoot = path.join(t.context.tmpDir, "node_modules", "subpath-imports-test");
+	mkdirSync(path.join(packageRoot, "dist", "platform", "browser"), { recursive: true });
+	mkdirSync(path.join(packageRoot, "dist", "platform", "node"), { recursive: true });
+	writeFileSync(
+		path.join(packageRoot, "package.json"),
+		JSON.stringify({
+			name: "subpath-imports-test",
+			imports: {
+				"#platform": {
+					// build-only (.ts) and node branches must NOT be selected
+					otel: { node: "./src/platform/node/index.ts", default: "./src/platform/browser/index.ts" },
+					node: { require: "./dist/platform/node/index.cjs", default: "./dist/platform/node/index.mjs" },
+					require: "./dist/platform/browser/index.cjs",
+					default: "./dist/platform/browser/index.mjs",
+				},
+			},
+		}),
+	);
+	const browserTarget = path.join(packageRoot, "dist/platform/browser/index.mjs");
+	writeFileSync(browserTarget, 'export default "browser";\n');
+	writeFileSync(path.join(packageRoot, "dist/platform/browser/index.cjs"), 'module.exports = "browser";\n');
+	writeFileSync(path.join(packageRoot, "dist/platform/node/index.mjs"), 'export default "node";\n');
+	// the importing module lives inside the package and imports "#platform"
+	const importer = path.join(packageRoot, "dist/platform/browser/trace.mjs");
+	writeFileSync(importer, 'import platform from "#platform";\nexport default platform;\n');
+
+	const projectInfo = {
+		pkgJson: {
+			name: "subpath-imports-test-project",
+			dependencies: {},
+		},
+	};
+	const log = { verbose() {} };
+	const util = require("../lib/util")(log, projectInfo);
+	const depPaths = [path.join(t.context.tmpDir, "node_modules")];
+
+	// resolves to the browser target (not node, not the .ts otel source)
+	t.is(util.resolveModule("#platform", { cwd, depPaths, importer }), browserTarget);
+	// fail-soft: without an importer there is no owning "imports" map
+	t.is(util.resolveModule("#platform", { cwd, depPaths }), undefined);
+});
+
 test.serial("Verify generation of @stomp/stompjs", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(["@stomp/stompjs"], {

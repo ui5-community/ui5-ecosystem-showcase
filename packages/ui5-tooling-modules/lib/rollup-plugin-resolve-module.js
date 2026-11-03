@@ -22,9 +22,11 @@
  *  - bare specifiers      : handed to the callback verbatim
  *
  * @param {object}   options plugin options
- * @param {(id: string) => string | null | undefined} options.resolveModule
+ * @param {(id: string, importer?: string) => string | null | undefined} options.resolveModule
  *        Callback that returns the resolved absolute file path for `id`,
  *        or a falsy value to let rollup fall through to its other resolvers.
+ *        `importer` (the absolute path of the importing module) is forwarded
+ *        so subpath `imports` (`#...`) can be resolved against it.
  * @returns {import('rollup').Plugin} configured rollup plugin
  */
 const path = require("path");
@@ -42,7 +44,11 @@ module.exports = function ({ resolveModule } = {}) {
 				module = path.resolve(path.dirname(importer), importee);
 			}
 			// try to resolve the node module using the provided function
-			const resolvedModule = resolveModule(module);
+			// the importer is forwarded so that Node.js "subpath imports"
+			// (bare "#..." specifiers) can be resolved against the importing
+			// module's package.json "imports" field (unlike "exports"/"browser"
+			// which resolve against the imported package itself)
+			const resolvedModule = resolveModule(module, importer);
 			//console.log(`Resolved ${importee} to ${resolvedModule}`);
 			return resolvedModule;
 		},
