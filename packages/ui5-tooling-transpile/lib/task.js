@@ -147,6 +147,11 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 					// create sourcemap resource if available
 					if (result.map) {
 						result.map.file = path.basename(filePath);
+						// The absolute sourceRoot above is only required for
+						// babel-plugin-transform-modules-ui5 namespace resolution.
+						// Keep the emitted source map portable: use the
+						// user-configured sourceRoot (e.g. "./") if set, else "./"
+						result.map.sourceRoot = babelConfig.sourceRoot || "./";
 						config.debug && log.info(`  + [.js.map] ${filePath}.map`);
 
 						const resourceMap = resourceFactory.createResource({
