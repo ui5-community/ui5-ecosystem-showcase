@@ -1018,16 +1018,25 @@ module.exports = function (log, projectInfo) {
 		 * @returns {string} the path of the module in the filesystem
 		 */
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
-		resolveModule: function resolveModule(moduleName, { cwd = process.cwd(), depPaths = [], additionalDeps = [] } = {}) {
+		resolveModule: function resolveModule(moduleName, { cwd = process.cwd(), depPaths = [], additionalDeps = [], importer } = {}) {
+			// Node.js "subpath imports" ("#..." specifiers) resolve against the
+			// IMPORTING module's package.json "imports" field, so the same specifier
+			// (e.g. "#platform") can resolve to different files per importer. The
+			// caches below are keyed by the bare moduleName, which is correct for
+			// package specifiers but would cross-contaminate "#..." between importers.
+			const isSubpathImport = typeof moduleName === "string" && moduleName.startsWith("#");
 			// create a cache key for the module and check the cache
+			// (fold the importer in for subpath imports so results are not shared across importers)
 			const cacheKey = createHash("sha256")
-				.update(`${[moduleName, cwd, ...depPaths].sort().join(",")}`)
+				.update(`${[moduleName, cwd, ...depPaths, ...(isSubpathImport && importer ? [importer] : [])].sort().join(",")}`)
 				.digest("hex");
 			if (modulesCache[cacheKey]) {
 				return modulesCache[cacheKey];
 			}
 			// if a module is listed in the negative cache, we ignore it!
-			if (modulesNegativeCache.indexOf(moduleName) !== -1 || /^\./.test(moduleName)) {
+			// (the negative cache is keyed by the bare moduleName and is importer-blind
+			//  - skip it for subpath imports)
+			if (!isSubpathImport && (modulesNegativeCache.indexOf(moduleName) !== -1 || /^\./.test(moduleName))) {
 				return undefined;
 			}
 			// retrieve or create a resolved module
@@ -1042,10 +1051,68 @@ module.exports = function (log, projectInfo) {
 				findDependenciesCache[cwd] = findDependencies({ cwd, depPaths, additionalDeps, linkedOnly: true });
 			}
 			const extendedDepPaths = [...depPaths, ...findDependenciesCache[cwd]];
+
+			// Condition priority for resolving package.json "exports"/"browser"
+			// mappings. Declared here (not inside the exports block below) so the
+			// subpath-imports resolution can share the exact same list.
+			const communityConditions = ["browser", "production" /*, "development"*/]; // could be injected from outside
+			const mainModuleConditions = ["esnext", "module", "main"];
+			const resolveConditions = [...communityConditions, ...mainModuleConditions, "import", "default", "require"]; // require is just the fallback!
+			// for the browser field, we need to resolve the conditions in a different order (axios showed this)
+			// the require field should be used before the default field to ensure the correct resolution
+			// as e.g. axios provides the browser package in the require field
+			const resolveConditionsBrowser = [...communityConditions, ...mainModuleConditions, "import", "require", "default"]; // default is just the fallback!
+
+			// resolve a Node.js subpath import ("#..." specifier) against the importing
+			// module's package.json "imports" field, towards the browser target.
+			// Returns the absolute file path or undefined (fail-soft, never throws).
+			// https://nodejs.org/api/packages.html#subpath-imports
+			const resolveSubpathImport = (specifier, importerFile) => {
+				// the imports field is owned by the importer's package, so we locate it
+				// from the importing file (exports/browser resolve against the imported
+				// package instead)
+				if (!importerFile || !path.isAbsolute(importerFile)) {
+					return undefined;
+				}
+				let pkgJsonFile, imports;
+				try {
+					pkgJsonFile = findPackageJson(importerFile);
+					imports = pkgJsonFile && getPackageJson(pkgJsonFile)?.imports;
+				} catch (e) {
+					return undefined;
+				}
+				// only exact key matches for now; subpath patterns ("#foo/*") are not needed yet
+				if (!imports || typeof imports !== "object" || typeof imports[specifier] !== "object") {
+					return undefined;
+				}
+				// walk the conditions (shared resolveConditions order) to the first
+				// matching target. The browser target wins because "node" - and any
+				// build-only conditions (e.g. a source-only ".ts" entry) - are not in
+				// the list, so the top-level browser require/default is selected.
+				let target = imports[specifier];
+				while (target && typeof target === "object") {
+					const condition = resolveConditions.find((c) => c in target);
+					if (!condition) {
+						return undefined;
+					}
+					target = target[condition];
+				}
+				if (typeof target !== "string") {
+					return undefined;
+				}
+				const resolved = path.join(path.dirname(pkgJsonFile), target);
+				return existsSyncAndIsFile(resolved) ? resolved : undefined;
+			};
+
 			// no module found => resolve it
 			let modulePath;
 			// resolve the module path
-			if (moduleName?.startsWith(`${pkg.name}/`)) {
+			if (isSubpathImport) {
+				// Node.js subpath import ("#..." specifier) - resolved against the
+				// importer's "imports" map (see resolveSubpathImport). Handled before
+				// the package-name path below, which assumes a real package specifier.
+				modulePath = resolveSubpathImport(moduleName, importer);
+			} else if (moduleName?.startsWith(`${pkg.name}/`)) {
 				// special handling for app-local resources!
 				modulePath = path.join(cwd, moduleName.substring(`${pkg.name}/`.length));
 				// check for the module path exists and to be a file
@@ -1103,15 +1170,6 @@ module.exports = function (log, projectInfo) {
 					const isMappings = (exports) => {
 						return exports && !isConditions(exports);
 					};
-
-					// the conditions and mappings to resolve the module path
-					const communityConditions = ["browser", "production" /*, "development"*/]; // could be injected from outside
-					const mainModuleConditions = ["esnext", "module", "main"];
-					const resolveConditions = [...communityConditions, ...mainModuleConditions, "import", "default", "require"]; // require is just the fallback!
-					// for the browser field, we need to resolve the conditions in a different order (axios showed this)
-					// the require field should be used before the default field to ensure the correct resolution
-					// as e.g. axios provides the browser package in the require field
-					const resolveConditionsBrowser = [...communityConditions, ...mainModuleConditions, "import", "require", "default"]; // default is just the fallback!
 
 					// helper to resolve the target of a mapping:
 					//  - if the target is a string it is returned (and if needed the wildcard is replaced)
@@ -1255,7 +1313,11 @@ module.exports = function (log, projectInfo) {
 				}
 			}
 			if (modulePath === undefined) {
-				modulesNegativeCache.push(moduleName);
+				// subpath imports are importer-specific, so keep them out of the
+				// importer-blind negative cache
+				if (!isSubpathImport) {
+					modulesNegativeCache.push(moduleName);
+				}
 				log.verbose(`  => not found!`);
 			} else if (!path.isAbsolute(modulePath) && modulePath === moduleName) {
 				modulePath = undefined;
@@ -1350,8 +1412,8 @@ module.exports = function (log, projectInfo) {
 					// once the node polyfills are injected, we can
 					// resolve the modules from node_modules
 					resolveModulePlugin({
-						resolveModule: function (moduleName) {
-							return that.resolveModule(moduleName, { cwd, depPaths });
+						resolveModule: function (moduleName, importer) {
+							return that.resolveModule(moduleName, { cwd, depPaths, importer });
 						},
 					}),
 					// handle the import.meta usages (e.g. geomap loading maplibre)
