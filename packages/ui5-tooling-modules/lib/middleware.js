@@ -353,6 +353,16 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 				resource = bundledResource;
 			}
 
+			// a failed bundling leaves the module entries without code: respond with an error
+			// instead of an empty 200 (which the UI5 loader would resolve as undefined module)
+			if (bundledResource?.type === "module" && typeof bundledResource.code !== "string") {
+				const reason = bundleInfo?.error?.message || "no code has been generated";
+				res.statusCode = 500;
+				res.setHeader("Content-Type", "text/plain; charset=utf-8");
+				res.end(`Couldn't bundle module ${moduleName}: ${reason}`);
+				return;
+			}
+
 			// serve the resource
 			if (resource) {
 				try {
