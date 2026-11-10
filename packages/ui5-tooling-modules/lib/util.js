@@ -221,7 +221,17 @@ function existsSyncWithCase(file) {
 		return true;
 	}
 	if (existsSync(dir)) {
-		var filenames = readdirSync(dir);
+		var filenames;
+		try {
+			filenames = readdirSync(dir);
+		} catch (err) {
+			// an ancestor directory which can be traversed but not listed (e.g. mode 711):
+			// the case can't be checked from here on, so stop climbing and only check the existence
+			if (err?.code === "EACCES" || err?.code === "EPERM") {
+				return existsSync(file);
+			}
+			throw err;
+		}
 		if (filenames.indexOf(path.basename(file)) === -1) {
 			return false;
 		}
