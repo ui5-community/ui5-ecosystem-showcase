@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.43.1
+
+### Patch Changes
+
+- [#1500](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1500) [`ffc0f3c`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ffc0f3cece53485f807a965fcd155a3f7cace6c0) Thanks [@SimplifierIO](https://github.com/SimplifierIO)! - fix(ui5-tooling-modules): respond with an error instead of an empty 200 when bundling failed
+  
+  When the bundling failed, the module entries registered before bundling stayed in the bundle info without code, and the middleware served them as HTTP 200 with an empty body. The UI5 loader then resolved the module as `undefined` and the app failed far away from the cause. The middleware now responds with HTTP 500 and the bundling error message, so the failure is visible in the browser's network tab.
+
+- [#1499](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1499) [`3cc1cc0`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3cc1cc01614a13998fa69d2ee2194904c5c709f9) Thanks [@SimplifierIO](https://github.com/SimplifierIO)! - fix(ui5-tooling-modules): tolerate non-listable ancestor directories in the case-sensitive existence check
+  
+  The case-sensitive existence check lists every parent directory up to the file system root. If an ancestor of the project can be traversed but not listed (e.g. mode `711` on shared or multi-tenant build hosts), `readdirSync` threw `EACCES` and bundling failed for every npm package. The check now stops climbing at such a directory and only verifies that the path exists.
+
 ## 3.43.0
 
 ### Minor Changes
