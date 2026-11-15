@@ -7,6 +7,9 @@ exports.config = {
 	// WebdriverIO allows it to run your tests in arbitrary locations (e.g. locally or
 	// on a remote machine).
 	runner: "local",
+	// Headless Chrome needs no Xvfb. WDIO v9's xvfb-run wrapper breaks
+	// worker IPC on Ubuntu 26.04 with "write EINVAL" (webdriverio#15685).
+	autoXvfb: !process.env.HEADLESS,
 	//
 	// ==================
 	// Specify Test Files
