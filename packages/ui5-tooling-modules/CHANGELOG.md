@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.43.2
+
+### Patch Changes
+
+- [#1503](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1503) [`6f36cdf`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f36cdfa59caf91209c2b950a06c662e65b0e5ac) Thanks [@petermuessig](https://github.com/petermuessig)! - Fix `new URL(..., import.meta.url)` asset handling when resolved IDs have no query suffix, avoiding an empty-path ENOENT. Emit `.mjs` and `.cjs` JavaScript assets with a `.js` filename and use that same filename in the generated URL, preventing double-dot resource names and mismatched worker URLs.
+
 ## 3.43.1
 
 ### Patch Changes
