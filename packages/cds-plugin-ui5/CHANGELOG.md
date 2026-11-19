@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.17.5
+
+### Patch Changes
+
+- [#1505](https://github.com/ui5-community/ui5-ecosystem-showcase/pull/1505) [`e44655d`](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e44655debb97fc9d9117dcc3b863a00111db47a7) Thanks [@petermuessig](https://github.com/petermuessig)! - Keep injected UI5 application links visible on recent CAP welcome pages by explicitly displaying the `#webapps` section.
+
 ## 0.17.4
 
 ### Patch Changes
