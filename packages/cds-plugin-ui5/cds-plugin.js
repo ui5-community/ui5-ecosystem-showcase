@@ -241,6 +241,9 @@ if (!skip) {
 										color: #FF5A37;
 									}
 								}
+								#webapps {
+									display: block !important;
+								}
 								</style>`,
 								);
 								const ul = doc.getElementsByTagName("ul")?.[0];
